@@ -1,14 +1,14 @@
-# imports 
+# imports
 postgresql_dialect_import = "from sqlalchemy.dialects.postgresql import {types}"
 sql_alchemy_func_import = "from sqlalchemy.sql import func"
 uniquer_constraint_import = "from sqlalchemy import UniqueConstraint"
 
 gino_import = "from gino import Gino"
 
-gino_init = 'db = Gino()'
+gino_init = "db = Gino()"
 gino_init_schema = 'db = Gino(schema="{schema}")'
 
-# model defenition 
+# model defenition
 model_template = """
 
 class {model_name}(db.Model):\n
@@ -28,4 +28,3 @@ fk_template = """
     {fk_name} = db.ForeignKeyConstraint(
         [{fk_columns}], [{fk_references_columns}])
 """
-

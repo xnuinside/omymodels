@@ -76,13 +76,22 @@ and you will get output:
 ```bash
 
     omm path/to/your.ddl
-    # for example
 
+    # for example
     omm tests/test_two_tables.sql
 
 ```
 
-To parse DDL used small library - https://github.com/xnuinside/simple-ddl-parser.
+You can define target path where to save models with **-t**, **--target** flag:
+
+```bash
+
+    # for example
+    omm tests/test_two_tables.sql -t test_path/test_models.py
+
+```
+
+Small library is used for parse DDL- https://github.com/xnuinside/simple-ddl-parser.
 
 
 ### What to do if types not supported in O! My Models and you cannot wait until PR will be approved

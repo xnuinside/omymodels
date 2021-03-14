@@ -1,4 +1,4 @@
-postgresql_dialect = ['ARRAY', 'JSON', 'JSONB']
+postgresql_dialect = ["ARRAY", "JSON", "JSONB"]
 
 # key - type from ddl, value - type from GinoORM
 
@@ -23,5 +23,5 @@ types_mapping = {
     "serial": "db.Integer",
     "jsonb": "JSONB",
     "json": "JSON",
-    "int": "db.Integer"
+    "int": "db.Integer",
 }
