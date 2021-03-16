@@ -35,13 +35,18 @@ def prepare_column_type(column_data: Dict) -> str:
         print(column_data["type"], 'OMM_UNMAPPED_TYPE')
     if column_type in postgresql_dialect:
         postgresql_dialect_cols.add(column_type)
+
+    if column_data["size"]:
+        column_type += f"({column_data['size']})"
+    else:
+        column_type += f"()"
+    
+    if '[' in column_data["type"]:
+        postgresql_dialect_cols.add('ARRAY')
+        column_type = f'ARRAY({column_type})'
     column = gt.column_template.format(
         column_name=column_data["name"], column_type=column_type
     )
-    if column_data["size"]:
-        column += f"({column_data['size']})"
-    else:
-        column += f"()"
     return column
 
 
@@ -161,17 +166,13 @@ def create_gino_models(
     dump: bool = True,
     dump_path: str = "models.py",
     singular: bool = False, 
-    exceptions: Optional[List] = None
-):
+    naming_exceptions: Optional[List] = None
+) -> Dict:
+    """ method returns parsed metadata from ddl & code output as result """
     tables = get_tables_information(ddl, ddl_path)
-    output = generate_gino_models_file(tables, singular, exceptions)
+    output = generate_gino_models_file(tables, singular, naming_exceptions)
     if dump:
         save_models_to_file(output, dump_path)
     else:
         print(output)
-        return output
-
-
-create_gino_models(ddl_path='/Users/iuliia_volkova2/work/kkr-metadata/sql_scripts/catalog.ddl', 
-                   singular=True,
-                   exceptions=["pipelines", "zones"])
+    return {'metadata': tables, 'code': output}
