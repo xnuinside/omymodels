@@ -20,6 +20,7 @@ column_template = """    {column_name} = db.Column({column_type}"""
 required = ", nullable=False"
 default = ", server_default={default}"
 pk_template = ", primary_key=True"
+unique = ", unique=True"
 autoincrement = ", autoincrement=True"
 index = ", index=True"
 

@@ -73,6 +73,8 @@ def setup_column_attributes(column_data: Dict, table_pk: List[str], column: str)
         column = prepare_column_default(column_data, column)
     if column_data["name"] in table_pk:
         column += gt.pk_template
+    if column_data["unique"]:
+        column += gt.unique
     return column
 
 
