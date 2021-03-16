@@ -3,10 +3,12 @@ from simple_ddl_parser import DDLParser, parse_from_file
 from typing import Optional, List, Dict
 import omymodels.gino.templates as gt
 from omymodels.gino.types import types_mapping, postgresql_dialect, datetime_types
+from omymodels.utils import create_model_name
 
 
 state = set()
 postgresql_dialect_cols = set()
+constraint = False
 
 
 def get_tables_information(
@@ -86,18 +88,31 @@ def generate_column(column_data: Dict, table_pk: List[str]) -> str:
     column += ")\n"
     return column
 
-
-def generate_model(table: Dict) -> str:
+def add_table_args(model: str, table: Dict) -> str:
+    statements = []
+    global constraint
+    if table.get('index'):
+        for index in table['index']:
+            constraint = True
+            statements.append(gt.index_template.format(columns=",".join(index['columns']), 
+                                              name=f"'{index['index_name']}'"))
+    print(statements)
+    model += gt.table_args.format(statements=",".join(statements))
+    return model
+        
+def generate_model(table: Dict, singular: bool = False, exceptions: Optional[List] = None) -> str:
     """ method to prepare one Model defention - name & tablename  & columns """
     print(table)
     model = ""
     if table.get('table_name'):
         # mean table
         model = gt.model_template.format(
-            model_name=table["table_name"].capitalize(), table_name=table["table_name"]
+            model_name=create_model_name(table["table_name"], singular, exceptions), table_name=table["table_name"]
         )
         for column in table["columns"]:
             model += generate_column(column, table["primary_key"])
+    if table.get('index') or table.get('alter') or table.get('checks'):
+        model += add_table_args(model, table)
     elif table.get('sequence_name'):
         # create sequence
         ...
@@ -112,15 +127,17 @@ def create_header(tables: List[Dict]) -> str:
     print(postgresql_dialect)
     if postgresql_dialect_cols:
         header += gt.postgresql_dialect_import.format(types=",".join(postgresql_dialect_cols)) + "\n"
+    if constraint:
+        header += gt.unique_cons_import + "\n"
     header += gt.gino_import + "\n\n"
     if tables[0]["schema"]:
-        header += gt.gino_init_schema + "\n"
+        header += gt.gino_init_schema.format(schema=tables[0]["schema"]) + "\n"
     else:
         header += gt.gino_init + "\n"
     return header
 
 
-def generate_gino_models_file(tables: List[Dict]) -> str:
+def generate_gino_models_file(tables: List[Dict], singular: bool = False, exceptions: Optional[List] = None) -> str:
     """ method to prepare full file with all Models &  """
     output = ""
     for table in tables:
@@ -143,12 +160,18 @@ def create_gino_models(
     ddl_path: Optional[str] = None,
     dump: bool = True,
     dump_path: str = "models.py",
+    singular: bool = False, 
+    exceptions: Optional[List] = None
 ):
     tables = get_tables_information(ddl, ddl_path)
-    output = generate_gino_models_file(tables)
+    output = generate_gino_models_file(tables, singular, exceptions)
     if dump:
         save_models_to_file(output, dump_path)
     else:
         print(output)
         return output
 
+
+create_gino_models(ddl_path='/Users/iuliia_volkova2/work/kkr-metadata/sql_scripts/catalog.ddl', 
+                   singular=True,
+                   exceptions=["pipelines", "zones"])

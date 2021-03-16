@@ -4,6 +4,7 @@ sql_alchemy_func_import = "from sqlalchemy.sql import func"
 uniquer_constraint_import = "from sqlalchemy import UniqueConstraint"
 
 gino_import = "from gino import Gino"
+unique_cons_import = "from sqlalchemy.schema import UniqueConstraint"
 
 gino_init = "db = Gino()"
 gino_init_schema = 'db = Gino(schema="{schema}")'
@@ -25,7 +26,17 @@ autoincrement = ", autoincrement=True"
 index = ", index=True"
 
 # tables properties
+
+table_args = """
+    __table_args__ = (
+                {statements}
+            )
+
+"""
 fk_template = """
     {fk_name} = db.ForeignKeyConstraint(
         [{fk_columns}], [{fk_references_columns}])
 """
+
+index_template = """
+    UniqueConstraint({columns}, name={name})"""

@@ -59,3 +59,6 @@ def main():
 
     if args.v or args.no_dump:
         pprint.pprint(result)
+
+
+# exceptions = ["pipelines", "zones"]
