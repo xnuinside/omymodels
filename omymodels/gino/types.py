@@ -11,6 +11,7 @@ types_mapping = {
     "text": "db.Text",
     "smallint": "db.SmallInteger",
     "boolean": "db.Boolean",
+    "bool": "db.Boolean",
     "decimal": "db.Numeric",
     "bigint": "db.BigInteger",
     "char": "db.String",
@@ -24,4 +25,9 @@ types_mapping = {
     "jsonb": "JSONB",
     "json": "JSON",
     "int": "db.Integer",
+    "serial": "db.Integer",
+    "bigserial": "db.BigInteger",
 }
+
+
+datetime_types = ['TIMESTAMP', 'DATETIME', 'DATE']

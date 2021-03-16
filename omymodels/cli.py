@@ -50,6 +50,7 @@ def main():
         sys.exit()
 
     print(f"Start parsing file {input_path} \n")
+    
     result = create_gino_models(
         ddl_path=input_path, dump=not args.no_dump, dump_path=args.target
     )
