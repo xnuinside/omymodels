@@ -122,3 +122,8 @@ for example:
 Please describe issue that you want to solve and open the PR, I will review it as soon as possible.
 
 Any questions? Ping me in Telegram: https://t.me/xnuinside 
+
+## Changelog
+**v0.2.0**
+1. Valid generating columns in models: autoincrement, default, type, arrays, unique, primary key and etc.
+2. Added creating __table_args__ for indexes

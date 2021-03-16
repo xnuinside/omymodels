@@ -11,7 +11,6 @@ gino_init_schema = 'db = Gino(schema="{schema}")'
 
 # model defenition
 model_template = """
-
 class {model_name}(db.Model):\n
     __tablename__ = \'{table_name}\'\n
 """

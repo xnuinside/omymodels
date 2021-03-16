@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "omymodels"
-version = "0.2.0-alpha0"
+version = "0.2.0"
 description = "O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM."
 authors = ["Iuliia Volkova <xnuinside@gmail.com>"]
 license = "MIT"

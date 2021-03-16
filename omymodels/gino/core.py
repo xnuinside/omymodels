@@ -31,8 +31,6 @@ def prepare_column_type(column_data: Dict) -> str:
     global postgresql_dialect_cols
     column_data_type = column_data["type"].lower().split('[')[0]
     column_type = types_mapping.get(column_data_type, "OMM_UNMAPPED_TYPE")
-    if column_type == 'OMM_UNMAPPED_TYPE':
-        print(column_data["type"], 'OMM_UNMAPPED_TYPE')
     if column_type in postgresql_dialect:
         postgresql_dialect_cols.add(column_type)
 
@@ -59,13 +57,11 @@ def prepare_column_default(column_data: Dict, column: str) -> str:
                 state.add("func")
             elif "'" not in column_data["default"]:
                 column_data["default"] = f"'{column_data['default']}'"
-        elif 'true' in column_data["default"] and not "'" in column_data["default"]:
-            column_data["default"] = True
-        elif 'false' in column_data["default"] and not "'" in column_data["default"]:
-            column_data["default"] = False
         else:
             if "'" not in column_data["default"]:
                 column_data["default"] = f"'{column_data['default']}'"
+    else:
+        column_data["default"] = f"'{str(column_data['default'])}'"
     column += gt.default.format(default=column_data["default"])
     return column
 
@@ -101,13 +97,11 @@ def add_table_args(model: str, table: Dict) -> str:
             constraint = True
             statements.append(gt.index_template.format(columns=",".join(index['columns']), 
                                               name=f"'{index['index_name']}'"))
-    print(statements)
     model += gt.table_args.format(statements=",".join(statements))
     return model
         
 def generate_model(table: Dict, singular: bool = False, exceptions: Optional[List] = None) -> str:
     """ method to prepare one Model defention - name & tablename  & columns """
-    print(table)
     model = ""
     if table.get('table_name'):
         # mean table
@@ -117,7 +111,7 @@ def generate_model(table: Dict, singular: bool = False, exceptions: Optional[Lis
         for column in table["columns"]:
             model += generate_column(column, table["primary_key"])
     if table.get('index') or table.get('alter') or table.get('checks'):
-        model += add_table_args(model, table)
+        model = add_table_args(model, table)
     elif table.get('sequence_name'):
         # create sequence
         ...
@@ -129,7 +123,6 @@ def create_header(tables: List[Dict]) -> str:
     header = ""
     if "func" in state:
         header += gt.sql_alchemy_func_import + "\n"
-    print(postgresql_dialect)
     if postgresql_dialect_cols:
         header += gt.postgresql_dialect_import.format(types=",".join(postgresql_dialect_cols)) + "\n"
     if constraint:
@@ -146,7 +139,7 @@ def generate_gino_models_file(tables: List[Dict], singular: bool = False, except
     """ method to prepare full file with all Models &  """
     output = ""
     for table in tables:
-        output += generate_model(table)
+        output += generate_model(table, singular, exceptions)
     header = create_header(tables)
     output = header + output
     return output
