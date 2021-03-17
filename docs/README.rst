@@ -134,6 +134,12 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 Changelog
 ---------
 
+**v0.3.0**
+
+
+#. Generated Index for 'index' statement in **table_args** (not unique constrait as previously)
+#. Fix issue with column size as tuple (4,2)
+
 **v0.2.0**
 
 
