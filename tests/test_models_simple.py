@@ -45,9 +45,9 @@ class Languages(db.Model):
     code = db.Column(db.String(2), nullable=False)
     name = db.Column(db.String(), nullable=False)
 """
-    assert expected == create_gino_models(ddl=ddl, dump=False)
+    assert expected == create_gino_models(ddl=ddl, dump=False)['code']
     tests_dir = os.path.dirname(os.path.abspath(__file__))
-    models = os.path.join(tests_dir, 'test_models.py')
+    models = os.path.join(tests_dir, '_models.py')
     ddl_path = os.path.join(tests_dir, 'test_two_tables.sql')
     create_gino_models(ddl_path=ddl_path, dump_path=models)
     with open(models, 'r') as f:

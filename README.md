@@ -124,6 +124,10 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside 
 
 ## Changelog
+**v0.3.0**
+1. Generated Index for 'index' statement in __table_args__ (not unique constrait as previously)
+2. Fix issue with column size as tuple (4,2)
+
 **v0.2.0**
 1. Valid generating columns in models: autoincrement, default, type, arrays, unique, primary key and etc.
 2. Added creating __table_args__ for indexes
