@@ -9,6 +9,7 @@ from omymodels.utils import create_model_name
 state = set()
 postgresql_dialect_cols = set()
 constraint = False
+im_index = False
 
 
 def get_tables_information(
@@ -35,7 +36,10 @@ def prepare_column_type(column_data: Dict) -> str:
         postgresql_dialect_cols.add(column_type)
 
     if column_data["size"]:
-        column_type += f"({column_data['size']})"
+        if isinstance(column_data["size"], int):
+            column_type += f"({column_data['size']})"
+        elif isinstance(column_data["size"], tuple):
+            column_type += f"({','.join([str(x) for x in column_data['size']])})"
     else:
         column_type += f"()"
     
@@ -90,13 +94,23 @@ def generate_column(column_data: Dict, table_pk: List[str]) -> str:
     return column
 
 def add_table_args(model: str, table: Dict) -> str:
-    statements = []
+    
     global constraint
+    global im_index
+    
+    statements = []
+    
     if table.get('index'):
         for index in table['index']:
-            constraint = True
-            statements.append(gt.index_template.format(columns=",".join(index['columns']), 
-                                              name=f"'{index['index_name']}'"))
+           
+            if not index['unique']:
+                im_index = True
+                statements.append(gt.index_template.format(columns=",".join(index['columns']), 
+                                                name=f"'{index['index_name']}'"))
+            else:
+                constraint = True
+                statements.append(gt.unique_index_template.format(columns=",".join(index['columns']), 
+                                                name=f"'{index['index_name']}'"))
     model += gt.table_args.format(statements=",".join(statements))
     return model
         
@@ -127,6 +141,8 @@ def create_header(tables: List[Dict]) -> str:
         header += gt.postgresql_dialect_import.format(types=",".join(postgresql_dialect_cols)) + "\n"
     if constraint:
         header += gt.unique_cons_import + "\n"
+    if im_index:
+        header += gt.index_import + "\n"
     header += gt.gino_import + "\n\n"
     if tables[0]["schema"]:
         header += gt.gino_init_schema.format(schema=tables[0]["schema"]) + "\n"

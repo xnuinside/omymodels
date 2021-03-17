@@ -425,7 +425,7 @@ jeepney = ">=0.6"
 
 [[package]]
 name = "simple-ddl-parser"
-version = "0.7.1"
+version = "0.7.2"
 description = "Simple DDL Parser to parse SQL & HQL ddl files to json/python dict with full information about columns: types, defaults, primary keys, etc."
 category = "main"
 optional = false
@@ -780,8 +780,8 @@ secretstorage = [
     {file = "SecretStorage-3.3.1.tar.gz", hash = "sha256:fd666c51a6bf200643495a04abb261f83229dcb6fd8472ec393df7ffc8b6f195"},
 ]
 simple-ddl-parser = [
-    {file = "simple-ddl-parser-0.7.1.tar.gz", hash = "sha256:b215a90e6480e095f620326d7b19d6fe2e13686b0556ff4669758ee1c3902833"},
-    {file = "simple_ddl_parser-0.7.1-py3-none-any.whl", hash = "sha256:fb5811e8e3b0165bdf7ed8be818baa86b7adb2ed14c878f2d1bcd9985cb78fa5"},
+    {file = "simple-ddl-parser-0.7.2.tar.gz", hash = "sha256:d4e241e2229b84e9bafee8bbba91f6d73513bdfe3969066e357227d79129f188"},
+    {file = "simple_ddl_parser-0.7.2-py3-none-any.whl", hash = "sha256:d579de8db7660a1479c7756f77425e24c29b3cd206cf714ed2abf589ab79697e"},
 ]
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
