@@ -20,23 +20,22 @@ def get_tables_information(
     return tables
 
 
-
 def create_models(
     ddl: Optional[str] = None,
     ddl_path: Optional[str] = None,
     dump: bool = True,
     dump_path: str = "models.py",
-    singular: bool = False, 
+    singular: bool = False,
     naming_exceptions: Optional[List] = None,
-    models_type: str = 'gino'
-    ):
+    models_type: str = "gino",
+):
     tables = get_tables_information(ddl, ddl_path)
     output = generate_models_file(tables, singular, naming_exceptions, models_type)
     if dump:
         save_models_to_file(output, dump_path)
     else:
         print(output)
-    return {'metadata': tables, 'code': output}
+    return {"metadata": tables, "code": output}
 
 
 def save_models_to_file(models: str, dump_path: str) -> None:
@@ -48,23 +47,25 @@ def save_models_to_file(models: str, dump_path: str) -> None:
 
 
 def generate_models_file(
-    tables: List[Dict], 
-    singular: bool = False, 
-    exceptions: Optional[List] = None, 
-    models_type: str = 'gino') -> str:
+    tables: List[Dict],
+    singular: bool = False,
+    exceptions: Optional[List] = None,
+    models_type: str = "gino",
+) -> str:
     """ method to prepare full file with all Models &  """
     output = ""
-    
-    models = {
-        'gino': g,
-        'pydantic': p
-    }
+
+    models = {"gino": g, "pydantic": p}
     models_type = models.get(models_type)
     if not models_type:
-        raise ValueError(f'Unsupported models type {models_type}. Possible variants: {models.keys()}')
+        raise ValueError(
+            f"Unsupported models type {models_type}. Possible variants: {models.keys()}"
+        )
+
+    model_generator = getattr(models_type, 'ModelGenerator')()
     
     for table in tables:
-        output += getattr(models_type, 'generate_model')(table, singular, exceptions)
-    header = getattr(models_type, 'create_header')(tables)
+        output += model_generator.generate_model(table, singular, exceptions)
+    header = model_generator.create_header(tables)
     output = header + output
     return output

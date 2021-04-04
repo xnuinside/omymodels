@@ -19,7 +19,7 @@ def cli():
         type=str,
         help="The type of model you want to generate, pass as argument one of the supported: [gino, pydantic]",
     )
-    
+
     omm_cli.add_argument(
         "ddl_file_path",
         type=str,
@@ -57,7 +57,10 @@ def main():
 
     print(f"Start parsing file {input_path} \n")
     result = create_models(
-        ddl_path=input_path, dump=not args.no_dump, dump_path=args.target, models_type=args.type
+        ddl_path=input_path,
+        dump=not args.no_dump,
+        dump_path=args.target,
+        models_type=args.type,
     )
     print(f"File with result was saved to {target_file} file")
 

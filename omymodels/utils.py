@@ -1,5 +1,7 @@
 from typing import Optional, List, Text
 
+type_not_found = "OMM_UNMAPPED_TYPE"
+
 
 def get_singular_name(table_name: Text, exceptions: Optional[List] = None) -> Text:
     endings = {"ies": lambda x: x[:-3] + "y", "es": lambda x: x[:-1]}
@@ -20,7 +22,9 @@ def get_singular_name(table_name: Text, exceptions: Optional[List] = None) -> Te
     return model_name
 
 
-def create_model_name(table_name: Text, singular: bool = False, exceptions: Optional[List] = None) -> Text:
+def create_model_name(
+    table_name: Text, singular: bool = False, exceptions: Optional[List] = None
+) -> Text:
     """ create correct class name for table in PascalCase """
     if singular:
         model_name = get_singular_name(table_name)

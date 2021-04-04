@@ -1,7 +1,7 @@
 datetime_import = """import datetime"""
 typing_imports = """from typing import {typing_types}"""
 
-base_model = 'BaseModel'
+base_model = "BaseModel"
 
 pydantic_imports = """from pydantic import {imports}"""
 
