@@ -16,9 +16,31 @@ O! My Models
    :alt: badge3
  
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future).
+O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future) and Pydantic.
 
-You provide an input like:
+By default method **create_models** generate GinoORM models, to ger Pydantic models output use argument ``models_type='pydantic'``
+
+For example,
+
+.. code-block:: python
+
+   from omymodels import create_models
+
+
+   ddl = """
+   CREATE table user_history (
+           runid                 decimal(21) not null
+       ,job_id                decimal(21) not null
+       ,id                    varchar(100) not null -- group_id or role_id
+       ,user              varchar(100) not null
+       ,status                varchar(10) not null
+       ,event_time            timestamp not null default now()
+       ,comment           varchar(1000) not null default 'none'
+       ) ;
+   """
+   result = create_models(ddl, models_type='pydantic')
+
+GinoORM example. If you provide an input like:
 
 .. code-block:: sql
 
@@ -99,6 +121,16 @@ You can define target path where to save models with **-t**\ , **--target** flag
        # for example
        omm tests/test_two_tables.sql -t test_path/test_models.py
 
+If you want generate the Pydantic models - just use flag **-m** or **--models_type='pydantic'**
+
+.. code-block:: bash
+
+
+       omm /path/to/your.ddl -m pydantic
+
+       # or 
+       omm /path/to/your.ddl --models_type pydantic
+
 Small library is used for parse DDL- https://github.com/xnuinside/simple-ddl-parser.
 
 What to do if types not supported in O! My Models and you cannot wait until PR will be approved
@@ -115,14 +147,31 @@ for example:
 .. code-block:: python
 
 
-       from omymodels.gino import types  types_mapping
-       from omymodels import create_gino_models
+       from omymodels.gino import types
+       from omymodels import create_models
 
        types.types_mapping.update({'your_type_from_ddl': 'db.TypeInGino'})
 
        ddl = "YOUR DDL with your custom your_type_from_ddl"
 
-       models = create_gino_models(ddl)
+       models = create_models(ddl)
+
+       #### And similar for Pydantic types
+
+       from omymodels.pydantic import types  types_mapping
+       from omymodels import create_models
+
+       types.types_mapping.update({'your_type_from_ddl': 'db.TypeInGino'})
+
+       ddl = "YOUR DDL with your custom your_type_from_ddl"
+
+       models = create_models(ddl, models_type='pydantic')
+
+TODO in next releases
+---------------------
+
+
+#. Add ForeignKey generation for GinoORM Models
 
 How to contribute
 -----------------
@@ -133,6 +182,12 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 Changelog
 ---------
+
+**v0.4.0**
+
+
+#. Added generation for Pydantic models from ddl
+#. Main method create_gino_models renamed to create_models
 
 **v0.3.0**
 

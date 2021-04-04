@@ -15,8 +15,9 @@ def cli():
     )
 
     omm_cli.add_argument(
-        "type",
+        "-m", "--models_type",
         type=str,
+        default='gino',
         help="The type of model you want to generate, pass as argument one of the supported: [gino, pydantic]",
     )
 
@@ -60,7 +61,7 @@ def main():
         ddl_path=input_path,
         dump=not args.no_dump,
         dump_path=args.target,
-        models_type=args.type,
+        models_type=args.models_type,
     )
     print(f"File with result was saved to {target_file} file")
 

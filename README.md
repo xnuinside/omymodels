@@ -114,6 +114,17 @@ You can define target path where to save models with **-t**, **--target** flag:
 
 ```
 
+If you want generate the Pydantic models - just use flag **-m** or **--models_type='pydantic'**
+
+```bash
+
+    omm /path/to/your.ddl -m pydantic
+
+    # or 
+    omm /path/to/your.ddl --models_type pydantic
+
+```
+
 Small library is used for parse DDL- https://github.com/xnuinside/simple-ddl-parser.
 
 
@@ -152,7 +163,7 @@ for example:
 
 ## TODO in next releases
 
-1. Add generating Sqlalchemy models.
+1. Add ForeignKey generation for GinoORM Models
 
 ## How to contribute
 
@@ -161,6 +172,10 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside 
 
 ## Changelog
+**v0.4.0**
+1. Added generation for Pydantic models from ddl
+2. Main method create_gino_models renamed to create_models
+
 **v0.3.0**
 1. Generated Index for 'index' statement in __table_args__ (not unique constrait as previously)
 2. Fix issue with column size as tuple (4,2)

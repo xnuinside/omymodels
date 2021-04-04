@@ -39,13 +39,14 @@ class ModelGenerator:
         model = ""
         if table.get("table_name"):
             # mean one model one table
-            model = (
+            model += "\n\n"
+            model += (
                 pt.pydantic_class.format(
                     class_name=create_model_name(table["table_name"], singular, exceptions),
                     table_name=table["table_name"],
                 )
-                + "\n\n"
-            )
+                
+            ) + "\n\n"
             for column in table["columns"]:
                 model += self.generate_attr(column) + "\n"
         return model
@@ -61,5 +62,5 @@ class ModelGenerator:
             header += (
                 pt.typing_imports.format(typing_types=", ".join(_imports)) + "\n"
             )
-        header += pt.pydantic_imports.format(imports=", ".join(self.imports)) + "\n\n\n"
+        header += pt.pydantic_imports.format(imports=", ".join(self.imports)) + "\n"
         return header
