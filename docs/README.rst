@@ -183,6 +183,11 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 Changelog
 ---------
 
+**v0.4.1**
+
+
+#. Added correct work with table names contains multiple '-'
+
 **v0.4.0**
 
 

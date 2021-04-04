@@ -172,6 +172,9 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside 
 
 ## Changelog
+**v0.4.1**
+1. Added correct work with table names contains multiple '-'
+
 **v0.4.0**
 1. Added generation for Pydantic models from ddl
 2. Main method create_gino_models renamed to create_models
