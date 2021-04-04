@@ -1,5 +1,5 @@
 import os
-from omymodels import create_gino_models
+from omymodels import create_models
 
 
 def test_two_simple_ddl():
@@ -45,11 +45,11 @@ class Languages(db.Model):
     code = db.Column(db.String(2), nullable=False)
     name = db.Column(db.String(), nullable=False)
 """
-    assert expected == create_gino_models(ddl=ddl, dump=False)['code']
+    assert expected == create_models(ddl=ddl, dump=False)['code']
     tests_dir = os.path.dirname(os.path.abspath(__file__))
     models = os.path.join(tests_dir, '_models.py')
     ddl_path = os.path.join(tests_dir, 'test_two_tables.sql')
-    create_gino_models(ddl_path=ddl_path, dump_path=models)
+    create_models(ddl_path=ddl_path, dump_path=models)
     with open(models, 'r') as f:
         content_of_models_py = f.read()
     assert expected == content_of_models_py

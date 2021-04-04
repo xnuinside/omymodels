@@ -3,9 +3,32 @@
 ![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels) 
 
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future).
+O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future) and Pydantic.
 
-You provide an input like:
+By default method **create_models** generate GinoORM models, to ger Pydantic models output use argument `models_type='pydantic'`
+
+For example,
+
+```python
+from omymodels import create_models
+
+
+ddl = """
+CREATE table user_history (
+        runid                 decimal(21) not null
+    ,job_id                decimal(21) not null
+    ,id                    varchar(100) not null -- group_id or role_id
+    ,user              varchar(100) not null
+    ,status                varchar(10) not null
+    ,event_time            timestamp not null default now()
+    ,comment           varchar(1000) not null default 'none'
+    ) ;
+"""
+result = create_models(ddl, models_type='pydantic')
+
+```
+
+GinoORM example. If you provide an input like:
 
 ```sql
 
@@ -106,16 +129,30 @@ for example:
 
 ```python
 
-    from omymodels.gino import types  types_mapping
-    from omymodels import create_gino_models
+    from omymodels.gino import types
+    from omymodels import create_models
 
     types.types_mapping.update({'your_type_from_ddl': 'db.TypeInGino'})
 
     ddl = "YOUR DDL with your custom your_type_from_ddl"
 
-    models = create_gino_models(ddl)
+    models = create_models(ddl)
 
+    #### And similar for Pydantic types
+
+    from omymodels.pydantic import types  types_mapping
+    from omymodels import create_models
+
+    types.types_mapping.update({'your_type_from_ddl': 'db.TypeInGino'})
+
+    ddl = "YOUR DDL with your custom your_type_from_ddl"
+
+    models = create_models(ddl, models_type='pydantic')
 ```
+
+## TODO in next releases
+
+1. Add generating Sqlalchemy models.
 
 ## How to contribute
 

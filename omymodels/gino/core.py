@@ -1,5 +1,3 @@
-import os
-from simple_ddl_parser import DDLParser, parse_from_file
 from typing import Optional, List, Dict
 import omymodels.gino.templates as gt
 from omymodels.gino.types import types_mapping, postgresql_dialect, datetime_types
@@ -11,20 +9,6 @@ postgresql_dialect_cols = set()
 constraint = False
 im_index = False
 
-
-def get_tables_information(
-    ddl: Optional[str] = None, ddl_file: Optional[str] = None
-) -> List[Dict]:
-    if not ddl_file and not ddl:
-        raise ValueError(
-            "You need to provide one of above argument: ddl with string that "
-            "contains ddl or ddl_file that contains path to ddl file to parse"
-        )
-    if ddl:
-        tables = DDLParser(ddl).run()
-    elif ddl_file:
-        tables = parse_from_file(ddl_file)
-    return tables
 
 
 def prepare_column_type(column_data: Dict) -> str:
@@ -149,39 +133,3 @@ def create_header(tables: List[Dict]) -> str:
     else:
         header += gt.gino_init + "\n"
     return header
-
-
-def generate_gino_models_file(tables: List[Dict], singular: bool = False, exceptions: Optional[List] = None) -> str:
-    """ method to prepare full file with all Models &  """
-    output = ""
-    for table in tables:
-        output += generate_model(table, singular, exceptions)
-    header = create_header(tables)
-    output = header + output
-    return output
-
-
-def save_models_to_file(models: str, dump_path: str) -> None:
-    folder = os.path.dirname(dump_path)
-    if folder:
-        os.makedirs(folder, exist_ok=True)
-    with open(dump_path, "w+") as f:
-        f.write(models)
-
-
-def create_gino_models(
-    ddl: Optional[str] = None,
-    ddl_path: Optional[str] = None,
-    dump: bool = True,
-    dump_path: str = "models.py",
-    singular: bool = False, 
-    naming_exceptions: Optional[List] = None
-) -> Dict:
-    """ method returns parsed metadata from ddl & code output as result """
-    tables = get_tables_information(ddl, ddl_path)
-    output = generate_gino_models_file(tables, singular, naming_exceptions)
-    if dump:
-        save_models_to_file(output, dump_path)
-    else:
-        print(output)
-    return {'metadata': tables, 'code': output}

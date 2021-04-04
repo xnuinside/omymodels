@@ -1,3 +1,8 @@
+**v0.4.0**
+1. Added generation for Pydantic models from ddl
+2. Added ForeignKey generation for GinoORM Models
+3. Main method create_gino_models renamed to create_models
+
 **v0.3.0**
 1. Generated Index for 'index' statement in __table_args__ (not unique constrait as previously)
 2. Fix issue with column size as tuple (4,2)
