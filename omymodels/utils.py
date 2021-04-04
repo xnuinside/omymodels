@@ -30,6 +30,7 @@ def create_model_name(
         model_name = get_singular_name(table_name)
     else:
         model_name = table_name
+    model_name = model_name.replace('-', '_').replace('__', '_')
     model_name = model_name.capitalize()
     previous_symbol = None
     final_model_name = ""

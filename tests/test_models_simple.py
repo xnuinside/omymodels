@@ -98,3 +98,39 @@ def test_drop_does_not_break_anything():
 
     """
     pass
+
+def test_correct_work_with_dash_simbols():
+    ddl = """
+    CREATE table "-arrays---2" (
+        field_1                decimal(21)[] not null
+    ,field_2              integer(61) array not null
+    ,field_3              varchar array not null default '{"none"}'
+    ,squares   integer[3][3] not null default '{1}'
+    ,schedule        text[][]
+    ,pay_by_quarter  integer[]
+    ,pay_by_quarter_2  integer ARRAY[4]
+    ,pay_by_quarter_3  integer ARRAY
+    ) ;
+
+"""
+    result = create_models(ddl)
+    expected = """
+from sqlalchemy.dialects.postgresql import ARRAY
+from gino import Gino
+
+db = Gino()
+
+
+class Arrays2(db.Model):
+
+    __tablename__ = '-arrays---2'
+
+    field_1 = db.Column(ARRAY(db.Numeric(21)), nullable=False)
+    field_2 = db.Column(ARRAY(db.Integer(61)), nullable=False)
+    field_3 = db.Column(ARRAY(db.String()), nullable=False, server_default='{"none"}')
+    squares = db.Column(ARRAY(db.Integer()), nullable=False, server_default='{1}')
+    schedule = db.Column(ARRAY(db.Text()))
+    pay_by_quarter = db.Column(ARRAY(db.Integer()))
+    pay_by_quarter_2 = db.Column(ARRAY(db.Integer()))
+    pay_by_quarter_3 = db.Column(ARRAY(db.Integer()))   
+"""

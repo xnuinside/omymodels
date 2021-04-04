@@ -1,3 +1,6 @@
+**v0.4.1**
+1. Added correct work with table names contains multiple '-'
+
 **v0.4.0**
 1. Added generation for Pydantic models from ddl
 2. Main method create_gino_models renamed to create_models

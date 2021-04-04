@@ -136,7 +136,7 @@ python-versions = ">=3.6, <3.7"
 
 [[package]]
 name = "docutils"
-version = "0.16"
+version = "0.17"
 description = "Docutils -- Python Documentation Utilities"
 category = "dev"
 optional = false
@@ -425,7 +425,7 @@ jeepney = ">=0.6"
 
 [[package]]
 name = "simple-ddl-parser"
-version = "0.8.1"
+version = "0.10.1"
 description = "Simple DDL Parser to parse SQL & HQL ddl files to json/python dict with full information about columns: types, defaults, primary keys, etc."
 category = "main"
 optional = false
@@ -542,7 +542,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "f45ec93c6966088fa2f1b520e7df5aac3c96aa32467e58024a2bd09252108152"
+content-hash = "68716496341d43997284f323fd986999f4c647da908a05276fd960fe6290b7a6"
 
 [metadata.files]
 appdirs = [
@@ -638,8 +638,8 @@ dataclasses = [
     {file = "dataclasses-0.8.tar.gz", hash = "sha256:8479067f342acf957dc82ec415d355ab5edb7e7646b90dc6e2fd1d96ad084c97"},
 ]
 docutils = [
-    {file = "docutils-0.16-py2.py3-none-any.whl", hash = "sha256:0c5b78adfbf7762415433f5515cd5c9e762339e23369dbe8000d84a4bf4ab3af"},
-    {file = "docutils-0.16.tar.gz", hash = "sha256:c2de3a60e9e7d07be26b7f2b00ca0309c207e06c100f9cc2a94931fc75a478fc"},
+    {file = "docutils-0.17-py2.py3-none-any.whl", hash = "sha256:a71042bb7207c03d5647f280427f14bfbd1a65c9eb84f4b341d85fafb6bb4bdf"},
+    {file = "docutils-0.17.tar.gz", hash = "sha256:e2ffeea817964356ba4470efba7c2f42b6b0de0b04e66378507e3e2504bbff4c"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -780,8 +780,8 @@ secretstorage = [
     {file = "SecretStorage-3.3.1.tar.gz", hash = "sha256:fd666c51a6bf200643495a04abb261f83229dcb6fd8472ec393df7ffc8b6f195"},
 ]
 simple-ddl-parser = [
-    {file = "simple-ddl-parser-0.8.1.tar.gz", hash = "sha256:646d8f8e04cc59fff7ecda16e738c79cadbc500a9dcc2414c34e077243ad5397"},
-    {file = "simple_ddl_parser-0.8.1-py3-none-any.whl", hash = "sha256:0b1e7238aa71b084bc30f07a6db4aa2653cb347b895107d721a105d1ea3e246c"},
+    {file = "simple-ddl-parser-0.10.1.tar.gz", hash = "sha256:3a72c146a013477e25a3d2e8e6c6a623f5b6a7e8a28913d6fd0512ca917c4df6"},
+    {file = "simple_ddl_parser-0.10.1-py3-none-any.whl", hash = "sha256:ad16f636f3d7c22d17e66f7f14a11edfb34fb1518074110a54f9929c69924c1e"},
 ]
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
