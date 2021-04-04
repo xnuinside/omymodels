@@ -1,7 +1,7 @@
 import argparse
 import os
 import sys
-from omymodels import create_gino_models
+from omymodels import create_models
 import pprint
 
 
@@ -12,6 +12,13 @@ def version(**kwargs):
 def cli():
     omm_cli = argparse.ArgumentParser(
         description="O! My Models. Create GinoORM models from SQL DDL"
+    )
+
+    omm_cli.add_argument(
+        "-m", "--models_type",
+        type=str,
+        default='gino',
+        help="The type of model you want to generate, pass as argument one of the supported: [gino, pydantic]",
     )
 
     omm_cli.add_argument(
@@ -50,11 +57,12 @@ def main():
         sys.exit()
 
     print(f"Start parsing file {input_path} \n")
-    
-    result = create_gino_models(
-        ddl_path=input_path, dump=not args.no_dump, dump_path=args.target
+    result = create_models(
+        ddl_path=input_path,
+        dump=not args.no_dump,
+        dump_path=args.target,
+        models_type=args.models_type,
     )
-
     print(f"File with result was saved to {target_file} file")
 
     if args.v or args.no_dump:

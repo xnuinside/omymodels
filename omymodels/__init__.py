@@ -1,4 +1,4 @@
-from omymodels.gino.core import create_gino_models
+from omymodels.common import create_models
 
 
-__all__ = ["create_gino_models"]
+__all__ = ["create_models"]

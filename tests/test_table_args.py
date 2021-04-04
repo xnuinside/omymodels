@@ -1,5 +1,5 @@
 import os
-from omymodels import create_gino_models
+from omymodels import create_models
 
 
 def test_unique_and_normal_index():
@@ -45,10 +45,10 @@ class ApproverHistory(db.Model):
     __table_args__ = (
                 
     UniqueConstraint(runid, name='approver_history_pk'),
-    Index(job_id, name='approver_history_ix2'),
-    Index(id, name='approver_history_ix3')
+    Index('approver_history_ix2', job_id),
+    Index('approver_history_ix3', id)
             )
 
 """
-    gino_models = create_gino_models(ddl=ddl, dump=False)['code']
+    gino_models = create_models(ddl=ddl, dump=False)['code']
     assert expected == gino_models

@@ -1,5 +1,5 @@
 import os
-from omymodels import create_gino_models
+from omymodels import create_models
 
 
 def test_two_simple_ddl():
@@ -45,11 +45,11 @@ class Languages(db.Model):
     code = db.Column(db.String(2), nullable=False)
     name = db.Column(db.String(), nullable=False)
 """
-    assert expected == create_gino_models(ddl=ddl, dump=False)['code']
+    assert expected == create_models(ddl=ddl, dump=False)['code']
     tests_dir = os.path.dirname(os.path.abspath(__file__))
     models = os.path.join(tests_dir, '_models.py')
     ddl_path = os.path.join(tests_dir, 'test_two_tables.sql')
-    create_gino_models(ddl_path=ddl_path, dump_path=models)
+    create_models(ddl_path=ddl_path, dump_path=models)
     with open(models, 'r') as f:
         content_of_models_py = f.read()
     assert expected == content_of_models_py
@@ -98,3 +98,39 @@ def test_drop_does_not_break_anything():
 
     """
     pass
+
+def test_correct_work_with_dash_simbols():
+    ddl = """
+    CREATE table "-arrays---2" (
+        field_1                decimal(21)[] not null
+    ,field_2              integer(61) array not null
+    ,field_3              varchar array not null default '{"none"}'
+    ,squares   integer[3][3] not null default '{1}'
+    ,schedule        text[][]
+    ,pay_by_quarter  integer[]
+    ,pay_by_quarter_2  integer ARRAY[4]
+    ,pay_by_quarter_3  integer ARRAY
+    ) ;
+
+"""
+    result = create_models(ddl)
+    expected = """
+from sqlalchemy.dialects.postgresql import ARRAY
+from gino import Gino
+
+db = Gino()
+
+
+class Arrays2(db.Model):
+
+    __tablename__ = '-arrays---2'
+
+    field_1 = db.Column(ARRAY(db.Numeric(21)), nullable=False)
+    field_2 = db.Column(ARRAY(db.Integer(61)), nullable=False)
+    field_3 = db.Column(ARRAY(db.String()), nullable=False, server_default='{"none"}')
+    squares = db.Column(ARRAY(db.Integer()), nullable=False, server_default='{1}')
+    schedule = db.Column(ARRAY(db.Text()))
+    pay_by_quarter = db.Column(ARRAY(db.Integer()))
+    pay_by_quarter_2 = db.Column(ARRAY(db.Integer()))
+    pay_by_quarter_3 = db.Column(ARRAY(db.Integer()))   
+"""

@@ -1,6 +1,8 @@
 models.py
 *.pyc
 omymodels/__pycache__
+omymodels/gino/__pycache__
+omymodels/pydantic/__pycache__
 dist/
 .pytest_cache/
 .vscode/
