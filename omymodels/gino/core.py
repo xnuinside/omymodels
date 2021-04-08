@@ -62,7 +62,7 @@ class ModelGenerator:
             column += gt.autoincrement
         if not column_data["nullable"]:
             column += gt.required
-        if column_data["default"]:
+        if column_data["default"] is not None:
             column = self.prepare_column_default(column_data, column)
         if column_data["name"] in table_pk:
             column += gt.pk_template
