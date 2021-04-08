@@ -425,7 +425,7 @@ jeepney = ">=0.6"
 
 [[package]]
 name = "simple-ddl-parser"
-version = "0.10.2"
+version = "0.11.1"
 description = "Simple DDL Parser to parse SQL & HQL ddl files to json/python dict with full information about columns: types, defaults, primary keys, etc."
 category = "main"
 optional = false
@@ -452,7 +452,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "tqdm"
-version = "4.59.0"
+version = "4.60.0"
 description = "Fast, Extensible Progress Meter"
 category = "dev"
 optional = false
@@ -542,7 +542,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "68716496341d43997284f323fd986999f4c647da908a05276fd960fe6290b7a6"
+content-hash = "6cb34a8d93cb0d616a64cc15263986d90a679518f14623e6d570cbce28d30402"
 
 [metadata.files]
 appdirs = [
@@ -780,8 +780,8 @@ secretstorage = [
     {file = "SecretStorage-3.3.1.tar.gz", hash = "sha256:fd666c51a6bf200643495a04abb261f83229dcb6fd8472ec393df7ffc8b6f195"},
 ]
 simple-ddl-parser = [
-    {file = "simple-ddl-parser-0.10.2.tar.gz", hash = "sha256:38acb3ec47d1a87ef2d5b4d77d71fc799918c3c95c657fcd5e0a8d8260d1e320"},
-    {file = "simple_ddl_parser-0.10.2-py3-none-any.whl", hash = "sha256:8d9e9f0eb7bd593f0ec3389c7b5da0a3c1ee81bb9527b5ecc2ce9f78e69aab1b"},
+    {file = "simple-ddl-parser-0.11.1.tar.gz", hash = "sha256:5d9e873613b0dae443cedd79b178fa46a0f053b2c1e2cb7b5ae24b1ec63bc5f1"},
+    {file = "simple_ddl_parser-0.11.1-py3-none-any.whl", hash = "sha256:f61171a60e350cd5da1d1709135facd6b664161e88957377e0b559b9ff029f85"},
 ]
 six = [
     {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
@@ -792,8 +792,8 @@ toml = [
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
 ]
 tqdm = [
-    {file = "tqdm-4.59.0-py2.py3-none-any.whl", hash = "sha256:9fdf349068d047d4cfbe24862c425883af1db29bcddf4b0eeb2524f6fbdb23c7"},
-    {file = "tqdm-4.59.0.tar.gz", hash = "sha256:d666ae29164da3e517fcf125e41d4fe96e5bb375cd87ff9763f6b38b5592fe33"},
+    {file = "tqdm-4.60.0-py2.py3-none-any.whl", hash = "sha256:daec693491c52e9498632dfbe9ccfc4882a557f5fa08982db1b4d3adbe0887c3"},
+    {file = "tqdm-4.60.0.tar.gz", hash = "sha256:ebdebdb95e3477ceea267decfc0784859aa3df3e27e22d23b83e9b272bf157ae"},
 ]
 twine = [
     {file = "twine-3.4.1-py3-none-any.whl", hash = "sha256:16f706f2f1687d7ce30e7effceee40ed0a09b7c33b9abb5ef6434e5551565d83"},
