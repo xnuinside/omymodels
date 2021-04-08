@@ -30,6 +30,7 @@ def create_models(
     models_type: str = "gino",
 ):
     tables = get_tables_information(ddl, ddl_path)
+    tables = remove_quotes_from_strings(tables)
     output = generate_models_file(tables, singular, naming_exceptions, models_type)
     if dump:
         save_models_to_file(output, dump_path)
@@ -69,3 +70,25 @@ def generate_models_file(
     header = model_generator.create_header(tables)
     output = header + output
     return output
+
+def iterate_over_the_dict(item: Dict) -> Dict:
+    for key, value in item.items():
+        if isinstance(value, list):
+            value = remove_quotes_from_strings(value)
+            item[key] =  value
+        elif isinstance(value, str):
+            item[key] = value.replace('"', '')
+        elif isinstance(value, dict):
+            value = iterate_over_the_dict(value)
+    return item
+
+def remove_quotes_from_strings(tables: List) -> str:
+    """ simple ddl parser return " in strings if in DDL them was used, we need to remove them"""
+    for item in tables:
+        if isinstance(item, dict):
+            iterate_over_the_dict(item)
+        elif isinstance(item, str):
+            new_item = item.replace('"', '')
+            tables.remove(item)
+            tables.append(new_item)
+    return tables
