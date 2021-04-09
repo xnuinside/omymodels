@@ -190,6 +190,10 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside 
 
 ## Changelog
+**v0.5.0**
+1. Added Enums/IntEnums types for Gino & Pydantic
+2. Added UUID type
+
 **v0.4.1**
 1. Added correct work with table names contains multiple '-'
 

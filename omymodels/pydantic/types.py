@@ -26,6 +26,7 @@ types_mapping = {
     "int": "int",
     "serial": "int",
     "bigserial": "int",
+    "uuid": "UUID",
 }
 
 

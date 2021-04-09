@@ -50,5 +50,5 @@ class ApproverHistory(db.Model):
             )
 
 """
-    gino_models = create_models(ddl=ddl, dump=False)['code']
+    gino_models = create_models(ddl=ddl, dump=False)["code"]
     assert expected == gino_models

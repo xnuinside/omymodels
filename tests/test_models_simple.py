@@ -45,12 +45,12 @@ class Languages(db.Model):
     code = db.Column(db.String(2), nullable=False)
     name = db.Column(db.String(), nullable=False)
 """
-    assert expected == create_models(ddl=ddl, dump=False)['code']
+    assert expected == create_models(ddl=ddl, dump=False)["code"]
     tests_dir = os.path.dirname(os.path.abspath(__file__))
-    models = os.path.join(tests_dir, '_models.py')
-    ddl_path = os.path.join(tests_dir, 'test_two_tables.sql')
+    models = os.path.join(tests_dir, "_models.py")
+    ddl_path = os.path.join(tests_dir, "test_two_tables.sql")
     create_models(ddl_path=ddl_path, dump_path=models)
-    with open(models, 'r') as f:
+    with open(models, "r") as f:
         content_of_models_py = f.read()
     assert expected == content_of_models_py
 
@@ -74,7 +74,7 @@ def test_ddl_with_defaults():
     create unique index task_requests_pk on v2.task_requests (runid) ;
 
     """
-    
+
     pass
 
 
@@ -98,6 +98,7 @@ def test_drop_does_not_break_anything():
 
     """
     pass
+
 
 def test_correct_work_with_dash_simbols():
     ddl = """
@@ -134,3 +135,27 @@ class Arrays2(db.Model):
     pay_by_quarter_2 = db.Column(ARRAY(db.Integer()))
     pay_by_quarter_3 = db.Column(ARRAY(db.Integer()))   
 """
+
+
+def test_support_uuid_and_schema_in_table_args():
+    ddl = """
+CREATE TABLE "prefix--schema-name"."table" (
+  _id uuid PRIMARY KEY,
+);
+"""
+    result = create_models(ddl)
+    expected = """from sqlalchemy.dialects.postgresql import UUID
+from gino import Gino
+
+db = Gino(schema="prefix--schema-name")
+
+
+class Table(db.Model):
+
+    __tablename__ = 'table'
+
+    _id = db.Column(UUID, nullable=False, primary_key=True)
+"""
+    assert expected == result['code']
+
+

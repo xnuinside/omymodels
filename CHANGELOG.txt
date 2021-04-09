@@ -1,3 +1,7 @@
+**v0.5.0**
+1. Added Enums/IntEnums types for Gino & Pydantic
+2. Added UUID type
+
 **v0.4.1**
 1. Added correct work with table names contains multiple '-'
 

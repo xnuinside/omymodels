@@ -2,7 +2,7 @@ from omymodels import create_models
 
 
 def test_pydantic_models_generator():
-    
+
     ddl = """
 CREATE table user_history (
         runid                 decimal(21) null
@@ -16,8 +16,8 @@ CREATE table user_history (
 
 
 """
-    result = create_models(ddl, models_type='pydantic')['code']
-    
+    result = create_models(ddl, models_type="pydantic")["code"]
+
     expected = """import datetime
 from typing import Optional
 from pydantic import BaseModel
@@ -65,5 +65,22 @@ class Arrays2(BaseModel):
     ) ;
 
 """
-    result = create_models(ddl, models_type="pydantic")['code']
+    result = create_models(ddl, models_type="pydantic")["code"]
     assert expected == result
+
+def test_pydantic_uuid():
+    expected = """from uuid import UUID
+from pydantic import BaseModel
+
+
+class Table(BaseModel):
+
+    _id: UUID
+"""
+    ddl = """
+CREATE TABLE "prefix--schema-name"."table" (
+  _id uuid PRIMARY KEY,
+);
+"""
+    result = create_models(ddl, models_type='pydantic')
+    assert expected == result['code']

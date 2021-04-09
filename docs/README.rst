@@ -201,6 +201,12 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 Changelog
 ---------
 
+**v0.5.0**
+
+
+#. Added Enums/IntEnums types for Gino & Pydantic
+#. Added UUID type
+
 **v0.4.1**
 
 

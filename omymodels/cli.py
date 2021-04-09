@@ -15,9 +15,10 @@ def cli():
     )
 
     omm_cli.add_argument(
-        "-m", "--models_type",
+        "-m",
+        "--models_type",
         type=str,
-        default='gino',
+        default="gino",
         help="The type of model you want to generate, pass as argument one of the supported: [gino, pydantic]",
     )
 
