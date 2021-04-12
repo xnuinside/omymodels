@@ -28,12 +28,19 @@ def create_models(
     singular: bool = False,
     naming_exceptions: Optional[List] = None,
     models_type: str = "gino",
+    schema_global: Optional[bool] = True
 ):
+    """
+        args expected in kwargs:
+        
+            
+    
+    """
     # extract data from ddl file
     data = get_tables_information(ddl, ddl_path)
     data = remove_quotes_from_strings(data)
     # generate code
-    output = generate_models_file(data, singular, naming_exceptions, models_type)
+    output = generate_models_file(data, singular, naming_exceptions, models_type, schema_global)
     if dump:
         save_models_to_file(output, dump_path)
     else:
@@ -54,6 +61,7 @@ def generate_models_file(
     singular: bool = False,
     exceptions: Optional[List] = None,
     models_type: str = "gino",
+    schema_global: bool = True
 ) -> str:
     """ method to prepare full file with all Models &  """
     output = ""
@@ -67,8 +75,8 @@ def generate_models_file(
     for _type in data["types"]:
         output += model_generator.generate_type(_type, singular, exceptions)
     for table in data["tables"]:
-        output += model_generator.generate_model(table, singular, exceptions)
-    header = model_generator.create_header(data["tables"])
+        output += model_generator.generate_model(table, singular, exceptions, schema_global)
+    header = model_generator.create_header(data["tables"], schema=schema_global)
     output = header + output
     return output
 
@@ -78,7 +86,7 @@ def remove_quotes_from_strings(item: Dict) -> Dict:
         if isinstance(value, list):
             value = iterate_over_the_list(value)
             item[key] = value
-        elif isinstance(value, str):
+        elif isinstance(value, str) and key != 'default':
             item[key] = value.replace('"', "")
         elif isinstance(value, dict):
             value = remove_quotes_from_strings(value)

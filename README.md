@@ -179,6 +179,64 @@ for example:
     models = create_models(ddl, models_type='pydantic')
 ```
 
+
+### Schema defenition
+
+There is 2 ways how to define schema in Models:
+
+1) Globally in Gino() class and it will be like this:
+
+```python
+
+    from gino import Gino
+    db = Gino(schema="schema_name")
+
+```
+
+And this is a default way for put schema during generation - it takes first schema in tables and use it. 
+
+2) But if you work with tables in different schemas, you need to define schema in each model in table_args. O!MyModels can do this also. Just use flag `--no-global-schema` if you use cli or put argument 'schema_global=False' to create_models() function if you use library from code. Like this:
+
+```python
+
+    ddl = """
+    CREATE TABLE "prefix--schema-name"."table" (
+    _id uuid PRIMARY KEY,
+    one_more_id int
+    );
+        create unique index table_pk on "prefix--schema-name"."table" (one_more_id) ;
+        create index table_ix2 on "prefix--schema-name"."table" (_id) ;
+    """
+    result = create_models(ddl, schema_global=False)
+```
+
+And result will be this:
+
+``` python
+
+    from sqlalchemy.dialects.postgresql import UUID
+    from sqlalchemy.schema import UniqueConstraint
+    from sqlalchemy import Index
+    from gino import Gino
+
+    db = Gino()
+
+
+    class Table(db.Model):
+
+        __tablename__ = 'table'
+
+        _id = db.Column(UUID, primary_key=True)
+        one_more_id = db.Column(db.Integer())
+
+        __table_args__ = (
+                    
+        UniqueConstraint(one_more_id, name='table_pk'),
+        Index('table_ix2', _id),
+        dict(schema="prefix--schema-name")
+                )
+```
+
 ## TODO in next releases
 
 1. Add ForeignKey generation for GinoORM Models
@@ -193,6 +251,11 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 **v0.5.0**
 1. Added Enums/IntEnums types for Gino & Pydantic
 2. Added UUID type
+3. Added key `schema_global` in create_models method (by default schema_global = True). 
+If you set schema_global=False schema if it exists in ddl will be defined for each table (model) in table args.
+This way you can have differen schemas per model (table). By default schema_global=True - this mean for all 
+table only one schema and it is defined in `db = Gino(schema="prefix--schema-name")`.
+4. If column is a primary key (primary_key=True) nullable argument not showed, because primary keys always are not null.
 
 **v0.4.1**
 1. Added correct work with table names contains multiple '-'

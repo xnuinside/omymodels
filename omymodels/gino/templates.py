@@ -43,7 +43,8 @@ unique_index_template = """
 index_template = """
     Index({name}, {columns})"""
 
-schema = 'schema="{schema_name}"'
+schema = """
+    dict(schema="{schema_name}")"""
 
 enum_class = """class {class_name}({type}):"""
 enum_value = """    {name} = {value}"""

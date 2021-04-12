@@ -206,6 +206,11 @@ Changelog
 
 #. Added Enums/IntEnums types for Gino & Pydantic
 #. Added UUID type
+#. Added key ``schema_global`` in create_models method (by default schema_global = True). 
+   If you set schema_global=False schema if it exists in ddl will be defined for each table (model) in table args.
+   This way you can have differen schemas per model (table). By default schema_global=True - this mean for all 
+   table only one schema and it is defined in ``db = Gino(schema="prefix--schema-name")``.
+#. If column is a primary key (primary_key=True) nullable argument not showed, because primary keys always are not null.
 
 **v0.4.1**
 

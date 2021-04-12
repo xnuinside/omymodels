@@ -46,7 +46,12 @@ class ModelGenerator:
         return column_str
 
     def generate_model(
-        self, table: Dict, singular: bool = False, exceptions: Optional[List] = None
+        self, 
+        table: Dict, 
+        singular: bool = False, 
+        exceptions: Optional[List] = None, 
+        *args,
+        **kwargs
     ) -> str:
         model = ""
         if table.get("table_name"):

@@ -5,8 +5,8 @@ from omymodels import create_models
 def test_unique_and_normal_index():
     ddl = """
     
-    drop table if exists v2.approver_history ;
-    CREATE table v2.approver_history (
+    drop table if exists schema_name.approver_history ;
+    CREATE table schema_name.approver_history (
         runid                 decimal(21) not null
     ,job_id                decimal(21) not null
     ,id                    varchar(100) not null -- group_id or role_id
@@ -15,9 +15,9 @@ def test_unique_and_normal_index():
     ,event_time            timestamp not null default now()
     ,deny_reason           varchar(1000) not null default 'none'
     ) ;
-    create unique index approver_history_pk on v2.approver_history (runid) ;
-    create index approver_history_ix2 on v2.approver_history (job_id) ;
-    create index approver_history_ix3 on v2.approver_history (id) ;
+    create unique index approver_history_pk on schema_name.approver_history (runid) ;
+    create index approver_history_ix2 on schema_name.approver_history (job_id) ;
+    create index approver_history_ix3 on schema_name.approver_history (id) ;
 
     
     
@@ -27,7 +27,7 @@ from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy import Index
 from gino import Gino
 
-db = Gino(schema="v2")
+db = Gino(schema="schema_name")
 
 
 class ApproverHistory(db.Model):

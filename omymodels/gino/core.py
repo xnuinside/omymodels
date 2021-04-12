@@ -73,7 +73,7 @@ class ModelGenerator:
             or column_data["type"].lower() == "bigserial"
         ):
             column += gt.autoincrement
-        if not column_data["nullable"]:
+        if not column_data["nullable"] and not column_data["name"] in table_pk:
             column += gt.required
         if column_data["default"] is not None:
             column = self.prepare_column_default(column_data, column)
@@ -91,9 +91,8 @@ class ModelGenerator:
         column += ")\n"
         return column
 
-    def add_table_args(self, model: str, table: Dict) -> str:
+    def add_table_args(self, model: str, table: Dict, schema_global: bool = True) -> str:
         statements = []
-
         if table.get("index"):
             for index in table["index"]:
 
@@ -113,6 +112,8 @@ class ModelGenerator:
                             name=f"'{index['index_name']}'",
                         )
                     )
+        if not schema_global:
+            statements.append(gt.schema.format(schema_name=table['schema']))
         model += gt.table_args.format(statements=",".join(statements))
         return model
 
@@ -156,7 +157,11 @@ class ModelGenerator:
         return type_class
 
     def generate_model(
-        self, table: Dict, singular: bool = False, exceptions: Optional[List] = None
+        self, 
+        table: Dict, 
+        singular: bool = False, 
+        exceptions: Optional[List] = None,
+        schema_global: Optional[bool] = True
     ) -> str:
         """ method to prepare one Model defention - name & tablename  & columns """
         model = ""
@@ -167,14 +172,14 @@ class ModelGenerator:
             )
             for column in table["columns"]:
                 model += self.generate_column(column, table["primary_key"])
-        if table.get("index") or table.get("alter") or table.get("checks"):
-            model = self.add_table_args(model, table)
+        if table.get("index") or table.get("alter") or table.get("checks") or not schema_global:
+            model = self.add_table_args(model, table, schema_global)
         elif table.get("sequence_name"):
             # create sequence
             ...
         return model
 
-    def create_header(self, tables: List[Dict]) -> str:
+    def create_header(self, tables: List[Dict], schema: bool = False) -> str:
         """ header of the file - imports & gino init """
         header = ""
         if self.enum_imports:
@@ -193,7 +198,7 @@ class ModelGenerator:
         if self.im_index:
             header += gt.index_import + "\n"
         header += gt.gino_import + "\n\n"
-        if tables[0]["schema"]:
+        if schema and tables[0]["schema"]:
             schema = tables[0]["schema"].replace('"', "")
             header += gt.gino_init_schema.format(schema=schema) + "\n"
         else:
