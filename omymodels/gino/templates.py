@@ -5,7 +5,7 @@ index_import = "from sqlalchemy import Index"
 
 gino_import = "from gino import Gino"
 unique_cons_import = "from sqlalchemy.schema import UniqueConstraint"
-
+enum_import = "from enum import {enums}"
 gino_init = "db = Gino()"
 gino_init_schema = 'db = Gino(schema="{schema}")'
 
@@ -42,3 +42,9 @@ unique_index_template = """
 
 index_template = """
     Index({name}, {columns})"""
+
+schema = """
+    dict(schema="{schema_name}")"""
+
+enum_class = """class {class_name}({type}):"""
+enum_value = """    {name} = {value}"""

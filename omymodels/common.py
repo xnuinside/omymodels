@@ -14,9 +14,9 @@ def get_tables_information(
             "contains ddl or ddl_file that contains path to ddl file to parse"
         )
     if ddl:
-        tables = DDLParser(ddl).run()
+        tables = DDLParser(ddl).run(group_by_type=True)
     elif ddl_file:
-        tables = parse_from_file(ddl_file)
+        tables = parse_from_file(ddl_file, group_by_type=True)
     return tables
 
 
@@ -28,15 +28,24 @@ def create_models(
     singular: bool = False,
     naming_exceptions: Optional[List] = None,
     models_type: str = "gino",
+    schema_global: Optional[bool] = True
 ):
-    tables = get_tables_information(ddl, ddl_path)
-    tables = remove_quotes_from_strings(tables)
-    output = generate_models_file(tables, singular, naming_exceptions, models_type)
+    """
+        args expected in kwargs:
+        
+            
+    
+    """
+    # extract data from ddl file
+    data = get_tables_information(ddl, ddl_path)
+    data = remove_quotes_from_strings(data)
+    # generate code
+    output = generate_models_file(data, singular, naming_exceptions, models_type, schema_global)
     if dump:
         save_models_to_file(output, dump_path)
     else:
         print(output)
-    return {"metadata": tables, "code": output}
+    return {"metadata": data, "code": output}
 
 
 def save_models_to_file(models: str, dump_path: str) -> None:
@@ -48,47 +57,49 @@ def save_models_to_file(models: str, dump_path: str) -> None:
 
 
 def generate_models_file(
-    tables: List[Dict],
+    data: Dict[str, List],
     singular: bool = False,
     exceptions: Optional[List] = None,
     models_type: str = "gino",
+    schema_global: bool = True
 ) -> str:
     """ method to prepare full file with all Models &  """
     output = ""
-
     models = {"gino": g, "pydantic": p}
     models_type = models.get(models_type)
     if not models_type:
         raise ValueError(
             f"Unsupported models type {models_type}. Possible variants: {models.keys()}"
         )
-
-    model_generator = getattr(models_type, 'ModelGenerator')()
-    
-    for table in tables:
-        output += model_generator.generate_model(table, singular, exceptions)
-    header = model_generator.create_header(tables)
+    model_generator = getattr(models_type, "ModelGenerator")()
+    for _type in data["types"]:
+        output += model_generator.generate_type(_type, singular, exceptions)
+    for table in data["tables"]:
+        output += model_generator.generate_model(table, singular, exceptions, schema_global)
+    header = model_generator.create_header(data["tables"], schema=schema_global)
     output = header + output
     return output
 
-def iterate_over_the_dict(item: Dict) -> Dict:
+
+def remove_quotes_from_strings(item: Dict) -> Dict:
     for key, value in item.items():
         if isinstance(value, list):
-            value = remove_quotes_from_strings(value)
-            item[key] =  value
-        elif isinstance(value, str):
-            item[key] = value.replace('"', '')
+            value = iterate_over_the_list(value)
+            item[key] = value
+        elif isinstance(value, str) and key != 'default':
+            item[key] = value.replace('"', "")
         elif isinstance(value, dict):
-            value = iterate_over_the_dict(value)
+            value = remove_quotes_from_strings(value)
     return item
 
-def remove_quotes_from_strings(tables: List) -> str:
+
+def iterate_over_the_list(items: List) -> str:
     """ simple ddl parser return " in strings if in DDL them was used, we need to remove them"""
-    for item in tables:
+    for item in items:
         if isinstance(item, dict):
-            iterate_over_the_dict(item)
+            remove_quotes_from_strings(item)
         elif isinstance(item, str):
-            new_item = item.replace('"', '')
-            tables.remove(item)
-            tables.append(new_item)
-    return tables
+            new_item = item.replace('"', "")
+            items.remove(item)
+            items.append(new_item)
+    return items

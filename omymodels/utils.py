@@ -22,7 +22,7 @@ def get_singular_name(table_name: Text, exceptions: Optional[List] = None) -> Te
     return model_name
 
 
-def create_model_name(
+def create_class_name(
     table_name: Text, singular: bool = False, exceptions: Optional[List] = None
 ) -> Text:
     """ create correct class name for table in PascalCase """
@@ -30,7 +30,11 @@ def create_model_name(
         model_name = get_singular_name(table_name)
     else:
         model_name = table_name
-    model_name = model_name.replace('-', '_').replace('__', '_')
+    if "_" not in table_name or "-" not in table_name:
+        if table_name.lower() != table_name and table_name.upper() != table_name:
+            # mean already table in PascalCase
+            return table_name
+    model_name = model_name.replace("-", "_").replace("__", "_")
     model_name = model_name.capitalize()
     previous_symbol = None
     final_model_name = ""
@@ -41,3 +45,14 @@ def create_model_name(
         previous_symbol = symbol
         final_model_name += symbol
     return final_model_name
+
+
+enum_number_name_list = {
+    0: "zero",
+    1: "one",
+    2: "two",
+    3: "three",
+    4: "four",
+    5: "five",
+    6: "six",
+}

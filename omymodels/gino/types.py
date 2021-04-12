@@ -1,4 +1,4 @@
-postgresql_dialect = ["ARRAY", "JSON", "JSONB"]
+postgresql_dialect = ["ARRAY", "JSON", "JSONB", "UUID"]
 
 # key - type from ddl, value - type from GinoORM
 
@@ -27,6 +27,7 @@ types_mapping = {
     "int": "db.Integer",
     "serial": "db.Integer",
     "bigserial": "db.BigInteger",
+    "uuid": "UUID",
 }
 
 

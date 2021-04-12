@@ -1,7 +1,7 @@
 def test_model_with_one_index():
     ddl = """
     
-    CREATE table v2.task_requests (
+    CREATE table schema_name.task_requests (
         runid                decimal(21) not null
     ,job_id               decimal(21) not null
     ,object_id            varchar(100) not null default 'none'
@@ -14,7 +14,7 @@ def test_model_with_one_index():
     ,status               varchar(25) not null
     ,status_update_time   timestamp null default now()
     ) ;
-    create unique index task_requests_pk on v2.task_requests (runid) ;
+    create unique index task_requests_pk on schema_name.task_requests (runid) ;
     
     """
     pass
