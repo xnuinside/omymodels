@@ -256,6 +256,7 @@ If you set schema_global=False schema if it exists in ddl will be defined for ea
 This way you can have differen schemas per model (table). By default schema_global=True - this mean for all 
 table only one schema and it is defined in `db = Gino(schema="prefix--schema-name")`.
 4. If column is a primary key (primary_key=True) nullable argument not showed, because primary keys always are not null.
+5. To cli was added flag '--no-global-schema' to set schema in table_args.
 
 **v0.4.1**
 1. Added correct work with table names contains multiple '-'
