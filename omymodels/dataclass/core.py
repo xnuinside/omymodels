@@ -1,7 +1,7 @@
 from typing import Optional, List, Dict
-from omymodels.pydantic import templates as pt
+from omymodels.dataclass import templates as pt
 from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
-from omymodels.pydantic.types import types_mapping
+from omymodels.pydantic.types import types_mapping, datetime_types
 
 
 class ModelGenerator:
@@ -16,11 +16,7 @@ class ModelGenerator:
         self.uuid_import = False
 
     def generate_attr(self, column: Dict) -> str:
-        if column["nullable"]:
-            self.typing_imports.add("Optional")
-            column_str = pt.pydantic_optional_attr
-        else:
-            column_str = pt.pydantic_attr
+        column_str = pt.dataclass_attr
         
         if "." in column["type"]:
             _type = column["type"].split(".")[1]
@@ -42,7 +38,16 @@ class ModelGenerator:
         if _type == 'UUID':
             self.uuid_import = True
         column_str = column_str.format(arg_name=column["name"], type=_type)
-
+        if column["default"]:
+            if column["type"].upper() in datetime_types:
+                if "now" in column["default"]:
+                    # todo: need to add other popular PostgreSQL & MySQL functions
+                    column["default"] = "datetime.datetime.now()"
+                elif "'" not in column["default"]:
+                    column["default"] = f"'{column['default']}'"
+            column_str += pt.dataclass_default_attr.format(default=column["default"])
+        if column["nullable"]:
+            column_str += pt.dataclass_default_attr.format(default=None)
         return column_str
 
     def generate_model(
@@ -58,17 +63,24 @@ class ModelGenerator:
             # mean one model one table
             model += "\n\n"
             model += (
-                pt.pydantic_class.format(
+                pt.dataclass_class.format(
                     class_name=create_class_name(
                         table["table_name"], singular, exceptions
                     ),
                     table_name=table["table_name"],
                 )
             ) + "\n\n"
-            
+            columns = {'default': [], 'non_default': []}
             for column in table["columns"]:
-                model += self.generate_attr(column) + "\n"
-            
+                column_str = self.generate_attr(column) + "\n"
+                if '=' in column_str:
+                    columns['default'].append(column_str)
+                else:
+                    columns['non_default'].append(column_str)
+            for column in columns['non_default']:
+                model += column
+            for column in columns['default']:
+                model += column
         return model
 
     def create_header(self, *args, **kwargs) -> str:
@@ -83,7 +95,7 @@ class ModelGenerator:
             _imports = list(self.typing_imports)
             _imports.sort()
             header += pt.typing_imports.format(typing_types=", ".join(_imports)) + "\n"
-        header += pt.pydantic_imports.format(imports=", ".join(self.imports)) + "\n"
+        header += pt.dataclass_imports + "\n"
         return header
 
     def generate_type(

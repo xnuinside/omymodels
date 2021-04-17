@@ -65,7 +65,7 @@ class ModelGenerator:
         return column
 
     def setup_column_attributes(
-        self, column_data: Dict, table_pk: List[str], column: str
+        self, column_data: Dict, table_pk: List[str], column: str, table_data: Dict
     ) -> str:
 
         if (
@@ -73,6 +73,8 @@ class ModelGenerator:
             or column_data["type"].lower() == "bigserial"
         ):
             column += gt.autoincrement
+        if column_data["references"]:
+            column = self.add_reference_to_the_column(column_data["name"], column, column_data["references"])
         if not column_data["nullable"] and not column_data["name"] in table_pk:
             column += gt.required
         if column_data["default"] is not None:
@@ -81,12 +83,30 @@ class ModelGenerator:
             column += gt.pk_template
         if column_data["unique"]:
             column += gt.unique
+        
+        if 'columns' in table_data["alter"]:
+            for alter_column in table_data["alter"]['columns']:
+                if alter_column['name'] == column_data[
+                    "name"] and not alter_column[
+                        'constraint_name'] and alter_column['references']:
+                    
+                    column = self.add_reference_to_the_column(alter_column['name'], column, alter_column['references'])
         return column
-
-    def generate_column(self, column_data: Dict, table_pk: List[str]) -> str:
+    
+    @staticmethod
+    def add_reference_to_the_column(column_name: str, column: str, reference: Dict[str, str]) -> str:
+        column += gt.fk_in_column.format(ref_table=reference['table'], 
+                                        ref_column=reference['column'] or column_name)
+        if reference['on_delete']:
+            column += gt.on_delete.format(mode=reference['on_delete'].upper())
+        if reference['on_update']:
+            column += gt.on_update.format(mode=reference['on_update'].upper())
+        return column
+                    
+    def generate_column(self, column_data: Dict, table_pk: List[str], table_data: Dict) -> str:
         """ method to generate full column defention """
         column = self.setup_column_attributes(
-            column_data, table_pk, self.prepare_column_type(column_data)
+            column_data, table_pk, self.prepare_column_type(column_data), table_data
         )
         column += ")\n"
         return column
@@ -112,9 +132,10 @@ class ModelGenerator:
                             name=f"'{index['index_name']}'",
                         )
                     )
-        if not schema_global:
+        if not schema_global and table['schema']:
             statements.append(gt.schema.format(schema_name=table['schema']))
-        model += gt.table_args.format(statements=",".join(statements))
+        if statements:
+            model += gt.table_args.format(statements=",".join(statements))
         return model
 
     def generate_type(
@@ -171,7 +192,7 @@ class ModelGenerator:
                 table_name=table["table_name"],
             )
             for column in table["columns"]:
-                model += self.generate_column(column, table["primary_key"])
+                model += self.generate_column(column, table["primary_key"], table)
         if table.get("index") or table.get("alter") or table.get("checks") or not schema_global:
             model = self.add_table_args(model, table, schema_global)
         elif table.get("sequence_name"):

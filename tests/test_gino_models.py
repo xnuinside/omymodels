@@ -149,3 +149,130 @@ class Table(db.Model):
 
 """
     assert expected == result['code']
+
+
+def test_foreign_key_from_alter():
+    
+    ddl = """
+
+    CREATE TABLE "materials" (
+    "id" int PRIMARY KEY,
+    "title" varchar NOT NULL,
+    "description" varchar,
+    "link" varchar,
+    "created_at" timestamp,
+    "updated_at" timestamp
+    );
+
+    CREATE TABLE "material_attachments" (
+    "material_id" int,
+    "attachment_id" int
+    );
+
+    CREATE TABLE "attachments" (
+    "id" int PRIMARY KEY,
+    "title" varchar,
+    "description" varchar,
+    "created_at" timestamp,
+    "updated_at" timestamp
+    );
+
+
+    ALTER TABLE "material_attachments" ADD FOREIGN KEY ("material_id") REFERENCES "materials" ("id");
+
+    ALTER TABLE "material_attachments" ADD FOREIGN KEY ("attachment_id") REFERENCES "attachments" ("id");
+
+    """
+    result = create_models(ddl, schema_global=False)['code']
+    expected = """from gino import Gino
+
+db = Gino()
+
+
+class Materials(db.Model):
+
+    __tablename__ = 'materials'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String(), nullable=False)
+    description = db.Column(db.String())
+    link = db.Column(db.String())
+    created_at = db.Column(db.TIMESTAMP())
+    updated_at = db.Column(db.TIMESTAMP())
+
+
+class MaterialAttachments(db.Model):
+
+    __tablename__ = 'material_attachments'
+
+    material_id = db.Column(db.Integer(), db.ForeignKey('materials.id'))
+    attachment_id = db.Column(db.Integer(), db.ForeignKey('attachments.id'))
+
+
+class Attachments(db.Model):
+
+    __tablename__ = 'attachments'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String())
+    description = db.Column(db.String())
+    created_at = db.Column(db.TIMESTAMP())
+    updated_at = db.Column(db.TIMESTAMP())
+"""
+    assert expected == result
+
+
+def test_foreign_key_from_column():
+    
+    ddl = """
+    
+    CREATE TABLE order_items (
+        product_no integer REFERENCES products,
+        order_id integer REFERENCES orders (id),
+        type integer REFERENCES types (type_id),
+        PRIMARY KEY (product_no, order_id)
+    );
+    
+    """
+    result = create_models(ddl, schema_global=False)
+    expected = """from gino import Gino
+
+db = Gino()
+
+
+class OrderItems(db.Model):
+
+    __tablename__ = 'order_items'
+
+    product_no = db.Column(db.Integer(), db.ForeignKey('products.product_no'), primary_key=True)
+    order_id = db.Column(db.Integer(), db.ForeignKey('orders.id'), primary_key=True)
+    type = db.Column(db.Integer(), db.ForeignKey('types.type_id'))
+"""
+
+def test_foreign_key_on_delete_on_update():
+    expected = """from gino import Gino
+
+db = Gino()
+
+
+class OrderItems(db.Model):
+
+    __tablename__ = 'order_items'
+
+    product_no = db.Column(db.Integer(), db.ForeignKey('products.product_no'), ondelete="RESTRICT", primary_key=True)
+    order_id = db.Column(db.Integer(), db.ForeignKey('orders.order_id'), ondelete="CASCADE", primary_key=True)
+    type = db.Column(db.Integer(), db.ForeignKey('types.type_id'), ondelete="RESTRICT", onupdate="CASCADE")
+"""
+
+    ddl = """
+    
+    CREATE TABLE order_items (
+        product_no integer REFERENCES products ON DELETE RESTRICT,
+        order_id integer REFERENCES orders ON DELETE CASCADE,
+        type integer REFERENCES types (type_id) ON UPDATE CASCADE ON DELETE RESTRICT,
+        PRIMARY KEY (product_no, order_id)
+    );
+    
+    """
+    result = create_models(ddl, schema_global=False)['code']
+    assert result == expected

@@ -1,3 +1,7 @@
+**v0.6.0**
+1. O!MyModels now also can generate python Dataclass from DDL. Use argument models_type='dataclass' or if you use the cli flag --models_type dataclass or -m dataclass
+2. Added ForeignKey generation to GinoORM Models, added support for ondelete and onupdate
+
 **v0.5.0**
 1. Added Enums/IntEnums types for Gino & Pydantic
 2. Added UUID type
