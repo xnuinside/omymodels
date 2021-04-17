@@ -3,9 +3,9 @@
 ![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels) 
 
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future) and Pydantic.
+O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
 
-By default method **create_models** generate GinoORM models, to ger Pydantic models output use argument `models_type='pydantic'`
+By default method **create_models** generate GinoORM models, to get Pydantic models output use argument `models_type='pydantic'`
 
 For example,
 
@@ -45,6 +45,32 @@ class UserHistory(BaseModel):
     comment: str
 
 ```
+
+To generate Dataclasses from DDL use argument `models_type='dataclass'`
+
+for example:
+
+```python
+    #  (same DDL as in Pydantic sample)
+    result = create_models(ddl, schema_global=False, models_type='dataclass')['code']
+
+    # and result will be: 
+    import datetime
+    from dataclasses import dataclass
+
+
+    @dataclass
+    class UserHistory:
+
+        id: str
+        user: str
+        status: str
+        runid: int = None
+        job_id: int = None
+        event_time: datetime.datetime = datetime.datetime.now()
+        comment: str = 'none'
+```
+
 
 GinoORM example. If you provide an input like:
 
@@ -132,11 +158,11 @@ You can define target path where to save models with **-t**, **--target** flag:
 
 ```
 
-If you want generate the Pydantic models - just use flag **-m** or **--models_type='pydantic'**
+If you want generate the Pydantic or Dataclasses models - just use flag **-m** or **--models_type='pydantic'** / **--models_type='dataclass'**
 
 ```bash
 
-    omm /path/to/your.ddl -m pydantic
+    omm /path/to/your.ddl -m dataclass
 
     # or 
     omm /path/to/your.ddl --models_type pydantic
@@ -239,15 +265,20 @@ And result will be this:
 
 ## TODO in next releases
 
-1. Add ForeignKey generation for GinoORM Models
+1. Generate pure SQLAlchemy models
+
 
 ## How to contribute
 
 Please describe issue that you want to solve and open the PR, I will review it as soon as possible.
 
-Any questions? Ping me in Telegram: https://t.me/xnuinside 
+Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
+**v0.6.0**
+1. O!MyModels now also can generate python Dataclass from DDL. Use argument models_type='dataclass' or if you use the cli flag --models_type dataclass or -m dataclass
+2. Added ForeignKey generation to GinoORM Models, added support for ondelete and onupdate
+
 **v0.5.0**
 1. Added Enums/IntEnums types for Gino & Pydantic
 2. Added UUID type

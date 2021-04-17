@@ -32,9 +32,7 @@ def create_models(
     schema_global: Optional[bool] = True
 ):
     """
-        args expected in kwargs:
-        
-            
+        models_type can be: "gino", "dataclass", "pydantic"
     
     """
     # extract data from ddl file

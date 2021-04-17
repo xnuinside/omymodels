@@ -4,9 +4,9 @@ uuid_import = """from uuid import UUID"""
 
 base_model = "BaseModel"
 
-pydantic_imports = """from dataclasses import dataclass"""
+dataclass_imports = """from dataclasses import dataclass"""
 
-pydantic_class = """@dataclass
+dataclass_class = """@dataclass
 class {class_name}:"""
 dataclass_attr = """    {arg_name}: {type}"""
 dataclass_default_attr = """ = {default}"""

@@ -32,11 +32,11 @@ table_args = """
             )
 
 """
-fk_template = """
+fk_constraint_template = """
     {fk_name} = db.ForeignKeyConstraint(
         [{fk_columns}], [{fk_references_columns}])
 """
-
+fk_in_column = ", db.ForeignKey('{ref_table}.{ref_column}')"
 unique_index_template = """
     UniqueConstraint({columns}, name={name})"""
 
@@ -48,3 +48,6 @@ schema = """
 
 enum_class = """class {class_name}({type}):"""
 enum_value = """    {name} = {value}"""
+
+on_delete = ', ondelete="{mode}"'
+on_update = ', onupdate="{mode}"'

@@ -1,6 +1,3 @@
-import datetime
-
-
 types_mapping = {
     "varchar": "str",
     "float": "int",

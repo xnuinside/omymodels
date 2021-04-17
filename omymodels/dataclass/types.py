@@ -30,4 +30,4 @@ types_mapping = {
 }
 
 
-datetime_types = ["TIMESTAMP", "DATETIME", "DATE"]
+datetime_types = ["datetime.date", "datetime.datetime"]

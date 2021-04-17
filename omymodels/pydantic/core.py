@@ -65,8 +65,10 @@ class ModelGenerator:
                     table_name=table["table_name"],
                 )
             ) + "\n\n"
+            
             for column in table["columns"]:
                 model += self.generate_attr(column) + "\n"
+            
         return model
 
     def create_header(self, *args, **kwargs) -> str:
