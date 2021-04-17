@@ -3,6 +3,7 @@ from typing import Optional, List, Dict
 from simple_ddl_parser import DDLParser, parse_from_file
 from omymodels.gino import core as g
 from omymodels.pydantic import core as p
+from omymodels.dataclass import core as d
 
 
 def get_tables_information(
@@ -65,7 +66,11 @@ def generate_models_file(
 ) -> str:
     """ method to prepare full file with all Models &  """
     output = ""
-    models = {"gino": g, "pydantic": p}
+    models = {
+        "gino": g, 
+        "pydantic": p, 
+        "dataclass": d
+        }
     models_type = models.get(models_type)
     if not models_type:
         raise ValueError(
