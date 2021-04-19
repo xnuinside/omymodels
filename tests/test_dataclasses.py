@@ -14,7 +14,7 @@ def test_dataclasses():
         ,pay_by_quarter_3  integer ARRAY
         ) ;
     """
-    result = create_models(ddl, schema_global=False, models_type='dataclass')
+    result = create_models(ddl, models_type='dataclass')
     expected = """from typing import List
 from dataclasses import dataclass
 
@@ -49,7 +49,7 @@ CREATE table user_history (
     ) ;
 
 """
-    result = create_models(ddl, schema_global=False, models_type='dataclass')
+    result = create_models(ddl, models_type='dataclass')
     expected = """import datetime
 from dataclasses import dataclass
 
@@ -66,3 +66,51 @@ class UserHistory:
     comment: str = 'none'
 """
     assert expected == result['code']
+
+
+def test_enums_in_dataclasses():
+    expected = """from enum import Enum
+import datetime
+from typing import Union
+from dataclasses import dataclass
+
+
+class MaterialType(str, Enum):
+
+    article = 'article'
+    video = 'video'
+
+
+@dataclass
+class Material:
+
+    id: int
+    title: str
+    link: str
+    description: str = None
+    type: MaterialType = None
+    additional_properties: Union[dict, list] = None
+    created_at: datetime.datetime = datetime.datetime.now()
+    updated_at: datetime.datetime = None
+"""
+    ddl = """
+CREATE TYPE "material_type" AS ENUM (
+  'video',
+  'article'
+);
+
+CREATE TABLE "material" (
+  "id" SERIAL PRIMARY KEY,
+  "title" varchar NOT NULL,
+  "description" text,
+  "link" varchar NOT NULL,
+  "type" material_type,
+  "additional_properties" json,
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp
+);
+
+  
+"""
+    result = create_models(ddl, models_type='dataclass')['code']
+    assert expected == result

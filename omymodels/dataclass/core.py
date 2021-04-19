@@ -1,14 +1,13 @@
 from typing import Optional, List, Dict
 from omymodels.dataclass import templates as pt
 from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
-from omymodels.pydantic.types import types_mapping, datetime_types
+from omymodels.dataclass.types import types_mapping, datetime_types
 
 
 class ModelGenerator:
     def __init__(self):
 
-        self.imports = set([pt.base_model])
-        self.types_for_import = ["Json"]
+        self.types_for_import = ["Union"]
         self.datetime_import = False
         self.typing_imports = set()
         self.enum_imports = set()
@@ -24,12 +23,16 @@ class ModelGenerator:
             _type = column["type"].lower().split("[")[0]
         if self.custom_types:
             column_type = self.custom_types.get(_type, _type)
+            
+            if isinstance(column_type, tuple):
+                _type = column_type[1]
+                column_type = column_type[0]
             if column_type != type_not_found:
                 column_type = f"{column_type}({_type})"
         if _type == _type:
             _type = types_mapping.get(_type, _type)
-        if _type in self.types_for_import:
-            self.imports.add(_type)
+        if _type.split('[')[0] in self.types_for_import:
+            self.typing_imports.add(_type.split('[')[0])
         elif "datetime" in _type:
             self.datetime_import = True
         elif "[" in column["type"]:
@@ -46,7 +49,7 @@ class ModelGenerator:
                 elif "'" not in column["default"]:
                     column["default"] = f"'{column['default']}'"
             column_str += pt.dataclass_default_attr.format(default=column["default"])
-        if column["nullable"]:
+        if column["nullable"] and not column["default"]:
             column_str += pt.dataclass_default_attr.format(default=None)
         return column_str
 
@@ -124,15 +127,16 @@ class ModelGenerator:
                     )
                     sub_type = 'IntEnum'
                     self.enum_imports.add("IntEnum")
-            type_class = "\n\n" + (
-            pt.enum_class.format(
-                class_name=create_class_name(
+            class_name = create_class_name(
                     _type["type_name"], singular, exceptions
                     
-                ),
+                )
+            type_class = "\n\n" + (
+            pt.enum_class.format(
+                class_name=class_name,
                 sub_type=sub_type
             )
             + "\n\n"
         ) + type_class
-            self.custom_types[_type["type_name"]] = "db.Enum"
+            self.custom_types[_type["type_name"]] = ("db.Enum", class_name)
         return type_class
