@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict
-import omymodels.gino.templates as gt
-from omymodels.gino.types import types_mapping, postgresql_dialect, datetime_types
+import omymodels.sqlalchemy.templates as st
+from omymodels.sqlalchemy.types import types_mapping, postgresql_dialect, datetime_types
 from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
 
 
@@ -45,7 +45,7 @@ class ModelGenerator:
         if "[" in column_data["type"]:
             self.postgresql_dialect_cols.add("ARRAY")
             column_type = f"ARRAY({column_type})"
-        column = gt.column_template.format(
+        column = st.column_template.format(
             column_name=column_data["name"], column_type=column_type
         )
         return column
@@ -64,7 +64,7 @@ class ModelGenerator:
                     column_data["default"] = f"'{column_data['default']}'"
         else:
             column_data["default"] = f"'{str(column_data['default'])}'"
-        column += gt.default.format(default=column_data["default"])
+        column += st.default.format(default=column_data["default"])
         return column
 
     def setup_column_attributes(
@@ -75,17 +75,17 @@ class ModelGenerator:
             column_data["type"].lower() == "serial"
             or column_data["type"].lower() == "bigserial"
         ):
-            column += gt.autoincrement
+            column += st.autoincrement
         if column_data["references"]:
             column = self.add_reference_to_the_column(column_data["name"], column, column_data["references"])
         if not column_data["nullable"] and not column_data["name"] in table_pk:
-            column += gt.required
+            column += st.required
         if column_data["default"] is not None:
             column = self.prepare_column_default(column_data, column)
         if column_data["name"] in table_pk:
-            column += gt.pk_template
+            column += st.pk_template
         if column_data["unique"]:
-            column += gt.unique
+            column += st.unique
         
         if 'columns' in table_data["alter"]:
             for alter_column in table_data["alter"]['columns']:
@@ -98,12 +98,12 @@ class ModelGenerator:
     
     @staticmethod
     def add_reference_to_the_column(column_name: str, column: str, reference: Dict[str, str]) -> str:
-        column += gt.fk_in_column.format(ref_table=reference['table'], 
+        column += st.fk_in_column.format(ref_table=reference['table'], 
                                         ref_column=reference['column'] or column_name)
         if reference['on_delete']:
-            column += gt.on_delete.format(mode=reference['on_delete'].upper())
+            column += st.on_delete.format(mode=reference['on_delete'].upper())
         if reference['on_update']:
-            column += gt.on_update.format(mode=reference['on_update'].upper())
+            column += st.on_update.format(mode=reference['on_update'].upper())
         return column
                     
     def generate_column(self, column_data: Dict, table_pk: List[str], table_data: Dict) -> str:
@@ -122,7 +122,7 @@ class ModelGenerator:
                 if not index["unique"]:
                     self.im_index = True
                     statements.append(
-                        gt.index_template.format(
+                        st.index_template.format(
                             columns=",".join(index["columns"]),
                             name=f"'{index['index_name']}'",
                         )
@@ -130,15 +130,15 @@ class ModelGenerator:
                 else:
                     self.constraint = True
                     statements.append(
-                        gt.unique_index_template.format(
+                        st.unique_index_template.format(
                             columns=",".join(index["columns"]),
                             name=f"'{index['index_name']}'",
                         )
                     )
         if not schema_global and table['schema']:
-            statements.append(gt.schema.format(schema_name=table['schema']))
+            statements.append(st.schema.format(schema_name=table['schema']))
         if statements:
-            model += gt.table_args.format(statements=",".join(statements))
+            model += st.table_args.format(statements=",".join(statements))
         return model
 
     def generate_type(
@@ -154,14 +154,14 @@ class ModelGenerator:
                 _value = value.replace("'", "")
                 if not _value.isnumeric():
                     type_class += (
-                        gt.enum_value.format(name=value.replace("'", ""), value=value)
+                        st.enum_value.format(name=value.replace("'", ""), value=value)
                         + "\n"
                     )
                     self.enum_imports.add("Enum")
                     sub_type = "Enum"
                 else:
                     type_class += (
-                        gt.enum_value.format(
+                        st.enum_value.format(
                             name=enum_number_name_list.get(num), value=_value
                         )
                         + "\n"
@@ -173,13 +173,13 @@ class ModelGenerator:
             )
             type_class ="\n\n" + (
                 
-                gt.enum_class.format(
+                st.enum_class.format(
                     class_name=class_name,
                     type = sub_type
                 )
                 + "\n"
             ) + "\n" + type_class
-            self.custom_types[_type["type_name"]] = ("db.Enum", class_name)
+            self.custom_types[_type["type_name"]] = ("sa.Enum", class_name)
             print(_type["type_name"])
         return type_class
 
@@ -194,7 +194,7 @@ class ModelGenerator:
         """ method to prepare one Model defention - name & tablename  & columns """
         model = ""
         if table.get("table_name"):
-            model = gt.model_template.format(
+            model = st.model_template.format(
                 model_name=create_class_name(table["table_name"], singular, exceptions),
                 table_name=table["table_name"],
             )
@@ -208,27 +208,27 @@ class ModelGenerator:
         return model
 
     def create_header(self, tables: List[Dict], schema: bool = False) -> str:
-        """ header of the file - imports & gino init """
+        """ header of the file - imports & sqlalchemy init """
         header = ""
         if self.enum_imports:
-            header += gt.enum_import.format(enums=",".join(self.enum_imports)) + "\n"
+            header += st.enum_import.format(enums=",".join(self.enum_imports)) + "\n"
         if "func" in self.state:
-            header += gt.sql_alchemy_func_import + "\n"
+            header += st.sql_alchemy_func_import + "\n"
         if self.postgresql_dialect_cols:
             header += (
-                gt.postgresql_dialect_import.format(
+                st.postgresql_dialect_import.format(
                     types=",".join(self.postgresql_dialect_cols)
                 )
                 + "\n"
             )
         if self.constraint:
-            header += gt.unique_cons_import + "\n"
+            header += st.unique_cons_import + "\n"
         if self.im_index:
-            header += gt.index_import + "\n"
-        header += gt.gino_import + "\n\n"
+            header += st.index_import + "\n"
+        header += st.sqlalchemy_import + "\n\n"
         if schema and tables[0]["schema"]:
             schema = tables[0]["schema"].replace('"', "")
-            header += gt.gino_init_schema.format(schema=schema) + "\n"
+            header += st.sqlalchemy_init_schema.format(schema=schema) + "\n"
         else:
-            header += gt.gino_init + "\n"
+            header += st.sqlalchemy_init + "\n"
         return header

@@ -16,9 +16,9 @@ O! My Models
    :alt: badge3
  
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
+O! My Models (omymodels) is a library to generate from SQL DDL Python Models for SQLAlchemy, GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
 
-By default method **create_models** generate GinoORM models, to get Pydantic models output use argument ``models_type='pydantic'``
+By default method **create_models** generate GinoORM models, to get Pydantic models output use argument ``models_type='pydantic'`` ('sqlalchemy' for SQLAlchemy models. 'dataclass' for Dataclasses). A lot of examples in tests/.
 
 For example,
 
@@ -271,7 +271,7 @@ TODO in next releases
 ---------------------
 
 
-#. Generate pure SQLAlchemy models
+#. Generate SQLAlchemy Core Tables
 
 How to contribute
 -----------------
@@ -282,6 +282,16 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 Changelog
 ---------
+
+**v0.7.0**
+
+
+#. Added generation for SQLAlchemy models (defaults from DDLs are setting up as 'server_default')
+#. Added defaults for Pydantic models
+#. Added flag to generate Pydantic & Dataclass models WITHOUT defaults ``defaults_off=True`` (by default it is False). And cli flag --defaults-off
+#. Fixed issue with Enum types with lower case names in DDLs
+#. Fixed several issues with Dataclass generation (default with datetime & Enums)
+#. '"' do not remove from defaults now
 
 **v0.6.0**
 

@@ -3,9 +3,9 @@
 ![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels) 
 
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
+O! My Models (omymodels) is a library to generate from SQL DDL Python Models for SQLAlchemy, GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
 
-By default method **create_models** generate GinoORM models, to get Pydantic models output use argument `models_type='pydantic'`
+By default method **create_models** generate GinoORM models, to get Pydantic models output use argument `models_type='pydantic'` ('sqlalchemy' for SQLAlchemy models. 'dataclass' for Dataclasses). A lot of examples in tests/.
 
 For example,
 
@@ -265,7 +265,7 @@ And result will be this:
 
 ## TODO in next releases
 
-1. Generate pure SQLAlchemy models
+1. Generate SQLAlchemy Core Tables
 
 
 ## How to contribute
@@ -275,6 +275,15 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
+
+**v0.7.0**
+1. Added generation for SQLAlchemy models (defaults from DDLs are setting up as 'server_default')
+2. Added defaults for Pydantic models
+3. Added flag to generate Pydantic & Dataclass models WITHOUT defaults `defaults_off=True` (by default it is False). And cli flag --defaults-off
+4. Fixed issue with Enum types with lower case names in DDLs
+5. Fixed several issues with Dataclass generation (default with datetime & Enums)
+6. '"' do not remove from defaults now
+
 **v0.6.0**
 1. O!MyModels now also can generate python Dataclass from DDL. Use argument models_type='dataclass' or if you use the cli flag --models_type dataclass or -m dataclass
 2. Added ForeignKey generation to GinoORM Models, added support for ondelete and onupdate

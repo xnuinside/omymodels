@@ -21,8 +21,8 @@ types_mapping = {
     "character_vying": "str",
     "varying": "str",
     "serial": "int",
-    "jsonb": "Json",
-    "json": "Json",
+    "jsonb": "Union[dict, list]",
+    "json": "Union[dict, list]",
     "int": "int",
     "serial": "int",
     "bigserial": "int",
@@ -30,4 +30,5 @@ types_mapping = {
 }
 
 
-datetime_types = ["datetime.date", "datetime.datetime"]
+
+datetime_types = ["TIMESTAMP", "DATETIME", "DATE"]

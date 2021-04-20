@@ -72,3 +72,54 @@ class Notification(BaseModel):
     content_type: Optional[ContentType]
     period: Optional[Period]
 """
+
+def test_enum_works_with_lower_case():
+    ddl = """
+  
+CREATE TYPE "material_type" AS ENUM (
+  'video',
+  'article'
+);
+
+CREATE TABLE "material" (
+  "id" SERIAL PRIMARY KEY,
+  "title" varchar NOT NULL,
+  "description" text,
+  "link" varchar NOT NULL,
+  "type" material_type,
+  "additional_properties" json,
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp
+);
+
+"""
+    result = create_models(ddl, schema_global=False)
+    expected = """from enum import Enum
+from sqlalchemy.sql import func
+from sqlalchemy.dialects.postgresql import JSON
+from gino import Gino
+
+db = Gino()
+
+
+class MaterialType(Enum):
+
+    article = 'article'
+    video = 'video'
+
+
+class Material(db.Model):
+
+    __tablename__ = 'material'
+
+    id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
+    title = db.Column(db.String(), nullable=False)
+    description = db.Column(db.Text())
+    link = db.Column(db.String(), nullable=False)
+    type = db.Column(db.Enum(MaterialType))
+    additional_properties = db.Column(JSON())
+    created_at = db.Column(db.TIMESTAMP(), server_default=func.now())
+    updated_at = db.Column(db.TIMESTAMP())
+"""
+    assert result['code'] == expected
+

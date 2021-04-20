@@ -4,6 +4,7 @@ from simple_ddl_parser import DDLParser, parse_from_file
 from omymodels.gino import core as g
 from omymodels.pydantic import core as p
 from omymodels.dataclass import core as d
+from omymodels.sqlalchemy import core as s
 
 
 def get_tables_information(
@@ -29,7 +30,8 @@ def create_models(
     singular: bool = False,
     naming_exceptions: Optional[List] = None,
     models_type: str = "gino",
-    schema_global: Optional[bool] = True
+    schema_global: Optional[bool] = True,
+    defaults_off: Optional[bool] = False
 ):
     """
         models_type can be: "gino", "dataclass", "pydantic"
@@ -39,7 +41,8 @@ def create_models(
     data = get_tables_information(ddl, ddl_path)
     data = remove_quotes_from_strings(data)
     # generate code
-    output = generate_models_file(data, singular, naming_exceptions, models_type, schema_global)
+    output = generate_models_file(data, singular, naming_exceptions, 
+                                  models_type, schema_global, defaults_off)
     if dump:
         save_models_to_file(output, dump_path)
     else:
@@ -60,14 +63,16 @@ def generate_models_file(
     singular: bool = False,
     exceptions: Optional[List] = None,
     models_type: str = "gino",
-    schema_global: bool = True
+    schema_global: bool = True, 
+    defaults_off: Optional[bool] = False
 ) -> str:
     """ method to prepare full file with all Models &  """
     output = ""
     models = {
         "gino": g, 
         "pydantic": p, 
-        "dataclass": d
+        "dataclass": d,
+        "sqlalchemy": s
         }
     models_type = models.get(models_type)
     if not models_type:
@@ -78,7 +83,7 @@ def generate_models_file(
     for _type in data["types"]:
         output += model_generator.generate_type(_type, singular, exceptions)
     for table in data["tables"]:
-        output += model_generator.generate_model(table, singular, exceptions, schema_global)
+        output += model_generator.generate_model(table, singular, exceptions, schema_global=schema_global, defaults_off=defaults_off)
     header = model_generator.create_header(data["tables"], schema=schema_global)
     output = header + output
     return output
@@ -86,13 +91,14 @@ def generate_models_file(
 
 def remove_quotes_from_strings(item: Dict) -> Dict:
     for key, value in item.items():
-        if isinstance(value, list):
-            value = iterate_over_the_list(value)
-            item[key] = value
-        elif isinstance(value, str) and key != 'default':
-            item[key] = value.replace('"', "")
-        elif isinstance(value, dict):
-            value = remove_quotes_from_strings(value)
+        if key.lower() != 'default':
+            if isinstance(value, list):
+                value = iterate_over_the_list(value)
+                item[key] = value
+            elif isinstance(value, str) and key != 'default':
+                item[key] = value.replace('"', "")
+            elif isinstance(value, dict):
+                value = remove_quotes_from_strings(value)
     return item
 
 
