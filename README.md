@@ -3,9 +3,9 @@
 ![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels) 
 
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
+O! My Models (omymodels) is a library to generate from SQL DDL Python Models for SQLAlchemy, GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
 
-By default method **create_models** generate GinoORM models, to get Pydantic models output use argument `models_type='pydantic'`
+By default method **create_models** generate GinoORM models, to get Pydantic models output use argument `models_type='pydantic'` ('sqlalchemy' for SQLAlchemy models. 'dataclass' for Dataclasses). A lot of examples in tests/.
 
 For example,
 
