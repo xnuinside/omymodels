@@ -114,3 +114,49 @@ CREATE TABLE "material" (
 """
     result = create_models(ddl, models_type='dataclass')['code']
     assert expected == result
+
+
+def test_defaults_off():
+    expected = """from enum import Enum
+import datetime
+from typing import Union
+from dataclasses import dataclass
+
+
+class MaterialType(str, Enum):
+
+    article = 'article'
+    video = 'video'
+
+
+@dataclass
+class Material:
+
+    id: int
+    title: str
+    description: str
+    link: str
+    type: MaterialType
+    additional_properties: Union[dict, list]
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+"""
+    ddl = """
+CREATE TYPE "material_type" AS ENUM (
+  'video',
+  'article'
+);
+
+CREATE TABLE "material" (
+  "id" SERIAL PRIMARY KEY,
+  "title" varchar NOT NULL,
+  "description" text,
+  "link" varchar NOT NULL,
+  "type" material_type,
+  "additional_properties" json DEFAULT '{"key": "value"}',
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp
+);
+"""
+    result = create_models(ddl, models_type='dataclass', defaults_off=True)
+    assert expected == result['code']

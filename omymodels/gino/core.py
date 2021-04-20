@@ -188,7 +188,8 @@ class ModelGenerator:
         table: Dict, 
         singular: bool = False, 
         exceptions: Optional[List] = None,
-        schema_global: Optional[bool] = True
+        schema_global: Optional[bool] = True,
+        *args, **kwargs
     ) -> str:
         """ method to prepare one Model defention - name & tablename  & columns """
         model = ""

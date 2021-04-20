@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict
-import omymodels.gino.templates as gt
-from omymodels.gino.types import types_mapping, postgresql_dialect, datetime_types
+import omymodels.sqlalchemy.templates as gt
+from omymodels.sqlalchemy.types import types_mapping, postgresql_dialect, datetime_types
 from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
 
 
@@ -207,7 +207,7 @@ class ModelGenerator:
         return model
 
     def create_header(self, tables: List[Dict], schema: bool = False) -> str:
-        """ header of the file - imports & gino init """
+        """ header of the file - imports & sqlalchemy init """
         header = ""
         if self.enum_imports:
             header += gt.enum_import.format(enums=",".join(self.enum_imports)) + "\n"
@@ -224,10 +224,10 @@ class ModelGenerator:
             header += gt.unique_cons_import + "\n"
         if self.im_index:
             header += gt.index_import + "\n"
-        header += gt.gino_import + "\n\n"
+        header += gt.sqlalchemy_import + "\n\n"
         if schema and tables[0]["schema"]:
             schema = tables[0]["schema"].replace('"', "")
-            header += gt.gino_init_schema.format(schema=schema) + "\n"
+            header += gt.sqlalchemy_init_schema.format(schema=schema) + "\n"
         else:
-            header += gt.gino_init + "\n"
+            header += gt.sqlalchemy_init + "\n"
         return header

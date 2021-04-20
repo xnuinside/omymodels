@@ -1,6 +1,6 @@
 postgresql_dialect = ["ARRAY", "JSON", "JSONB", "UUID"]
 
-# key - type from ddl, value - type from GinoORM
+# key - type from ddl, value - type from sqlalchemyORM
 
 types_mapping = {
     "varchar": "sa.String",

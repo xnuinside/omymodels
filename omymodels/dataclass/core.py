@@ -14,7 +14,7 @@ class ModelGenerator:
         self.custom_types = {}
         self.uuid_import = False
 
-    def generate_attr(self, column: Dict) -> str:
+    def generate_attr(self, column: Dict, defaults_off: bool) -> str:
         column_str = pt.dataclass_attr
         
         if "." in column["type"]:
@@ -41,7 +41,7 @@ class ModelGenerator:
         if _type == 'UUID':
             self.uuid_import = True
         column_str = column_str.format(arg_name=column["name"], type=_type)
-        if column["default"]:
+        if column["default"] and defaults_off is False:
             if column["type"].upper() in datetime_types:
                 if "now" in column["default"]:
                     # todo: need to add other popular PostgreSQL & MySQL functions
@@ -49,7 +49,7 @@ class ModelGenerator:
                 elif "'" not in column["default"]:
                     column["default"] = f"'{column['default']}'"
             column_str += pt.dataclass_default_attr.format(default=column["default"])
-        if column["nullable"] and not column["default"]:
+        if column["nullable"] and not (column["default"] and not defaults_off) and not defaults_off:
             column_str += pt.dataclass_default_attr.format(default=None)
         return column_str
 
@@ -58,10 +58,12 @@ class ModelGenerator:
         table: Dict, 
         singular: bool = False, 
         exceptions: Optional[List] = None, 
+        defaults_off: Optional[bool] = False,
         *args,
         **kwargs
     ) -> str:
         model = ""
+        print(defaults_off)
         if table.get("table_name"):
             # mean one model one table
             model += "\n\n"
@@ -75,7 +77,7 @@ class ModelGenerator:
             ) + "\n\n"
             columns = {'default': [], 'non_default': []}
             for column in table["columns"]:
-                column_str = self.generate_attr(column) + "\n"
+                column_str = self.generate_attr(column, defaults_off) + "\n"
                 if '=' in column_str:
                     columns['default'].append(column_str)
                 else:

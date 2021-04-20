@@ -30,8 +30,8 @@ class UserHistory(BaseModel):
     id: str
     user: str
     status: str
-    event_time: datetime.datetime
-    comment: str
+    event_time: datetime.datetime = datetime.datetime.now()
+    comment: str = 'none'
 """
     assert result == expected
 
@@ -45,8 +45,8 @@ class Arrays2(BaseModel):
 
     field_1: List[int]
     field_2: List[int]
-    field_3: List[str]
-    squares: List[int]
+    field_3: List[str] = '{"none"}'
+    squares: List[int] = '{1}'
     schedule: Optional[List[str]]
     pay_by_quarter: Optional[List[int]]
     pay_by_quarter_2: Optional[List[int]]
@@ -84,3 +84,99 @@ CREATE TABLE "prefix--schema-name"."table" (
 """
     result = create_models(ddl, models_type='pydantic')
     assert expected == result['code']
+
+
+def test_enums_lower_case_names_works():
+    expected = """from enum import Enum
+import datetime
+from typing import Optional
+from pydantic import BaseModel, Json
+
+
+class MaterialType(str, Enum):
+
+    article = 'article'
+    video = 'video'
+
+
+class Material(BaseModel):
+
+    id: int
+    title: str
+    description: Optional[str]
+    link: str
+    type: Optional[MaterialType]
+    additional_properties: Optional[Json]
+    created_at: Optional[datetime.datetime] = datetime.datetime.now()
+    updated_at: Optional[datetime.datetime]
+"""
+    from omymodels import create_models
+
+    ddl = """
+CREATE TYPE "material_type" AS ENUM (
+  'video',
+  'article'
+);
+
+CREATE TABLE "material" (
+  "id" SERIAL PRIMARY KEY,
+  "title" varchar NOT NULL,
+  "description" text,
+  "link" varchar NOT NULL,
+  "type" material_type,
+  "additional_properties" json,
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp
+);
+
+  
+"""
+    result = create_models(ddl, models_type='pydantic')['code']
+    assert result == expected
+
+
+def test_no_defaults():
+    ddl = """
+CREATE TYPE "material_type" AS ENUM (
+  'video',
+  'article'
+);
+
+CREATE TABLE "material" (
+  "id" SERIAL PRIMARY KEY,
+  "title" varchar NOT NULL,
+  "description" text,
+  "link" varchar NOT NULL,
+  "type" material_type,
+  "additional_properties" json DEFAULT '{"key": "value"}',
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp
+);
+
+  
+"""
+    result = create_models(ddl, models_type='pydantic', defaults_off=True)['code']
+    expected = """from enum import Enum
+import datetime
+from typing import Optional
+from pydantic import BaseModel, Json
+
+
+class MaterialType(str, Enum):
+
+    article = 'article'
+    video = 'video'
+
+
+class Material(BaseModel):
+
+    id: int
+    title: str
+    description: Optional[str]
+    link: str
+    type: Optional[MaterialType]
+    additional_properties: Optional[Json]
+    created_at: Optional[datetime.datetime]
+    updated_at: Optional[datetime.datetime]
+"""
+    assert expected == result

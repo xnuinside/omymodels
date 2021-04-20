@@ -265,7 +265,7 @@ And result will be this:
 
 ## TODO in next releases
 
-1. Generate pure SQLAlchemy models
+1. Generate SQLAlchemy Core Tables
 
 
 ## How to contribute

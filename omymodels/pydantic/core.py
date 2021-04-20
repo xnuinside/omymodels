@@ -1,7 +1,7 @@
 from typing import Optional, List, Dict
 from omymodels.pydantic import templates as pt
 from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
-from omymodels.pydantic.types import types_mapping
+from omymodels.pydantic.types import types_mapping, datetime_types
 
 
 class ModelGenerator:
@@ -15,7 +15,7 @@ class ModelGenerator:
         self.custom_types = {}
         self.uuid_import = False
 
-    def generate_attr(self, column: Dict) -> str:
+    def generate_attr(self, column: Dict, defaults_off: bool) -> str:
         if column["nullable"]:
             self.typing_imports.add("Optional")
             column_str = pt.pydantic_optional_attr
@@ -28,6 +28,9 @@ class ModelGenerator:
             _type = column["type"].lower().split("[")[0]
         if self.custom_types:
             column_type = self.custom_types.get(_type, _type)
+            if isinstance(column_type, tuple):
+                _type = column_type[1]
+                column_type = column_type[0]
             if column_type != type_not_found:
                 column_type = f"{column_type}({_type})"
         if _type == _type:
@@ -41,7 +44,17 @@ class ModelGenerator:
             _type = f"List[{_type}]"
         if _type == 'UUID':
             self.uuid_import = True
+        
+        print(_type)
         column_str = column_str.format(arg_name=column["name"], type=_type)
+        if column["default"] and defaults_off is False:
+            if column["type"].upper() in datetime_types:
+                if "now" in column["default"]:
+                    # todo: need to add other popular PostgreSQL & MySQL functions
+                    column["default"] = "datetime.datetime.now()"
+                elif "'" not in column["default"]:
+                    column["default"] = f"'{column['default']}'"
+            column_str += pt.pydantic_default_attr.format(default=column["default"])
 
         return column_str
 
@@ -50,6 +63,7 @@ class ModelGenerator:
         table: Dict, 
         singular: bool = False, 
         exceptions: Optional[List] = None, 
+        defaults_off: Optional[bool] = False,
         *args,
         **kwargs
     ) -> str:
@@ -67,7 +81,7 @@ class ModelGenerator:
             ) + "\n\n"
             
             for column in table["columns"]:
-                model += self.generate_attr(column) + "\n"
+                model += self.generate_attr(column, defaults_off) + "\n"
             
         return model
 
@@ -83,6 +97,8 @@ class ModelGenerator:
             _imports = list(self.typing_imports)
             _imports.sort()
             header += pt.typing_imports.format(typing_types=", ".join(_imports)) + "\n"
+        self.imports = list(self.imports)
+        self.imports.sort()
         header += pt.pydantic_imports.format(imports=", ".join(self.imports)) + "\n"
         return header
 
@@ -112,15 +128,16 @@ class ModelGenerator:
                     )
                     sub_type = 'IntEnum'
                     self.enum_imports.add("IntEnum")
-            type_class = "\n\n" + (
-            pt.enum_class.format(
-                class_name=create_class_name(
+            class_name = create_class_name(
                     _type["type_name"], singular, exceptions
                     
-                ),
+                )
+            type_class = "\n\n" + (
+            pt.enum_class.format(
+                class_name=class_name,
                 sub_type=sub_type
             )
             + "\n\n"
         ) + type_class
-            self.custom_types[_type["type_name"]] = "db.Enum"
+            self.custom_types[_type["type_name"]] = ("db.Enum", class_name)
         return type_class
