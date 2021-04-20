@@ -51,6 +51,12 @@ def cli():
         default=False,
         help="Define schema in table_args, not global in Gino()",
     )
+    omm_cli.add_argument(
+        "--defaults-off",
+        action="store_true",
+        default=False,
+        help="Do not add defaults in Pydantic & Dataclass models",
+    )
     return omm_cli
 
 

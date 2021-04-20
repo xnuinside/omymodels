@@ -4,6 +4,7 @@ from simple_ddl_parser import DDLParser, parse_from_file
 from omymodels.gino import core as g
 from omymodels.pydantic import core as p
 from omymodels.dataclass import core as d
+from omymodels.sqlalchemy import core as s
 
 
 def get_tables_information(
@@ -70,9 +71,9 @@ def generate_models_file(
     models = {
         "gino": g, 
         "pydantic": p, 
-        "dataclass": d
+        "dataclass": d,
+        "sqlalchemy": s
         }
-    print(defaults_off)
     models_type = models.get(models_type)
     if not models_type:
         raise ValueError(
@@ -90,7 +91,6 @@ def generate_models_file(
 
 def remove_quotes_from_strings(item: Dict) -> Dict:
     for key, value in item.items():
-        print(key)
         if key.lower() != 'default':
             if isinstance(value, list):
                 value = iterate_over_the_list(value)
@@ -99,8 +99,6 @@ def remove_quotes_from_strings(item: Dict) -> Dict:
                 item[key] = value.replace('"', "")
             elif isinstance(value, dict):
                 value = remove_quotes_from_strings(value)
-        else:
-            print(value)
     return item
 
 

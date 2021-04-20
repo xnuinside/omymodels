@@ -2,7 +2,7 @@
 **v0.7.0**
 1. Added generation for SQLAlchemy models (defaults from DDLs are setting up as 'server_default')
 2. Added defaults for Pydantic models
-3. Added flag to generate Pydantic & Dataclass models WITHOUT defaults `defaults_off=True` (by default it is False).
+3. Added flag to generate Pydantic & Dataclass models WITHOUT defaults `defaults_off=True` (by default it is False). And cli flag --defaults-off
 4. Fixed issue with Enum types with lower case names in DDLs
 5. Fixed several issues with Dataclass generation (default with datetime & Enums)
 6. '"' do not remove from defaults now

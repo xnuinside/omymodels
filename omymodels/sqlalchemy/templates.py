@@ -3,10 +3,10 @@ postgresql_dialect_import = "from sqlalchemy.dialects.postgresql import {types}"
 sql_alchemy_func_import = "from sqlalchemy.sql import func"
 index_import = "from sqlalchemy import Index"
 
-sq_import = """import sqlalchemy as sa
+sqlalchemy_import = """import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 """
-sa_base = "Base = declarative_base()"
+sqlalchemy_init = "Base = declarative_base()"
 unique_cons_import = "from sqlalchemy.schema import UniqueConstraint"
 enum_import = "from enum import {enums}"
 
