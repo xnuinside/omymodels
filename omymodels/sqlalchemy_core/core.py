@@ -1,6 +1,10 @@
 from typing import Optional, List, Dict
 import omymodels.sqlalchemy_core.templates as st
-from omymodels.sqlalchemy_core.types import types_mapping, postgresql_dialect, datetime_types
+from omymodels.sqlalchemy_core.types import (
+    types_mapping,
+    postgresql_dialect,
+    datetime_types,
+)
 from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
 
 
@@ -33,7 +37,7 @@ class ModelGenerator:
             column_type = types_mapping.get(column_data_type, column_type)
         if column_type in postgresql_dialect:
             self.postgresql_dialect_cols.add(column_type)
-        if column_type == 'UUID':
+        if column_type == "UUID":
             no_need_par = True
         if column_data["size"]:
             column_type = self.add_size_to_column_type(column_data["size"])
@@ -51,10 +55,10 @@ class ModelGenerator:
             return f"({size})"
         elif isinstance(size, tuple):
             return f"({','.join([str(x) for x in size])})"
-    
+
     def column_default(self, column_data: Dict) -> str:
         """ extract & format column default values """
-        
+
         if isinstance(column_data["default"], str):
             if column_data["type"].upper() in datetime_types:
                 if "now" in column_data["default"]:
@@ -81,8 +85,9 @@ class ModelGenerator:
         ):
             properties.append(st.autoincrement)
         if column_data["references"]:
-            properties.append(self.column_reference(column_data["name"], 
-                                                    column_data["references"]))
+            properties.append(
+                self.column_reference(column_data["name"], column_data["references"])
+            )
         if not column_data["nullable"] and not column_data["name"] in table_pk:
             properties.append(st.required)
         if column_data["default"] is not None:
@@ -91,38 +96,52 @@ class ModelGenerator:
             properties.append(st.pk_template)
         if column_data["unique"]:
             properties.append(st.unique)
-        if 'columns' in table_data["alter"]:
-            for alter_column in table_data["alter"]['columns']:
-                if alter_column['name'] == column_data["name"] and not alter_column[
-                        'constraint_name'] and alter_column['references'] and not column_data["references"]:  
-                    properties.append(self.column_reference(alter_column['name'], alter_column['references']))
+        if "columns" in table_data["alter"]:
+            for alter_column in table_data["alter"]["columns"]:
+                if (
+                    alter_column["name"] == column_data["name"]
+                    and not alter_column["constraint_name"]
+                    and alter_column["references"]
+                    and not column_data["references"]
+                ):
+                    properties.append(
+                        self.column_reference(
+                            alter_column["name"], alter_column["references"]
+                        )
+                    )
         return properties
-    
+
     @staticmethod
     def column_reference(column_name: str, reference: Dict[str, str]) -> str:
         """ ForeignKey property creator """
-        ref_property = st.fk_in_column.format(ref_table=reference['table'], 
-                                        ref_column=reference['column'] or column_name)
-        if reference['on_delete']:
-            ref_property += st.on_delete.format(mode=reference['on_delete'].upper())
-        if reference['on_update']:
-            ref_property += st.on_update.format(mode=reference['on_update'].upper())
-        return ref_property
-                    
-    def generate_column(self, column_data: Dict, table_pk: List[str], table_data: Dict) -> str:
-        """ method to generate full column defention """
-        column_type =  self.prepare_column_type(column_data)
-        properties = "".join(self.get_column_attributes(
-            column_data, table_pk, table_data))
-        
-        column = st.column_template.format(
-            column_name=column_data["name"], 
-            column_type=column_type, 
-            properties=properties
+        ref_property = st.fk_in_column.format(
+            ref_table=reference["table"], ref_column=reference["column"] or column_name
         )
-        return column + ',\n'
+        if reference["on_delete"]:
+            ref_property += st.on_delete.format(mode=reference["on_delete"].upper())
+        if reference["on_update"]:
+            ref_property += st.on_update.format(mode=reference["on_update"].upper())
+        return ref_property
 
-    def get_indexes_and_unique(self, model: str, table: Dict, table_var_name: str) -> str:
+    def generate_column(
+        self, column_data: Dict, table_pk: List[str], table_data: Dict
+    ) -> str:
+        """ method to generate full column defention """
+        column_type = self.prepare_column_type(column_data)
+        properties = "".join(
+            self.get_column_attributes(column_data, table_pk, table_data)
+        )
+
+        column = st.column_template.format(
+            column_name=column_data["name"],
+            column_type=column_type,
+            properties=properties,
+        )
+        return column + ",\n"
+
+    def get_indexes_and_unique(
+        self, model: str, table: Dict, table_var_name: str
+    ) -> str:
         indexes = []
         unique_constr = []
         if table.get("index"):
@@ -131,16 +150,26 @@ class ModelGenerator:
                     self.im_index = True
                     indexes.append(
                         st.index_template.format(
-                            columns=",".join([f"{table_var_name}.c.{name}" for name in index["columns"]]),
+                            columns=",".join(
+                                [
+                                    f"{table_var_name}.c.{name}"
+                                    for name in index["columns"]
+                                ]
+                            ),
                             name=f"'{index['index_name']}'",
                         )
                     )
                 else:
                     self.constraint = True
-                    unique_constr.append(',' + st.unique_index_template.format(
-                            columns=",".join([f"\'{name}\'" for name in index["columns"]]),
+                    unique_constr.append(
+                        ","
+                        + st.unique_index_template.format(
+                            columns=",".join(
+                                [f"'{name}'" for name in index["columns"]]
+                            ),
                             name=f"'{index['index_name']}'",
-                        ))
+                        )
+                    )
         return indexes, unique_constr
 
     def generate_type(
@@ -148,7 +177,7 @@ class ModelGenerator:
     ) -> str:
         """ method to prepare one Model defention - name & tablename  & columns """
         type_class = ""
-            
+
         if _type["properties"].get("values"):
             # mean this is a Enum
             _type["properties"]["values"].sort()
@@ -170,45 +199,45 @@ class ModelGenerator:
                     )
                     sub_type = "IntEnum"
                     self.enum_imports.add("IntEnum")
-            class_name = create_class_name(
-                _type["type_name"], singular, exceptions
-            )
-            type_class ="\n\n" + (
-                
-                st.enum_class.format(
-                    class_name=class_name,
-                    type = sub_type
-                )
+            class_name = create_class_name(_type["type_name"], singular, exceptions)
+            type_class = (
+                "\n\n"
+                + (st.enum_class.format(class_name=class_name, type=sub_type) + "\n")
                 + "\n"
-            ) + "\n" + type_class
+                + type_class
+            )
             self.custom_types[_type["type_name"]] = ("sa.Enum", class_name)
         return type_class
 
-    def generate_model(
-        self, 
-        table: Dict, 
-        singular: bool = False, 
-        exceptions: Optional[List] = None,
-        schema_global: Optional[bool] = True,
-        *args, **kwargs
-    ) -> str:
+    def generate_model(self, data: Dict, *args, **kwargs) -> str:
         """ method to prepare one Model defention - name & tablename  & columns """
         model = ""
-        if table.get("table_name"):
+        if data.get("table_name"):
+            # mean this is a table
+            table = data
             columns = ""
+
             for column in table["columns"]:
                 columns += self.generate_column(column, table["primary_key"], table)
-            table_var_name = table["table_name"].replace('-', '_')
+
+            table_var_name = table["table_name"].replace("-", "_")
+
             indexes = []
             constraints = None
+
             if table.get("index") or table.get("alter") or table.get("checks"):
-                indexes, constraints = self.get_indexes_and_unique(model, table, table_var_name)
+                indexes, constraints = self.get_indexes_and_unique(
+                    model, table, table_var_name
+                )
+
             model = st.table_template.format(
                 table_var=table_var_name,
                 table_name=table["table_name"],
-                columns=columns, 
-                schema="" if not table.get("schema") else st.schema.format(schema_name=table["schema"]),
-                constraints=", ".join(constraints) if constraints else ""
+                columns=columns,
+                schema=""
+                if not table.get("schema")
+                else st.schema.format(schema_name=table["schema"]),
+                constraints=", ".join(constraints) if constraints else "",
             )
             for index in indexes:
                 model += index
@@ -233,6 +262,6 @@ class ModelGenerator:
         if self.im_index:
             header += st.index_import + "\n"
         header += st.sqlalchemy_import + "\n\n"
-        
+
         header += st.sqlalchemy_init + "\n"
         return header

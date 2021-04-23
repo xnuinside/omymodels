@@ -16,9 +16,13 @@ O! My Models
    :alt: badge3
  
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for SQLAlchemy, GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
+Big example you can find in example/ folder on the github: https://github.com/xnuinside/omymodels/tree/main/example
 
-By default method **create_models** generate GinoORM models, to get Pydantic models output use argument ``models_type='pydantic'`` ('sqlalchemy' for SQLAlchemy models. 'dataclass' for Dataclasses). A lot of examples in tests/.
+O! My Models (omymodels) is a library to generate from SQL DDL Python Models for SQLAlchemy (models), SQLAlchemy Core (tables), GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
+
+By default method **create_models** generate GinoORM models, to get Pydantic models output use the argument ``models_type='pydantic'`` ('sqlalchemy' for SQLAlchemy models; 'dataclass' for Dataclasses; 'sqlalchemy_core' for Sqlalchemy Core Tables).
+
+A lot of examples in tests/ - https://github.com/xnuinside/omymodels/tree/main/tests.
 
 For example,
 
@@ -271,7 +275,8 @@ TODO in next releases
 ---------------------
 
 
-#. Generate SQLAlchemy Core Tables
+#. Add Sequence generation in Models (Gino, SQLAlchemy)
+#. Generate Tortoise ORM models (https://tortoise-orm.readthedocs.io/en/latest/)
 
 How to contribute
 -----------------
@@ -282,6 +287,14 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 Changelog
 ---------
+
+**v0.8.0**
+
+
+#. Fix --defaults-off flag in cli
+#. Added support for SQLAlchemy Core Tables generation
+#. Added examples folder in github ``omymodels/example``
+#. Fix issue with ForeignKey in SQLAlchemy
 
 **v0.7.0**
 

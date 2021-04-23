@@ -32,7 +32,7 @@ class ModelGenerator:
             column_type = types_mapping.get(column_data_type, column_type)
         if column_type in postgresql_dialect:
             self.postgresql_dialect_cols.add(column_type)
-        if column_type == 'UUID':
+        if column_type == "UUID":
             no_need_par = True
         if column_data["size"]:
             if isinstance(column_data["size"], int):
@@ -40,7 +40,7 @@ class ModelGenerator:
             elif isinstance(column_data["size"], tuple):
                 column_type += f"({','.join([str(x) for x in column_data['size']])})"
         elif no_need_par is False:
-            column_type += f"()"
+            column_type += "()"
 
         if "[" in column_data["type"]:
             self.postgresql_dialect_cols.add("ARRAY")
@@ -77,7 +77,9 @@ class ModelGenerator:
         ):
             column += gt.autoincrement
         if column_data["references"]:
-            column = self.add_reference_to_the_column(column_data["name"], column, column_data["references"])
+            column = self.add_reference_to_the_column(
+                column_data["name"], column, column_data["references"]
+            )
         if not column_data["nullable"] and not column_data["name"] in table_pk:
             column += gt.required
         if column_data["default"] is not None:
@@ -86,27 +88,36 @@ class ModelGenerator:
             column += gt.pk_template
         if column_data["unique"]:
             column += gt.unique
-        
-        if 'columns' in table_data["alter"]:
-            for alter_column in table_data["alter"]['columns']:
-                if alter_column['name'] == column_data[
-                    "name"] and not alter_column[
-                        'constraint_name'] and alter_column['references']:
-                    
-                    column = self.add_reference_to_the_column(alter_column['name'], column, alter_column['references'])
+
+        if "columns" in table_data["alter"]:
+            for alter_column in table_data["alter"]["columns"]:
+                if (
+                    alter_column["name"] == column_data["name"]
+                    and not alter_column["constraint_name"]
+                    and alter_column["references"]
+                ):
+
+                    column = self.add_reference_to_the_column(
+                        alter_column["name"], column, alter_column["references"]
+                    )
         return column
-    
+
     @staticmethod
-    def add_reference_to_the_column(column_name: str, column: str, reference: Dict[str, str]) -> str:
-        column += gt.fk_in_column.format(ref_table=reference['table'], 
-                                        ref_column=reference['column'] or column_name)
-        if reference['on_delete']:
-            column += gt.on_delete.format(mode=reference['on_delete'].upper())
-        if reference['on_update']:
-            column += gt.on_update.format(mode=reference['on_update'].upper())
+    def add_reference_to_the_column(
+        column_name: str, column: str, reference: Dict[str, str]
+    ) -> str:
+        column += gt.fk_in_column.format(
+            ref_table=reference["table"], ref_column=reference["column"] or column_name
+        )
+        if reference["on_delete"]:
+            column += gt.on_delete.format(mode=reference["on_delete"].upper())
+        if reference["on_update"]:
+            column += gt.on_update.format(mode=reference["on_update"].upper())
         return column
-                    
-    def generate_column(self, column_data: Dict, table_pk: List[str], table_data: Dict) -> str:
+
+    def generate_column(
+        self, column_data: Dict, table_pk: List[str], table_data: Dict
+    ) -> str:
         """ method to generate full column defention """
         column = self.setup_column_attributes(
             column_data, table_pk, self.prepare_column_type(column_data), table_data
@@ -114,7 +125,9 @@ class ModelGenerator:
         column += ")\n"
         return column
 
-    def add_table_args(self, model: str, table: Dict, schema_global: bool = True) -> str:
+    def add_table_args(
+        self, model: str, table: Dict, schema_global: bool = True
+    ) -> str:
         statements = []
         if table.get("index"):
             for index in table["index"]:
@@ -135,8 +148,8 @@ class ModelGenerator:
                             name=f"'{index['index_name']}'",
                         )
                     )
-        if not schema_global and table['schema']:
-            statements.append(gt.schema.format(schema_name=table['schema']))
+        if not schema_global and table["schema"]:
+            statements.append(gt.schema.format(schema_name=table["schema"]))
         if statements:
             model += gt.table_args.format(statements=",".join(statements))
         return model
@@ -146,7 +159,7 @@ class ModelGenerator:
     ) -> str:
         """ method to prepare one Model defention - name & tablename  & columns """
         type_class = ""
-            
+
         if _type["properties"].get("values"):
             # mean this is a Enum
             _type["properties"]["values"].sort()
@@ -168,27 +181,24 @@ class ModelGenerator:
                     )
                     sub_type = "IntEnum"
                     self.enum_imports.add("IntEnum")
-            class_name = create_class_name(
-                _type["type_name"], singular, exceptions
-            )
-            type_class ="\n\n" + (
-                
-                gt.enum_class.format(
-                    class_name=class_name,
-                    type = sub_type
-                )
+            class_name = create_class_name(_type["type_name"], singular, exceptions)
+            type_class = (
+                "\n\n"
+                + (gt.enum_class.format(class_name=class_name, type=sub_type) + "\n")
                 + "\n"
-            ) + "\n" + type_class
+                + type_class
+            )
             self.custom_types[_type["type_name"]] = ("db.Enum", class_name)
         return type_class
 
     def generate_model(
-        self, 
-        table: Dict, 
-        singular: bool = False, 
+        self,
+        table: Dict,
+        singular: bool = False,
         exceptions: Optional[List] = None,
         schema_global: Optional[bool] = True,
-        *args, **kwargs
+        *args,
+        **kwargs,
     ) -> str:
         """ method to prepare one Model defention - name & tablename  & columns """
         model = ""
@@ -199,7 +209,12 @@ class ModelGenerator:
             )
             for column in table["columns"]:
                 model += self.generate_column(column, table["primary_key"], table)
-        if table.get("index") or table.get("alter") or table.get("checks") or not schema_global:
+        if (
+            table.get("index")
+            or table.get("alter")
+            or table.get("checks")
+            or not schema_global
+        ):
             model = self.add_table_args(model, table, schema_global)
         elif table.get("sequence_name"):
             # create sequence
