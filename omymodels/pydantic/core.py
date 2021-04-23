@@ -21,7 +21,7 @@ class ModelGenerator:
             column_str = pt.pydantic_optional_attr
         else:
             column_str = pt.pydantic_attr
-        
+
         if "." in column["type"]:
             _type = column["type"].split(".")[1]
         else:
@@ -42,10 +42,9 @@ class ModelGenerator:
         elif "[" in column["type"]:
             self.typing_imports.add("List")
             _type = f"List[{_type}]"
-        if _type == 'UUID':
+        if _type == "UUID":
             self.uuid_import = True
-        
-        print(_type)
+
         column_str = column_str.format(arg_name=column["name"], type=_type)
         if column["default"] and defaults_off is False:
             if column["type"].upper() in datetime_types:
@@ -59,13 +58,13 @@ class ModelGenerator:
         return column_str
 
     def generate_model(
-        self, 
-        table: Dict, 
-        singular: bool = False, 
-        exceptions: Optional[List] = None, 
+        self,
+        table: Dict,
+        singular: bool = False,
+        exceptions: Optional[List] = None,
         defaults_off: Optional[bool] = False,
         *args,
-        **kwargs
+        **kwargs,
     ) -> str:
         model = ""
         if table.get("table_name"):
@@ -79,10 +78,10 @@ class ModelGenerator:
                     table_name=table["table_name"],
                 )
             ) + "\n\n"
-            
+
             for column in table["columns"]:
                 model += self.generate_attr(column, defaults_off) + "\n"
-            
+
         return model
 
     def create_header(self, *args, **kwargs) -> str:
@@ -117,7 +116,7 @@ class ModelGenerator:
                         pt.enum_value.format(name=value.replace("'", ""), value=value)
                         + "\n"
                     )
-                    sub_type = 'str, Enum'
+                    sub_type = "str, Enum"
                     self.enum_imports.add("Enum")
                 else:
                     type_class += (
@@ -126,18 +125,16 @@ class ModelGenerator:
                         )
                         + "\n"
                     )
-                    sub_type = 'IntEnum'
+                    sub_type = "IntEnum"
                     self.enum_imports.add("IntEnum")
-            class_name = create_class_name(
-                    _type["type_name"], singular, exceptions
-                    
+            class_name = create_class_name(_type["type_name"], singular, exceptions)
+            type_class = (
+                "\n\n"
+                + (
+                    pt.enum_class.format(class_name=class_name, sub_type=sub_type)
+                    + "\n\n"
                 )
-            type_class = "\n\n" + (
-            pt.enum_class.format(
-                class_name=class_name,
-                sub_type=sub_type
+                + type_class
             )
-            + "\n\n"
-        ) + type_class
             self.custom_types[_type["type_name"]] = ("db.Enum", class_name)
         return type_class

@@ -2,10 +2,13 @@
 
 ![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels) 
 
+Big example you can find in example/ folder on the github: https://github.com/xnuinside/omymodels/tree/main/example
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for SQLAlchemy, GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
+O! My Models (omymodels) is a library to generate from SQL DDL Python Models for SQLAlchemy (models), SQLAlchemy Core (tables), GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
 
-By default method **create_models** generate GinoORM models, to get Pydantic models output use argument `models_type='pydantic'` ('sqlalchemy' for SQLAlchemy models. 'dataclass' for Dataclasses). A lot of examples in tests/.
+By default method **create_models** generate GinoORM models, to get Pydantic models output use the argument `models_type='pydantic'` ('sqlalchemy' for SQLAlchemy models; 'dataclass' for Dataclasses; 'sqlalchemy_core' for Sqlalchemy Core Tables).
+
+A lot of examples in tests/ - https://github.com/xnuinside/omymodels/tree/main/tests.
 
 For example,
 
@@ -265,8 +268,8 @@ And result will be this:
 
 ## TODO in next releases
 
-1. Generate SQLAlchemy Core Tables
-
+1. Add Sequence generation in Models (Gino, SQLAlchemy)
+2. Generate Tortoise ORM models (https://tortoise-orm.readthedocs.io/en/latest/)
 
 ## How to contribute
 
@@ -275,6 +278,12 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
+
+**v0.8.0**
+1. Fix --defaults-off flag in cli
+2. Added support for SQLAlchemy Core Tables generation
+3. Added examples folder in github `omymodels/example`
+4. Fix issue with ForeignKey in SQLAlchemy
 
 **v0.7.0**
 1. Added generation for SQLAlchemy models (defaults from DDLs are setting up as 'server_default')

@@ -44,7 +44,7 @@ def cli():
         default=False,
         help="Create without saving to the file. Only print result to the console.",
     )
-    
+
     omm_cli.add_argument(
         "--no-global-schema",
         action="store_true",
@@ -76,7 +76,8 @@ def main():
         dump=not args.no_dump,
         dump_path=args.target,
         models_type=args.models_type,
-        schema_global=not args.no_global_schema
+        schema_global=not args.no_global_schema,
+        defaults_off=args.defaults_off,
     )
     print(f"File with result was saved to {target_file} file")
 

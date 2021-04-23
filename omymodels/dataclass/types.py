@@ -1,6 +1,3 @@
-import datetime
-
-
 types_mapping = {
     "varchar": "str",
     "float": "int",
@@ -28,7 +25,6 @@ types_mapping = {
     "bigserial": "int",
     "uuid": "UUID",
 }
-
 
 
 datetime_types = ["TIMESTAMP", "DATETIME", "DATE"]
