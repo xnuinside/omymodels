@@ -1,7 +1,7 @@
 
 **v0.8.0**
 1. Fix --defaults-off flag in cli
-2. Added support for SQLAlchemy Core Tables generation
+2. Added support for SQLAlchemy Core Tables generating
 3. Added examples folder in github `omymodels/example`
 4. Fix issue with ForeignKey in SQLAlchemy
 
