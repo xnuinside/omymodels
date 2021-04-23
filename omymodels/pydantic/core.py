@@ -44,8 +44,7 @@ class ModelGenerator:
             _type = f"List[{_type}]"
         if _type == 'UUID':
             self.uuid_import = True
-        
-        print(_type)
+
         column_str = column_str.format(arg_name=column["name"], type=_type)
         if column["default"] and defaults_off is False:
             if column["type"].upper() in datetime_types:

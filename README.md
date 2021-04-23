@@ -265,8 +265,8 @@ And result will be this:
 
 ## TODO in next releases
 
-1. Generate SQLAlchemy Core Tables
-
+1. Add Sequence generation in Models (Gino, SQLAlchemy)
+2. Generate Tortoise ORM models (https://tortoise-orm.readthedocs.io/en/latest/)
 
 ## How to contribute
 
@@ -275,7 +275,6 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
-
 **v0.7.0**
 1. Added generation for SQLAlchemy models (defaults from DDLs are setting up as 'server_default')
 2. Added defaults for Pydantic models

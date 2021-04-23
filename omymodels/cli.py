@@ -76,7 +76,8 @@ def main():
         dump=not args.no_dump,
         dump_path=args.target,
         models_type=args.models_type,
-        schema_global=not args.no_global_schema
+        schema_global=not args.no_global_schema,
+        defaults_off=args.defaults_off
     )
     print(f"File with result was saved to {target_file} file")
 

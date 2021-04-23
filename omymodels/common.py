@@ -5,6 +5,7 @@ from omymodels.gino import core as g
 from omymodels.pydantic import core as p
 from omymodels.dataclass import core as d
 from omymodels.sqlalchemy import core as s
+from omymodels.sqlalchemy_core import core as sc
 
 
 def get_tables_information(
@@ -72,7 +73,8 @@ def generate_models_file(
         "gino": g, 
         "pydantic": p, 
         "dataclass": d,
-        "sqlalchemy": s
+        "sqlalchemy": s,
+        "sqlalchemy_core": sc
         }
     models_type = models.get(models_type)
     if not models_type:

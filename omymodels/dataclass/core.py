@@ -63,7 +63,6 @@ class ModelGenerator:
         **kwargs
     ) -> str:
         model = ""
-        print(defaults_off)
         if table.get("table_name"):
             # mean one model one table
             model += "\n\n"

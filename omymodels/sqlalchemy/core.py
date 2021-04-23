@@ -180,7 +180,6 @@ class ModelGenerator:
                 + "\n"
             ) + "\n" + type_class
             self.custom_types[_type["type_name"]] = ("sa.Enum", class_name)
-            print(_type["type_name"])
         return type_class
 
     def generate_model(
@@ -202,9 +201,6 @@ class ModelGenerator:
                 model += self.generate_column(column, table["primary_key"], table)
         if table.get("index") or table.get("alter") or table.get("checks") or not schema_global:
             model = self.add_table_args(model, table, schema_global)
-        elif table.get("sequence_name"):
-            # create sequence
-            ...
         return model
 
     def create_header(self, tables: List[Dict], schema: bool = False) -> str:
