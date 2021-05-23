@@ -14,7 +14,11 @@ O! My Models
 .. image:: https://img.shields.io/pypi/pyversions/omymodels
    :target: https://img.shields.io/pypi/pyversions/omymodels
    :alt: badge3
- 
+
+.. image:: https://github.com/xnuinside/omymodels/actions/workflows/main.yml/badge.svg
+   :target: https://github.com/xnuinside/omymodels/actions/workflows/main.yml/badge.svg
+   :alt: workflow
+
 
 Big example you can find in example/ folder on the github: https://github.com/xnuinside/omymodels/tree/main/example
 
@@ -288,11 +292,17 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 Changelog
 ---------
 
+**v0.8.1**
+
+
+#. Parser version is updated (fixed several issues with generation)
+#. Fixed issue with Unique Constraint after schema in SQLAlchemy Core
+
 **v0.8.0**
 
 
 #. Fix --defaults-off flag in cli
-#. Added support for SQLAlchemy Core Tables generation
+#. Added support for SQLAlchemy Core Tables generating
 #. Added examples folder in github ``omymodels/example``
 #. Fix issue with ForeignKey in SQLAlchemy
 

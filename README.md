@@ -277,10 +277,13 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
+**v0.8.1**
+1. Parser version is updated (fixed several issues with generation)
+2. Fixed issue with Unique Constraint after schema in SQLAlchemy Core
 
 **v0.8.0**
 1. Fix --defaults-off flag in cli
-2. Added support for SQLAlchemy Core Tables generation
+2. Added support for SQLAlchemy Core Tables generating
 3. Added examples folder in github `omymodels/example`
 4. Fix issue with ForeignKey in SQLAlchemy
 
