@@ -98,7 +98,7 @@ class ModelGenerator:
             header += pt.typing_imports.format(typing_types=", ".join(_imports)) + "\n"
         self.imports = list(self.imports)
         self.imports.sort()
-        header += pt.pydantic_imports.format(imports=", ".join(self.imports)) + "\n"
+        header += pt.pydantic_imports.format(imports=", ".join(self.imports))
         return header
 
     def generate_type(

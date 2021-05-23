@@ -3,7 +3,6 @@ postgresql_dialect_import = "from sqlalchemy.dialects.postgresql import {types}"
 sql_alchemy_func_import = "from sqlalchemy.sql import func"
 index_import = "from sqlalchemy import Index"
 
-gino_import = "from gino import Gino"
 unique_cons_import = "from sqlalchemy.schema import UniqueConstraint"
 enum_import = "from enum import {enums}"
 gino_init = "db = Gino()"

@@ -2,11 +2,11 @@ from omymodels import create_models
 
 
 def test_unique_and_index():
-    expected = """from sqlalchemy.dialects.postgresql import UUID
+    expected = """import sqlalchemy as sa
+from sqlalchemy import Table, Column, MetaData
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy import Index
-import sqlalchemy as sa
-from sqlalchemy import Table, Column, MetaData
 
 
 metadata = MetaData()
@@ -15,8 +15,8 @@ metadata = MetaData()
 table = Table("table", metadata,
         Column(UUID, primary_key=True),
         Column(sa.Integer()),
-        schema="prefix--schema-name",
-UniqueConstraint('one_more_id', name='table_pk'))
+        UniqueConstraint('one_more_id', name='table_pk'),
+        schema="prefix--schema-name")
 
 Index('table_ix2', table.c._id)"""
     ddl = """

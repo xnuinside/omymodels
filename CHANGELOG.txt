@@ -1,3 +1,6 @@
+**v0.8.1**
+1. Parser version is updated (fixed several issues with generation)
+2. Fixed issue with Unique Constraint after schema in SQLAlchemy Core
 
 **v0.8.0**
 1. Fix --defaults-off flag in cli

@@ -162,8 +162,7 @@ class ModelGenerator:
                 else:
                     self.constraint = True
                     unique_constr.append(
-                        ","
-                        + st.unique_index_template.format(
+                        st.unique_index_template.format(
                             columns=",".join(
                                 [f"'{name}'" for name in index["columns"]]
                             ),
@@ -261,7 +260,4 @@ class ModelGenerator:
             header += st.unique_cons_import + "\n"
         if self.im_index:
             header += st.index_import + "\n"
-        header += st.sqlalchemy_import + "\n\n"
-
-        header += st.sqlalchemy_init + "\n"
         return header

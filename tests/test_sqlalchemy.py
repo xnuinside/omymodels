@@ -2,11 +2,11 @@ from omymodels import create_models
 
 
 def test_with_enums():
-    expected = """from enum import Enum
+    expected = """import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+from enum import Enum
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
-import sqlalchemy as sa
-from sqlalchemy.ext.declarative import declarative_base
 
 
 Base = declarative_base()

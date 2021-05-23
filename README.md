@@ -208,7 +208,6 @@ for example:
     models = create_models(ddl, models_type='pydantic')
 ```
 
-
 ### Schema defenition
 
 There is 2 ways how to define schema in Models:

@@ -236,10 +236,4 @@ class ModelGenerator:
             header += st.unique_cons_import + "\n"
         if self.im_index:
             header += st.index_import + "\n"
-        header += st.sqlalchemy_import + "\n\n"
-        if schema and tables[0]["schema"]:
-            schema = tables[0]["schema"].replace('"', "")
-            header += st.sqlalchemy_init_schema.format(schema=schema) + "\n"
-        else:
-            header += st.sqlalchemy_init + "\n"
         return header

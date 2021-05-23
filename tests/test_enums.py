@@ -2,8 +2,8 @@ from omymodels import create_models
 
 
 def test_enums_gino():
-    expected = """from enum import Enum
-from gino import Gino
+    expected = """from gino import Gino
+from enum import Enum
 
 db = Gino(schema="schema--notification")
 
@@ -94,10 +94,10 @@ CREATE TABLE "material" (
 
 """
     result = create_models(ddl, schema_global=False)
-    expected = """from enum import Enum
+    expected = """from gino import Gino
+from enum import Enum
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
-from gino import Gino
 
 db = Gino()
 

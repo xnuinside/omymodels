@@ -239,10 +239,9 @@ class ModelGenerator:
             header += gt.unique_cons_import + "\n"
         if self.im_index:
             header += gt.index_import + "\n"
-        header += gt.gino_import + "\n\n"
         if schema and tables[0]["schema"]:
             schema = tables[0]["schema"].replace('"', "")
-            header += gt.gino_init_schema.format(schema=schema) + "\n"
+            header += "\n" + gt.gino_init_schema.format(schema=schema)
         else:
-            header += gt.gino_init + "\n"
+            header += "\n" + gt.gino_init
         return header

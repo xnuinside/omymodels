@@ -22,10 +22,10 @@ def test_unique_and_normal_index():
     
     
     """
-    expected = """from sqlalchemy.sql import func
+    expected = """from gino import Gino
+from sqlalchemy.sql import func
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy import Index
-from gino import Gino
 
 db = Gino(schema="schema_name")
 

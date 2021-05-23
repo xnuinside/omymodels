@@ -70,8 +70,8 @@ def test_correct_work_with_dash_simbols():
 
 """
     result = create_models(ddl)
-    expected = """from sqlalchemy.dialects.postgresql import ARRAY
-from gino import Gino
+    expected = """from gino import Gino
+from sqlalchemy.dialects.postgresql import ARRAY
 
 db = Gino()
 
@@ -99,8 +99,8 @@ CREATE TABLE "prefix--schema-name"."table" (
 );
 """
     result = create_models(ddl)
-    expected = """from sqlalchemy.dialects.postgresql import UUID
-from gino import Gino
+    expected = """from gino import Gino
+from sqlalchemy.dialects.postgresql import UUID
 
 db = Gino(schema="prefix--schema-name")
 
@@ -125,10 +125,10 @@ def test_schema_not_global():
         create index table_ix2 on "prefix--schema-name"."table" (_id) ;
     """
     result = create_models(ddl, schema_global=False)
-    expected = """from sqlalchemy.dialects.postgresql import UUID
+    expected = """from gino import Gino
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy import Index
-from gino import Gino
 
 db = Gino()
 
