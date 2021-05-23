@@ -14,7 +14,7 @@ def test_dataclasses():
         ,pay_by_quarter_3  integer ARRAY
         ) ;
     """
-    result = create_models(ddl, models_type='dataclass')
+    result = create_models(ddl, models_type="dataclass")
     expected = """from typing import List
 from dataclasses import dataclass
 
@@ -31,9 +31,8 @@ class Arrays2:
     pay_by_quarter_2: List[int] = None
     pay_by_quarter_3: List[int] = None
 """
-    
-    assert expected == result['code']
-    
+
+    assert expected == result["code"]
 
 
 def test_defaults_datetime():
@@ -49,7 +48,7 @@ CREATE table user_history (
     ) ;
 
 """
-    result = create_models(ddl, models_type='dataclass')
+    result = create_models(ddl, models_type="dataclass")
     expected = """import datetime
 from dataclasses import dataclass
 
@@ -65,7 +64,7 @@ class UserHistory:
     event_time: datetime.datetime = datetime.datetime.now()
     comment: str = 'none'
 """
-    assert expected == result['code']
+    assert expected == result["code"]
 
 
 def test_enums_in_dataclasses():
@@ -109,10 +108,8 @@ CREATE TABLE "material" (
   "created_at" timestamp DEFAULT (now()),
   "updated_at" timestamp
 );
-
-  
 """
-    result = create_models(ddl, models_type='dataclass')['code']
+    result = create_models(ddl, models_type="dataclass")["code"]
     assert expected == result
 
 
@@ -158,5 +155,5 @@ CREATE TABLE "material" (
   "updated_at" timestamp
 );
 """
-    result = create_models(ddl, models_type='dataclass', defaults_off=True)
-    assert expected == result['code']
+    result = create_models(ddl, models_type="dataclass", defaults_off=True)
+    assert expected == result["code"]

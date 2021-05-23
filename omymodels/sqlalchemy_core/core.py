@@ -17,32 +17,36 @@ class ModelGenerator:
         self.enum_imports = set()
         self.custom_types = {}
 
+    def add_custom_type(self, column_data_type: str, column_type: str) -> str:
+        column_type = self.custom_types.get(column_data_type, column_type)
+        if isinstance(column_type, tuple):
+            column_data_type = column_type[1]
+            column_type = column_type[0]
+        if column_type != type_not_found:
+            column_type = f"{column_type}({column_data_type})"
+            self.no_need_par = True
+        return column_type
+
     def prepare_column_type(self, column_data: Dict) -> str:
         """ extract and map column type """
-        no_need_par = False
+        self.no_need_par = False
         column_type = type_not_found
         if "." in column_data["type"]:
             column_data_type = column_data["type"].split(".")[1]
         else:
             column_data_type = column_data["type"].lower().split("[")[0]
         if self.custom_types:
-            column_type = self.custom_types.get(column_data_type, column_type)
-            if isinstance(column_type, tuple):
-                column_data_type = column_type[1]
-                column_type = column_type[0]
-            if column_type != type_not_found:
-                column_type = f"{column_type}({column_data_type})"
-                no_need_par = True
+            column_type = self.add_custom_type(column_data_type, column_type)
         if column_type == type_not_found:
             column_type = types_mapping.get(column_data_type, column_type)
         if column_type in postgresql_dialect:
             self.postgresql_dialect_cols.add(column_type)
         if column_type == "UUID":
-            no_need_par = True
+            self.no_need_par = True
         if column_data["size"]:
             column_type = self.add_size_to_column_type(column_data["size"])
-        elif no_need_par is False:
-            column_type += f"()"
+        elif self.no_need_par is False:
+            column_type += "()"
 
         if "[" in column_data["type"]:
             self.postgresql_dialect_cols.add("ARRAY")
@@ -58,7 +62,6 @@ class ModelGenerator:
 
     def column_default(self, column_data: Dict) -> str:
         """ extract & format column default values """
-
         if isinstance(column_data["default"], str):
             if column_data["type"].upper() in datetime_types:
                 if "now" in column_data["default"]:

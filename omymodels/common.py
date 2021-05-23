@@ -1,5 +1,6 @@
 import os
 import pathlib
+import sys
 from jinja2 import Template
 
 from typing import Optional, List, Dict
@@ -37,12 +38,13 @@ def create_models(
     schema_global: Optional[bool] = True,
     defaults_off: Optional[bool] = False,
 ):
-    """
-    models_type can be: "gino", "dataclass", "pydantic"
-
-    """
+    """ models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
     data = get_tables_information(ddl, ddl_path)
+    print(data)
+    if not data['tables'] or data['tables'][0].get("schema", 'NOT EXIST') == 'NOT EXIST':
+        print("No tables found in DDL. Exit.")
+        sys.exit(0)
     data = remove_quotes_from_strings(data)
     # generate code
     output = generate_models_file(
@@ -107,7 +109,7 @@ def render_jinja2_template(models_type: str, models: str, headers: str) -> str:
     with open(template_file) as t:
         template = t.read()
         template = Template(template)
-        params = {"models": models, 
+        params = {"models": models,
                   "headers": headers}
         return template.render(**params)
 

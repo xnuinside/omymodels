@@ -5,8 +5,8 @@ index_import = "from sqlalchemy import Index"
 
 sqlalchemy_import = """import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
-""" # +
-sqlalchemy_init = "Base = declarative_base()" # +
+"""
+sqlalchemy_init = "Base = declarative_base()"
 unique_cons_import = "from sqlalchemy.schema import UniqueConstraint"
 enum_import = "from enum import {enums}"
 

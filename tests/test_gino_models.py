@@ -17,7 +17,7 @@ CREATE TABLE "languages" (
   "id" int PRIMARY KEY,
   "code" varchar(2) NOT NULL,
   "name" varchar NOT NULL
-); 
+);
     """
 
     expected = """from gino import Gino
@@ -89,7 +89,7 @@ class Arrays2(db.Model):
     pay_by_quarter_2 = db.Column(ARRAY(db.Integer()))
     pay_by_quarter_3 = db.Column(ARRAY(db.Integer()))
 """
-    assert expected == result['code']
+    assert expected == result["code"]
 
 
 def test_support_uuid_and_schema_in_table_args():
@@ -111,11 +111,11 @@ class Table(db.Model):
 
     _id = db.Column(UUID, primary_key=True)
 """
-    assert expected == result['code']
+    assert expected == result["code"]
 
 
 def test_schema_not_global():
-    
+
     ddl = """
     CREATE TABLE "prefix--schema-name"."table" (
     _id uuid PRIMARY KEY,
@@ -141,18 +141,15 @@ class Table(db.Model):
     one_more_id = db.Column(db.Integer())
 
     __table_args__ = (
-                
     UniqueConstraint(one_more_id, name='table_pk'),
     Index('table_ix2', _id),
-    dict(schema="prefix--schema-name")
-            )
-
+    dict(schema="prefix--schema-name"))
 """
-    assert expected == result['code']
+    assert expected == result["code"]
 
 
 def test_foreign_key_from_alter():
-    
+
     ddl = """
 
     CREATE TABLE "materials" (
@@ -183,7 +180,7 @@ def test_foreign_key_from_alter():
     ALTER TABLE "material_attachments" ADD FOREIGN KEY ("attachment_id") REFERENCES "attachments" ("id");
 
     """
-    result = create_models(ddl, schema_global=False)['code']
+    result = create_models(ddl, schema_global=False)
     expected = """from gino import Gino
 
 db = Gino()
@@ -219,22 +216,22 @@ class Attachments(db.Model):
     created_at = db.Column(db.TIMESTAMP())
     updated_at = db.Column(db.TIMESTAMP())
 """
-    assert expected == result
+    assert expected == result['code']
 
 
 def test_foreign_key_from_column():
-    
+
     ddl = """
-    
+
     CREATE TABLE order_items (
         product_no integer REFERENCES products,
         order_id integer REFERENCES orders (id),
         type integer REFERENCES types (type_id),
         PRIMARY KEY (product_no, order_id)
     );
-    
-    """
-    result = create_models(ddl, schema_global=False)
+
+"""
+    result = create_models(ddl, schema_global=False)['code']
     expected = """from gino import Gino
 
 db = Gino()
@@ -248,6 +245,8 @@ class OrderItems(db.Model):
     order_id = db.Column(db.Integer(), db.ForeignKey('orders.id'), primary_key=True)
     type = db.Column(db.Integer(), db.ForeignKey('types.type_id'))
 """
+    assert expected == result
+
 
 def test_foreign_key_on_delete_on_update():
     expected = """from gino import Gino
@@ -265,14 +264,12 @@ class OrderItems(db.Model):
 """
 
     ddl = """
-    
     CREATE TABLE order_items (
         product_no integer REFERENCES products ON DELETE RESTRICT,
         order_id integer REFERENCES orders ON DELETE CASCADE,
         type integer REFERENCES types (type_id) ON UPDATE CASCADE ON DELETE RESTRICT,
         PRIMARY KEY (product_no, order_id)
     );
-    
     """
-    result = create_models(ddl, schema_global=False)['code']
+    result = create_models(ddl, schema_global=False)["code"]
     assert result == expected

@@ -27,9 +27,10 @@ Index('table_ix2', table.c._id)"""
         create unique index table_pk on "prefix--schema-name"."table" (one_more_id) ;
         create index table_ix2 on "prefix--schema-name"."table" (_id) ;
     """
-    
-    result = create_models(ddl, models_type='sqlalchemy_core')['code']
+
+    result = create_models(ddl, models_type="sqlalchemy_core")["code"]
     assert expected == result
+
 
 def test_foreign_keys_with_schema():
     expected = """import sqlalchemy as sa
@@ -64,7 +65,7 @@ attachments = Table("attachments", metadata,
 )
 """
     ddl = """
-   
+
     CREATE TABLE "materials" (
     "id" int PRIMARY KEY,
     "title" varchar NOT NULL,
@@ -92,6 +93,6 @@ attachments = Table("attachments", metadata,
 
     ALTER TABLE "schema_name"."material_attachments" ADD FOREIGN KEY ("attachment_id") REFERENCES "attachments" ("id");
 """
-    
-    result = create_models(ddl, models_type='sqlalchemy_core')['code']
+
+    result = create_models(ddl, models_type="sqlalchemy_core")["code"]
     assert result == expected

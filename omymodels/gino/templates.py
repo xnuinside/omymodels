@@ -26,10 +26,7 @@ index = ", index=True"
 # tables properties
 
 table_args = """
-    __table_args__ = (
-                {statements}
-            )
-
+    __table_args__ = ({statements})
 """
 fk_constraint_template = """
     {fk_name} = db.ForeignKeyConstraint(

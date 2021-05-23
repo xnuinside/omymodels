@@ -47,11 +47,9 @@ CREATE TABLE "material" (
   "created_at" timestamp DEFAULT (now()),
   "updated_at" timestamp
 );
-
-  
 """
-    result = create_models(ddl, models_type='sqlalchemy')
-    assert expected == result['code']
+    result = create_models(ddl, models_type="sqlalchemy")
+    assert expected == result["code"]
 
 
 def test_foreign_keys():
@@ -122,5 +120,5 @@ class Attachments(Base):
   ALTER TABLE "material_attachments" ADD FOREIGN KEY ("attachment_id") REFERENCES "attachments" ("id");
 
   """
-    result = create_models(ddl, models_type='sqlalchemy')['code']
+    result = create_models(ddl, models_type="sqlalchemy")["code"]
     assert result == expected
