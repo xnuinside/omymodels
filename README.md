@@ -1,6 +1,6 @@
 ## O! My Models
 
-![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels) 
+![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels)![workflow](https://github.com/xnuinside/omymodels/actions/workflows/main.yml/badge.svg)
 
 Big example you can find in example/ folder on the github: https://github.com/xnuinside/omymodels/tree/main/example
 
