@@ -1,4 +1,8 @@
 import os
+import pathlib
+import sys
+from jinja2 import Template
+
 from typing import Optional, List, Dict
 from simple_ddl_parser import DDLParser, parse_from_file
 from omymodels.gino import core as g
@@ -34,12 +38,13 @@ def create_models(
     schema_global: Optional[bool] = True,
     defaults_off: Optional[bool] = False,
 ):
-    """
-    models_type can be: "gino", "dataclass", "pydantic"
-
-    """
+    """ models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
     data = get_tables_information(ddl, ddl_path)
+    print(data)
+    if not data['tables'] or data['tables'][0].get("schema", 'NOT EXIST') == 'NOT EXIST':
+        print("No tables found in DDL. Exit.")
+        sys.exit(0)
     data = remove_quotes_from_strings(data)
     # generate code
     output = generate_models_file(
@@ -69,7 +74,7 @@ def generate_models_file(
     defaults_off: Optional[bool] = False,
 ) -> str:
     """ method to prepare full file with all Models &  """
-    output = ""
+    models_str = ""
     models = {
         "gino": g,
         "pydantic": p,
@@ -77,16 +82,16 @@ def generate_models_file(
         "sqlalchemy": s,
         "sqlalchemy_core": sc,
     }
-    models_type = models.get(models_type)
-    if not models_type:
+    model = models.get(models_type)
+    if not model:
         raise ValueError(
             f"Unsupported models type {models_type}. Possible variants: {models.keys()}"
         )
-    model_generator = getattr(models_type, "ModelGenerator")()
+    model_generator = getattr(model, "ModelGenerator")()
     for _type in data["types"]:
-        output += model_generator.generate_type(_type, singular, exceptions)
+        models_str += model_generator.generate_type(_type, singular, exceptions)
     for table in data["tables"]:
-        output += model_generator.generate_model(
+        models_str += model_generator.generate_model(
             table,
             singular,
             exceptions,
@@ -94,8 +99,19 @@ def generate_models_file(
             defaults_off=defaults_off,
         )
     header = model_generator.create_header(data["tables"], schema=schema_global)
-    output = header + output
+    output = render_jinja2_template(models_type, models_str, header)
     return output
+
+
+def render_jinja2_template(models_type: str, models: str, headers: str) -> str:
+    template_file = pathlib.Path(__file__).parent / models_type / f'{models_type}.jinja2'
+
+    with open(template_file) as t:
+        template = t.read()
+        template = Template(template)
+        params = {"models": models,
+                  "headers": headers}
+        return template.render(**params)
 
 
 def remove_quotes_from_strings(item: Dict) -> Dict:

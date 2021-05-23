@@ -68,6 +68,7 @@ class Arrays2(BaseModel):
     result = create_models(ddl, models_type="pydantic")["code"]
     assert expected == result
 
+
 def test_pydantic_uuid():
     expected = """from uuid import UUID
 from pydantic import BaseModel
@@ -82,8 +83,8 @@ CREATE TABLE "prefix--schema-name"."table" (
   _id uuid PRIMARY KEY,
 );
 """
-    result = create_models(ddl, models_type='pydantic')
-    assert expected == result['code']
+    result = create_models(ddl, models_type="pydantic")
+    assert expected == result["code"]
 
 
 def test_enums_lower_case_names_works():
@@ -128,10 +129,8 @@ CREATE TABLE "material" (
   "created_at" timestamp DEFAULT (now()),
   "updated_at" timestamp
 );
-
-  
 """
-    result = create_models(ddl, models_type='pydantic')['code']
+    result = create_models(ddl, models_type="pydantic")["code"]
     assert result == expected
 
 
@@ -152,10 +151,8 @@ CREATE TABLE "material" (
   "created_at" timestamp DEFAULT (now()),
   "updated_at" timestamp
 );
-
-  
 """
-    result = create_models(ddl, models_type='pydantic', defaults_off=True)['code']
+    result = create_models(ddl, models_type="pydantic", defaults_off=True)["code"]
     expected = """from enum import Enum
 import datetime
 from typing import Optional

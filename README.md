@@ -1,6 +1,6 @@
 ## O! My Models
 
-![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels) 
+![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels)![workflow](https://github.com/xnuinside/omymodels/actions/workflows/main.yml/badge.svg)
 
 Big example you can find in example/ folder on the github: https://github.com/xnuinside/omymodels/tree/main/example
 
@@ -208,7 +208,6 @@ for example:
     models = create_models(ddl, models_type='pydantic')
 ```
 
-
 ### Schema defenition
 
 There is 2 ways how to define schema in Models:
@@ -278,10 +277,13 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
+**v0.8.1**
+1. Parser version is updated (fixed several issues with generation)
+2. Fixed issue with Unique Constraint after schema in SQLAlchemy Core
 
 **v0.8.0**
 1. Fix --defaults-off flag in cli
-2. Added support for SQLAlchemy Core Tables generation
+2. Added support for SQLAlchemy Core Tables generating
 3. Added examples folder in github `omymodels/example`
 4. Fix issue with ForeignKey in SQLAlchemy
 

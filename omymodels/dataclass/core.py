@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict
 from omymodels.dataclass import templates as pt
-from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
+from omymodels.utils import create_class_name, enum_number_name_list
 from omymodels.dataclass.types import types_mapping, datetime_types
 
 
@@ -14,6 +14,13 @@ class ModelGenerator:
         self.custom_types = {}
         self.uuid_import = False
 
+    def add_custom_type(self, _type: str) -> str:
+        column_type = self.custom_types.get(_type, _type)
+        if isinstance(column_type, tuple):
+            _type = column_type[1]
+            column_type = column_type[0]
+        return _type
+
     def generate_attr(self, column: Dict, defaults_off: bool) -> str:
         column_str = pt.dataclass_attr
 
@@ -22,13 +29,7 @@ class ModelGenerator:
         else:
             _type = column["type"].lower().split("[")[0]
         if self.custom_types:
-            column_type = self.custom_types.get(_type, _type)
-
-            if isinstance(column_type, tuple):
-                _type = column_type[1]
-                column_type = column_type[0]
-            if column_type != type_not_found:
-                column_type = f"{column_type}({_type})"
+            _type = self.add_custom_type(_type)
         if _type == _type:
             _type = types_mapping.get(_type, _type)
         if _type.split("[")[0] in self.types_for_import:
@@ -42,19 +43,24 @@ class ModelGenerator:
             self.uuid_import = True
         column_str = column_str.format(arg_name=column["name"], type=_type)
         if column["default"] and defaults_off is False:
-            if column["type"].upper() in datetime_types:
-                if "now" in column["default"]:
-                    # todo: need to add other popular PostgreSQL & MySQL functions
-                    column["default"] = "datetime.datetime.now()"
-                elif "'" not in column["default"]:
-                    column["default"] = f"'{column['default']}'"
-            column_str += pt.dataclass_default_attr.format(default=column["default"])
+            column_str = self.add_column_default(column_str, column)
         if (
             column["nullable"]
             and not (column["default"] and not defaults_off)
             and not defaults_off
         ):
             column_str += pt.dataclass_default_attr.format(default=None)
+        return column_str
+
+    @staticmethod
+    def add_column_default(column_str: str, column: Dict) -> str:
+        if column["type"].upper() in datetime_types:
+            if "now" in column["default"]:
+                # todo: need to add other popular PostgreSQL & MySQL functions
+                column["default"] = "datetime.datetime.now()"
+            elif "'" not in column["default"]:
+                column["default"] = f"'{column['default']}'"
+        column_str += pt.dataclass_default_attr.format(default=column["default"])
         return column_str
 
     def generate_model(
@@ -103,7 +109,7 @@ class ModelGenerator:
             _imports = list(self.typing_imports)
             _imports.sort()
             header += pt.typing_imports.format(typing_types=", ".join(_imports)) + "\n"
-        header += pt.dataclass_imports + "\n"
+        header += pt.dataclass_imports
         return header
 
     def generate_type(

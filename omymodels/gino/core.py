@@ -13,33 +13,37 @@ class ModelGenerator:
         self.enum_imports = set()
         self.custom_types = {}
 
+    def add_custom_type(self, column_data_type: str, column_type: str) -> str:
+        column_type = self.custom_types.get(column_data_type, column_type)
+        if isinstance(column_type, tuple):
+            column_data_type = column_type[1]
+            column_type = column_type[0]
+        if column_type != type_not_found:
+            column_type = f"{column_type}({column_data_type})"
+            self.no_need_par = True
+        return column_type
+
     def prepare_column_type(self, column_data: Dict) -> str:
-        no_need_par = False
+        self.no_need_par = False
         column_type = type_not_found
         if "." in column_data["type"]:
             column_data_type = column_data["type"].split(".")[1]
         else:
             column_data_type = column_data["type"].lower().split("[")[0]
         if self.custom_types:
-            column_type = self.custom_types.get(column_data_type, column_type)
-            if isinstance(column_type, tuple):
-                column_data_type = column_type[1]
-                column_type = column_type[0]
-            if column_type != type_not_found:
-                column_type = f"{column_type}({column_data_type})"
-                no_need_par = True
+            column_type = self.add_custom_type(column_data_type, column_type)
         if column_type == type_not_found:
             column_type = types_mapping.get(column_data_type, column_type)
+        if column_type == "UUID":
+            self.no_need_par = True
+
         if column_type in postgresql_dialect:
             self.postgresql_dialect_cols.add(column_type)
-        if column_type == "UUID":
-            no_need_par = True
+
         if column_data["size"]:
-            if isinstance(column_data["size"], int):
-                column_type += f"({column_data['size']})"
-            elif isinstance(column_data["size"], tuple):
-                column_type += f"({','.join([str(x) for x in column_data['size']])})"
-        elif no_need_par is False:
+            column_type = self.set_column_size(column_type, column_data)
+
+        elif self.no_need_par is False:
             column_type += "()"
 
         if "[" in column_data["type"]:
@@ -49,6 +53,14 @@ class ModelGenerator:
             column_name=column_data["name"], column_type=column_type
         )
         return column
+
+    @staticmethod
+    def set_column_size(column_type, column_data):
+        if isinstance(column_data["size"], int):
+            column_type += f"({column_data['size']})"
+        elif isinstance(column_data["size"], tuple):
+            column_type += f"({','.join([str(x) for x in column_data['size']])})"
+        return column_type
 
     def prepare_column_default(self, column_data: Dict, column: str) -> str:
         if isinstance(column_data["default"], str):
@@ -119,8 +131,10 @@ class ModelGenerator:
         self, column_data: Dict, table_pk: List[str], table_data: Dict
     ) -> str:
         """ method to generate full column defention """
+        column_type = self.prepare_column_type(column_data)
+
         column = self.setup_column_attributes(
-            column_data, table_pk, self.prepare_column_type(column_data), table_data
+            column_data, table_pk, column_type, table_data
         )
         column += ")\n"
         return column
@@ -239,10 +253,9 @@ class ModelGenerator:
             header += gt.unique_cons_import + "\n"
         if self.im_index:
             header += gt.index_import + "\n"
-        header += gt.gino_import + "\n\n"
         if schema and tables[0]["schema"]:
             schema = tables[0]["schema"].replace('"', "")
-            header += gt.gino_init_schema.format(schema=schema) + "\n"
+            header += "\n" + gt.gino_init_schema.format(schema=schema)
         else:
-            header += gt.gino_init + "\n"
+            header += "\n" + gt.gino_init
         return header

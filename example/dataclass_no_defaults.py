@@ -6,8 +6,8 @@ from dataclasses import dataclass
 
 class MaterialType(str, Enum):
 
-    article = 'article'
-    video = 'video'
+    article = "article"
+    video = "video"
 
 
 @dataclass

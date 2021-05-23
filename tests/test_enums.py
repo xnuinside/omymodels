@@ -2,8 +2,8 @@ from omymodels import create_models
 
 
 def test_enums_gino():
-    expected = """from enum import Enum
-from gino import Gino
+    expected = """from gino import Gino
+from enum import Enum
 
 db = Gino(schema="schema--notification")
 
@@ -37,18 +37,17 @@ def test_pydantic_models():
     ddl = """
     CREATE TYPE "schema--notification"."ContentType" AS
     ENUM ('TEXT','MARKDOWN','HTML');
-    
+
     CREATE TYPE "schema--notification"."Period" AS
     ENUM (0, 1, 2);
-    
+
     CREATE TABLE "schema--notification"."notification" (
         content_type "schema--notification"."ContentType",
         period "schema--notification"."Period"
     );
     """
-    result = create_models(ddl, models_type='pydantic')
-    expected = """
-    from enum import IntEnum,Enum
+    result = create_models(ddl, models_type="pydantic")
+    expected = """from enum import Enum, IntEnum
 from typing import Optional
 from pydantic import BaseModel
 
@@ -72,10 +71,12 @@ class Notification(BaseModel):
     content_type: Optional[ContentType]
     period: Optional[Period]
 """
+    assert expected == result['code']
+
 
 def test_enum_works_with_lower_case():
     ddl = """
-  
+
 CREATE TYPE "material_type" AS ENUM (
   'video',
   'article'
@@ -94,10 +95,10 @@ CREATE TABLE "material" (
 
 """
     result = create_models(ddl, schema_global=False)
-    expected = """from enum import Enum
+    expected = """from gino import Gino
+from enum import Enum
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
-from gino import Gino
 
 db = Gino()
 
@@ -121,5 +122,4 @@ class Material(db.Model):
     created_at = db.Column(db.TIMESTAMP(), server_default=func.now())
     updated_at = db.Column(db.TIMESTAMP())
 """
-    assert result['code'] == expected
-
+    assert result["code"] == expected

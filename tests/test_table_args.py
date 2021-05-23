@@ -1,10 +1,8 @@
-import os
 from omymodels import create_models
 
 
 def test_unique_and_normal_index():
     ddl = """
-    
     drop table if exists schema_name.approver_history ;
     CREATE table schema_name.approver_history (
         runid                 decimal(21) not null
@@ -17,15 +15,11 @@ def test_unique_and_normal_index():
     ) ;
     create unique index approver_history_pk on schema_name.approver_history (runid) ;
     create index approver_history_ix2 on schema_name.approver_history (job_id) ;
-    create index approver_history_ix3 on schema_name.approver_history (id) ;
-
-    
-    
-    """
-    expected = """from sqlalchemy.sql import func
+    create index approver_history_ix3 on schema_name.approver_history (id) ;"""
+    expected = """from gino import Gino
+from sqlalchemy.sql import func
 from sqlalchemy.schema import UniqueConstraint
 from sqlalchemy import Index
-from gino import Gino
 
 db = Gino(schema="schema_name")
 
@@ -43,12 +37,9 @@ class ApproverHistory(db.Model):
     deny_reason = db.Column(db.String(1000), nullable=False, server_default='none')
 
     __table_args__ = (
-                
     UniqueConstraint(runid, name='approver_history_pk'),
     Index('approver_history_ix2', job_id),
-    Index('approver_history_ix3', id)
-            )
-
+    Index('approver_history_ix3', id))
 """
     gino_models = create_models(ddl=ddl, dump=False)["code"]
     assert expected == gino_models

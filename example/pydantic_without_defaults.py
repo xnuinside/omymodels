@@ -6,8 +6,8 @@ from pydantic import BaseModel, Json
 
 class MaterialType(str, Enum):
 
-    article = 'article'
-    video = 'video'
+    article = "article"
+    video = "video"
 
 
 class Material(BaseModel):

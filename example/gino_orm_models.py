@@ -1,6 +1,6 @@
 from enum import Enum
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import JSON,ARRAY
+from sqlalchemy.dialects.postgresql import JSON, ARRAY
 from gino import Gino
 
 db = Gino()
@@ -8,13 +8,13 @@ db = Gino()
 
 class MaterialType(Enum):
 
-    article = 'article'
-    video = 'video'
+    article = "article"
+    video = "video"
 
 
 class Material(db.Model):
 
-    __tablename__ = 'material'
+    __tablename__ = "material"
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
     title = db.Column(db.String(), nullable=False)
@@ -28,7 +28,7 @@ class Material(db.Model):
 
 class Author(db.Model):
 
-    __tablename__ = 'author'
+    __tablename__ = "author"
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
     name = db.Column(db.String())
@@ -37,23 +37,23 @@ class Author(db.Model):
 
 class MaterialAuthors(db.Model):
 
-    __tablename__ = 'material_authors'
+    __tablename__ = "material_authors"
 
-    category = db.Column(db.Integer(), db.ForeignKey('author.id'))
-    material = db.Column(db.Integer(), db.ForeignKey('material.id'))
+    category = db.Column(db.Integer(), db.ForeignKey("author.id"))
+    material = db.Column(db.Integer(), db.ForeignKey("material.id"))
 
 
 class MaterialPlatforms(db.Model):
 
-    __tablename__ = 'material_platforms'
+    __tablename__ = "material_platforms"
 
-    category = db.Column(db.Integer(), db.ForeignKey('platform.id'))
-    material = db.Column(db.Integer(), db.ForeignKey('material.id'))
+    category = db.Column(db.Integer(), db.ForeignKey("platform.id"))
+    material = db.Column(db.Integer(), db.ForeignKey("material.id"))
 
 
 class Platform(db.Model):
 
-    __tablename__ = 'platform'
+    __tablename__ = "platform"
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
     name = db.Column(db.String(), nullable=False)
@@ -62,15 +62,15 @@ class Platform(db.Model):
 
 class MaterialCategories(db.Model):
 
-    __tablename__ = 'material_categories'
+    __tablename__ = "material_categories"
 
-    category = db.Column(db.Integer(), db.ForeignKey('category.id'))
-    material = db.Column(db.Integer(), db.ForeignKey('material.id'))
+    category = db.Column(db.Integer(), db.ForeignKey("category.id"))
+    material = db.Column(db.Integer(), db.ForeignKey("material.id"))
 
 
 class Category(db.Model):
 
-    __tablename__ = 'category'
+    __tablename__ = "category"
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
     name = db.Column(db.String(), nullable=False)
@@ -81,9 +81,9 @@ class Category(db.Model):
 
 class ContentFilters(db.Model):
 
-    __tablename__ = 'content_filters'
+    __tablename__ = "content_filters"
 
-    category = db.Column(db.Integer(), db.ForeignKey('category.id'))
+    category = db.Column(db.Integer(), db.ForeignKey("category.id"))
     channels = db.Column(ARRAY(db.String()))
     words = db.Column(ARRAY(db.String()))
     created_at = db.Column(db.TIMESTAMP(), server_default=func.now())
