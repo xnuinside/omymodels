@@ -4,12 +4,15 @@ import sys
 from jinja2 import Template
 
 from typing import Optional, List, Dict
+
+from typing_extensions import final
 from simple_ddl_parser import DDLParser, parse_from_file
 from omymodels.gino import core as g
 from omymodels.pydantic import core as p
 from omymodels.dataclass import core as d
 from omymodels.sqlalchemy import core as s
 from omymodels.sqlalchemy_core import core as sc
+from omymodels.meta_model import TableMeta, Column, Type
 
 
 def get_tables_information(
@@ -41,11 +44,10 @@ def create_models(
     """ models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
     data = get_tables_information(ddl, ddl_path)
-    print(data)
-    if not data['tables'] or data['tables'][0].get("schema", 'NOT EXIST') == 'NOT EXIST':
-        print("No tables found in DDL. Exit.")
-        sys.exit(0)
     data = remove_quotes_from_strings(data)
+    data = convert_ddl_to_models(data)
+    if not data['tables']:
+        sys.exit(0)
     # generate code
     output = generate_models_file(
         data, singular, naming_exceptions, models_type, schema_global, defaults_off
@@ -55,6 +57,19 @@ def create_models(
     else:
         print(output)
     return {"metadata": data, "code": output}
+
+
+def convert_ddl_to_models(data):
+    final_data = {'tables': [], 'types': []}
+    tables = []
+    for table in data['tables']:
+        tables.append(TableMeta(**table))
+    final_data['tables'] = tables 
+    _types = []   
+    for _type in data['types']:
+        _types.append(Type(**_type))
+    final_data['types'] = _types    
+    return final_data
 
 
 def save_models_to_file(models: str, dump_path: str) -> None:
@@ -98,7 +113,8 @@ def generate_models_file(
             schema_global=schema_global,
             defaults_off=defaults_off,
         )
-    header = model_generator.create_header(data["tables"], schema=schema_global)
+    header = model_generator.create_header(
+        data["tables"], schema=schema_global)
     output = render_jinja2_template(models_type, models_str, header)
     return output
 

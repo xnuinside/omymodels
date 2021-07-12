@@ -6,6 +6,7 @@ from omymodels.sqlalchemy_core.types import (
     datetime_types,
 )
 from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
+from omymodels.meta_model import Column
 
 
 class ModelGenerator:
@@ -31,10 +32,10 @@ class ModelGenerator:
         """ extract and map column type """
         self.no_need_par = False
         column_type = type_not_found
-        if "." in column_data["type"]:
-            column_data_type = column_data["type"].split(".")[1]
+        if "." in column_data.type:
+            column_data_type = column_data.type.split(".")[1]
         else:
-            column_data_type = column_data["type"].lower().split("[")[0]
+            column_data_type = column_data.type.lower().split("[")[0]
         if self.custom_types:
             column_type = self.add_custom_type(column_data_type, column_type)
         if column_type == type_not_found:
@@ -43,12 +44,12 @@ class ModelGenerator:
             self.postgresql_dialect_cols.add(column_type)
         if column_type == "UUID":
             self.no_need_par = True
-        if column_data["size"]:
-            column_type = self.add_size_to_column_type(column_data["size"])
+        if column_data.size:
+            column_type = self.add_size_to_column_type(column_data.size)
         elif self.no_need_par is False:
             column_type += "()"
 
-        if "[" in column_data["type"]:
+        if "[" in column_data.type:
             self.postgresql_dialect_cols.add("ARRAY")
             column_type = f"ARRAY({column_type})"
         return column_type
@@ -62,20 +63,20 @@ class ModelGenerator:
 
     def column_default(self, column_data: Dict) -> str:
         """ extract & format column default values """
-        if isinstance(column_data["default"], str):
-            if column_data["type"].upper() in datetime_types:
-                if "now" in column_data["default"]:
+        if isinstance(column_data.default, str):
+            if column_data.type.upper() in datetime_types:
+                if "now" in column_data.default.lower():
                     # todo: need to add other popular PostgreSQL & MySQL functions
-                    column_data["default"] = "func.now()"
+                    column_data.default = "func.now()"
                     self.state.add("func")
-                elif "'" not in column_data["default"]:
-                    column_data["default"] = f"'{column_data['default']}'"
+                elif "'" not in column_data.default:
+                    column_data.default = f"'{column_data.default}'"
             else:
-                if "'" not in column_data["default"]:
-                    column_data["default"] = f"'{column_data['default']}'"
+                if "'" not in column_data.default:
+                    column_data.default = f"'{column_data.default}'"
         else:
-            column_data["default"] = f"'{str(column_data['default'])}'"
-        default_property = st.default.format(default=column_data["default"])
+            column_data.default = f"'{str(column_data.default)}'"
+        default_property = st.default.format(default=column_data.default)
         return default_property
 
     def get_column_attributes(
@@ -83,33 +84,33 @@ class ModelGenerator:
     ) -> List[str]:
         properties = []
         if (
-            column_data["type"].lower() == "serial"
-            or column_data["type"].lower() == "bigserial"
+            column_data.type.lower() == "serial"
+            or column_data.type.lower() == "bigserial"
         ):
             properties.append(st.autoincrement)
-        if column_data["references"]:
+        if column_data.references:
             properties.append(
-                self.column_reference(column_data["name"], column_data["references"])
+                self.column_reference(column_data.name, column_data.references)
             )
-        if not column_data["nullable"] and not column_data["name"] in table_pk:
+        if not column_data.nullable and not column_data.name in table_pk:
             properties.append(st.required)
-        if column_data["default"] is not None:
+        if column_data.default is not None:
             properties.append(self.column_default(column_data))
-        if column_data["name"] in table_pk:
+        if column_data.name in table_pk:
             properties.append(st.pk_template)
-        if column_data["unique"]:
+        if column_data.unique:
             properties.append(st.unique)
-        if "columns" in table_data["alter"]:
-            for alter_column in table_data["alter"]["columns"]:
+        if "columns" in table_data.alter:
+            for alter_column in table_data.alter["columns"]:
                 if (
-                    alter_column["name"] == column_data["name"]
+                    alter_column['name'] == column_data.name
                     and not alter_column["constraint_name"]
                     and alter_column["references"]
-                    and not column_data["references"]
+                    and not column_data.references
                 ):
                     properties.append(
                         self.column_reference(
-                            alter_column["name"], alter_column["references"]
+                            alter_column['name'], alter_column["references"]
                         )
                     )
         return properties
@@ -127,7 +128,7 @@ class ModelGenerator:
         return ref_property
 
     def generate_column(
-        self, column_data: Dict, table_pk: List[str], table_data: Dict
+        self, column_data: Column, table_pk: List[str], table_data: Dict
     ) -> str:
         """ method to generate full column defention """
         column_type = self.prepare_column_type(column_data)
@@ -136,7 +137,7 @@ class ModelGenerator:
         )
 
         column = st.column_template.format(
-            column_name=column_data["name"],
+            column_name=column_data.name,
             column_type=column_type,
             properties=properties,
         )
@@ -147,8 +148,8 @@ class ModelGenerator:
     ) -> str:
         indexes = []
         unique_constr = []
-        if table.get("index"):
-            for index in table["index"]:
+        if table.indexes:
+            for index in table.indexes:
                 if not index["unique"]:
                     self.im_index = True
                     indexes.append(
@@ -180,10 +181,10 @@ class ModelGenerator:
         """ method to prepare one Model defention - name & tablename  & columns """
         type_class = ""
 
-        if _type["properties"].get("values"):
+        if _type.properties.get("values"):
             # mean this is a Enum
-            _type["properties"]["values"].sort()
-            for num, value in enumerate(_type["properties"]["values"]):
+            _type.properties["values"].sort()
+            for num, value in enumerate(_type.properties["values"]):
                 _value = value.replace("'", "")
                 if not _value.isnumeric():
                     type_class += (
@@ -201,48 +202,47 @@ class ModelGenerator:
                     )
                     sub_type = "IntEnum"
                     self.enum_imports.add("IntEnum")
-            class_name = create_class_name(_type["type_name"], singular, exceptions)
+            class_name = create_class_name(_type.name, singular, exceptions)
             type_class = (
                 "\n\n"
                 + (st.enum_class.format(class_name=class_name, type=sub_type) + "\n")
                 + "\n"
                 + type_class
             )
-            self.custom_types[_type["type_name"]] = ("sa.Enum", class_name)
+            self.custom_types[_type.name] = ("sa.Enum", class_name)
         return type_class
 
     def generate_model(self, data: Dict, *args, **kwargs) -> str:
         """ method to prepare one Model defention - name & tablename  & columns """
         model = ""
-        if data.get("table_name"):
-            # mean this is a table
-            table = data
-            columns = ""
+        # mean this is a table
+        table = data
+        columns = ""
 
-            for column in table["columns"]:
-                columns += self.generate_column(column, table["primary_key"], table)
+        for column in table.columns:
+            columns += self.generate_column(column, table.primary_key, table)
 
-            table_var_name = table["table_name"].replace("-", "_")
+        table_var_name = table.name.replace("-", "_")
 
-            indexes = []
-            constraints = None
+        indexes = []
+        constraints = None
 
-            if table.get("index") or table.get("alter") or table.get("checks"):
-                indexes, constraints = self.get_indexes_and_unique(
-                    model, table, table_var_name
-                )
-
-            model = st.table_template.format(
-                table_var=table_var_name,
-                table_name=table["table_name"],
-                columns=columns,
-                schema=""
-                if not table.get("schema")
-                else st.schema.format(schema_name=table["schema"]),
-                constraints=", ".join(constraints) if constraints else "",
+        if table.indexes or table.alter or table.checks:
+            indexes, constraints = self.get_indexes_and_unique(
+                model, table, table_var_name
             )
-            for index in indexes:
-                model += index
+
+        model = st.table_template.format(
+            table_var=table_var_name,
+            table_name=table.name,
+            columns=columns,
+            schema=""
+            if not table.table_schema
+            else st.schema.format(schema_name=table.table_schema),
+            constraints=", ".join(constraints) if constraints else "",
+        )
+        for index in indexes:
+            model += index
         return model
 
     def create_header(self, tables: List[Dict], schema: bool = False) -> str:

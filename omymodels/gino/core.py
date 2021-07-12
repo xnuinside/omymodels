@@ -26,10 +26,10 @@ class ModelGenerator:
     def prepare_column_type(self, column_data: Dict) -> str:
         self.no_need_par = False
         column_type = type_not_found
-        if "." in column_data["type"]:
-            column_data_type = column_data["type"].split(".")[1]
+        if "." in column_data.type:
+            column_data_type = column_data.type.split(".")[1]
         else:
-            column_data_type = column_data["type"].lower().split("[")[0]
+            column_data_type = column_data.type.lower().split("[")[0]
         if self.custom_types:
             column_type = self.add_custom_type(column_data_type, column_type)
         if column_type == type_not_found:
@@ -40,43 +40,43 @@ class ModelGenerator:
         if column_type in postgresql_dialect:
             self.postgresql_dialect_cols.add(column_type)
 
-        if column_data["size"]:
+        if column_data.size:
             column_type = self.set_column_size(column_type, column_data)
 
         elif self.no_need_par is False:
             column_type += "()"
 
-        if "[" in column_data["type"]:
+        if "[" in column_data.type:
             self.postgresql_dialect_cols.add("ARRAY")
             column_type = f"ARRAY({column_type})"
         column = gt.column_template.format(
-            column_name=column_data["name"], column_type=column_type
+            column_name=column_data.name, column_type=column_type
         )
         return column
 
     @staticmethod
     def set_column_size(column_type, column_data):
-        if isinstance(column_data["size"], int):
-            column_type += f"({column_data['size']})"
-        elif isinstance(column_data["size"], tuple):
-            column_type += f"({','.join([str(x) for x in column_data['size']])})"
+        if isinstance(column_data.size, int):
+            column_type += f"({column_data.size})"
+        elif isinstance(column_data.size, tuple):
+            column_type += f"({','.join([str(x) for x in column_data.size])})"
         return column_type
 
     def prepare_column_default(self, column_data: Dict, column: str) -> str:
-        if isinstance(column_data["default"], str):
-            if column_data["type"].upper() in datetime_types:
-                if "now" in column_data["default"]:
+        if isinstance(column_data.default, str):
+            if column_data.type.upper() in datetime_types:
+                if "now" in column_data.default.lower():
                     # todo: need to add other popular PostgreSQL & MySQL functions
-                    column_data["default"] = "func.now()"
+                    column_data.default = "func.now()"
                     self.state.add("func")
-                elif "'" not in column_data["default"]:
-                    column_data["default"] = f"'{column_data['default']}'"
+                elif "'" not in column_data.default:
+                    column_data.default = f"'{column_data.default}'"
             else:
-                if "'" not in column_data["default"]:
-                    column_data["default"] = f"'{column_data['default']}'"
+                if "'" not in column_data.default:
+                    column_data.default = f"'{column_data.default}'"
         else:
-            column_data["default"] = f"'{str(column_data['default'])}'"
-        column += gt.default.format(default=column_data["default"])
+            column_data.default = f"'{str(column_data.default)}'"
+        column += gt.default.format(default=column_data.default)
         return column
 
     def setup_column_attributes(
@@ -84,33 +84,33 @@ class ModelGenerator:
     ) -> str:
 
         if (
-            column_data["type"].lower() == "serial"
-            or column_data["type"].lower() == "bigserial"
+            column_data.type.lower() == "serial"
+            or column_data.type.lower() == "bigserial"
         ):
             column += gt.autoincrement
-        if column_data["references"]:
+        if column_data.references:
             column = self.add_reference_to_the_column(
-                column_data["name"], column, column_data["references"]
+                column_data.name, column, column_data.references
             )
-        if not column_data["nullable"] and not column_data["name"] in table_pk:
+        if not column_data.nullable and not column_data.name in table_pk:
             column += gt.required
-        if column_data["default"] is not None:
+        if column_data.default is not None:
             column = self.prepare_column_default(column_data, column)
-        if column_data["name"] in table_pk:
+        if column_data.name in table_pk:
             column += gt.pk_template
-        if column_data["unique"]:
+        if column_data.unique:
             column += gt.unique
 
-        if "columns" in table_data["alter"]:
-            for alter_column in table_data["alter"]["columns"]:
+        if "columns" in table_data.alter:
+            for alter_column in table_data.alter["columns"]:
                 if (
-                    alter_column["name"] == column_data["name"]
+                    alter_column['name'] == column_data.name
                     and not alter_column["constraint_name"]
                     and alter_column["references"]
                 ):
 
                     column = self.add_reference_to_the_column(
-                        alter_column["name"], column, alter_column["references"]
+                        alter_column['name'], column, alter_column["references"]
                     )
         return column
 
@@ -143,8 +143,8 @@ class ModelGenerator:
         self, model: str, table: Dict, schema_global: bool = True
     ) -> str:
         statements = []
-        if table.get("index"):
-            for index in table["index"]:
+        if table.indexes:
+            for index in table.indexes:
 
                 if not index["unique"]:
                     self.im_index = True
@@ -162,8 +162,8 @@ class ModelGenerator:
                             name=f"'{index['index_name']}'",
                         )
                     )
-        if not schema_global and table["schema"]:
-            statements.append(gt.schema.format(schema_name=table["schema"]))
+        if not schema_global and table.table_schema:
+            statements.append(gt.schema.format(schema_name=table.table_schema))
         if statements:
             model += gt.table_args.format(statements=",".join(statements))
         return model
@@ -174,10 +174,10 @@ class ModelGenerator:
         """ method to prepare one Model defention - name & tablename  & columns """
         type_class = ""
 
-        if _type["properties"].get("values"):
+        if _type.properties.get("values"):
             # mean this is a Enum
-            _type["properties"]["values"].sort()
-            for num, value in enumerate(_type["properties"]["values"]):
+            _type.properties["values"].sort()
+            for num, value in enumerate(_type.properties["values"]):
                 _value = value.replace("'", "")
                 if not _value.isnumeric():
                     type_class += (
@@ -195,14 +195,14 @@ class ModelGenerator:
                     )
                     sub_type = "IntEnum"
                     self.enum_imports.add("IntEnum")
-            class_name = create_class_name(_type["type_name"], singular, exceptions)
+            class_name = create_class_name(_type.name, singular, exceptions)
             type_class = (
                 "\n\n"
                 + (gt.enum_class.format(class_name=class_name, type=sub_type) + "\n")
                 + "\n"
                 + type_class
             )
-            self.custom_types[_type["type_name"]] = ("db.Enum", class_name)
+            self.custom_types[_type.name] = ("db.Enum", class_name)
         return type_class
 
     def generate_model(
@@ -216,23 +216,20 @@ class ModelGenerator:
     ) -> str:
         """ method to prepare one Model defention - name & tablename  & columns """
         model = ""
-        if table.get("table_name"):
-            model = gt.model_template.format(
-                model_name=create_class_name(table["table_name"], singular, exceptions),
-                table_name=table["table_name"],
-            )
-            for column in table["columns"]:
-                model += self.generate_column(column, table["primary_key"], table)
+        model = gt.model_template.format(
+            model_name=create_class_name(table.name, singular, exceptions),
+            table_name=table.name,
+        )
+        for column in table.columns:
+            model += self.generate_column(column, table.primary_key, table)
         if (
-            table.get("index")
-            or table.get("alter")
-            or table.get("checks")
+            table.indexes
+            or table.alter
+            or table.checks
             or not schema_global
         ):
             model = self.add_table_args(model, table, schema_global)
-        elif table.get("sequence_name"):
-            # create sequence
-            ...
+        # create sequence
         return model
 
     def create_header(self, tables: List[Dict], schema: bool = False) -> str:
@@ -253,8 +250,8 @@ class ModelGenerator:
             header += gt.unique_cons_import + "\n"
         if self.im_index:
             header += gt.index_import + "\n"
-        if schema and tables[0]["schema"]:
-            schema = tables[0]["schema"].replace('"', "")
+        if schema and tables[0].table_schema:
+            schema = tables[0].table_schema.replace('"', "")
             header += "\n" + gt.gino_init_schema.format(schema=schema)
         else:
             header += "\n" + gt.gino_init
