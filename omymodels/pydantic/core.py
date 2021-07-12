@@ -78,9 +78,7 @@ class ModelGenerator:
         model += "\n\n"
         model += (
             pt.pydantic_class.format(
-                class_name=create_class_name(
-                    table.name, singular, exceptions
-                ),
+                class_name=create_class_name(table.name, singular, exceptions),
                 table_name=table.name,
             )
         ) + "\n\n"

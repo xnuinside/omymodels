@@ -37,7 +37,7 @@ class ModelGenerator:
             self.typing_imports.add(_type.split("[")[0])
         elif "datetime" in _type:
             self.datetime_import = True
-            self.additional_imports.add('field')
+            self.additional_imports.add("field")
         elif "[" in column.type:
             self.typing_imports.add("List")
             _type = f"List[{_type}]"
@@ -75,14 +75,12 @@ class ModelGenerator:
         **kwargs,
     ) -> str:
         model = ""
-        
+
         # mean one model one table
         model += "\n\n"
         model += (
             dt.dataclass_class.format(
-                class_name=create_class_name(
-                    table.name, singular, exceptions
-                ),
+                class_name=create_class_name(table.name, singular, exceptions),
                 table_name=table.name,
             )
         ) + "\n\n"
@@ -114,8 +112,10 @@ class ModelGenerator:
         if self.additional_imports:
             self.additional_imports = f', {",".join(self.additional_imports)}'
         else:
-            self.additional_imports = ''
-        header += dt.dataclass_imports.format(additional_imports=self.additional_imports)
+            self.additional_imports = ""
+        header += dt.dataclass_imports.format(
+            additional_imports=self.additional_imports
+        )
         return header
 
     def generate_type(

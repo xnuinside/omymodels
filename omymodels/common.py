@@ -5,14 +5,13 @@ from jinja2 import Template
 
 from typing import Optional, List, Dict
 
-from typing_extensions import final
 from simple_ddl_parser import DDLParser, parse_from_file
 from omymodels.gino import core as g
 from omymodels.pydantic import core as p
 from omymodels.dataclass import core as d
 from omymodels.sqlalchemy import core as s
 from omymodels.sqlalchemy_core import core as sc
-from omymodels.meta_model import TableMeta, Column, Type
+from omymodels.meta_model import TableMeta, Type
 
 
 def get_tables_information(
@@ -46,7 +45,7 @@ def create_models(
     data = get_tables_information(ddl, ddl_path)
     data = remove_quotes_from_strings(data)
     data = convert_ddl_to_models(data)
-    if not data['tables']:
+    if not data["tables"]:
         sys.exit(0)
     # generate code
     output = generate_models_file(
@@ -60,15 +59,15 @@ def create_models(
 
 
 def convert_ddl_to_models(data):
-    final_data = {'tables': [], 'types': []}
+    final_data = {"tables": [], "types": []}
     tables = []
-    for table in data['tables']:
+    for table in data["tables"]:
         tables.append(TableMeta(**table))
-    final_data['tables'] = tables 
-    _types = []   
-    for _type in data['types']:
+    final_data["tables"] = tables
+    _types = []
+    for _type in data["types"]:
         _types.append(Type(**_type))
-    final_data['types'] = _types    
+    final_data["types"] = _types
     return final_data
 
 
@@ -113,20 +112,20 @@ def generate_models_file(
             schema_global=schema_global,
             defaults_off=defaults_off,
         )
-    header = model_generator.create_header(
-        data["tables"], schema=schema_global)
+    header = model_generator.create_header(data["tables"], schema=schema_global)
     output = render_jinja2_template(models_type, models_str, header)
     return output
 
 
 def render_jinja2_template(models_type: str, models: str, headers: str) -> str:
-    template_file = pathlib.Path(__file__).parent / models_type / f'{models_type}.jinja2'
+    template_file = (
+        pathlib.Path(__file__).parent / models_type / f"{models_type}.jinja2"
+    )
 
     with open(template_file) as t:
         template = t.read()
         template = Template(template)
-        params = {"models": models,
-                  "headers": headers}
+        params = {"models": models, "headers": headers}
         return template.render(**params)
 
 

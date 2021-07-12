@@ -278,7 +278,7 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
-**v0.8.2**
+**v0.8.3**
 1. Added fundamental concept of TableMetaModel - class that unifies metadata parsed from different classes/ORM models types/DDLs to one standard to allow easy way convert one models to another
 in next releases it will be used for converter from one type of models to another.
 2. Fixed issue: https://github.com/xnuinside/omymodels/issues/18 "NOW() not recognized as now()"

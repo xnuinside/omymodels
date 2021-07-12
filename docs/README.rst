@@ -293,7 +293,7 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 Changelog
 ---------
 
-**v0.8.2**
+**v0.8.3**
 
 
 #. Added fundamental concept of TableMetaModel - class that unifies metadata parsed from different classes/ORM models types/DDLs to one standard to allow easy way convert one models to another

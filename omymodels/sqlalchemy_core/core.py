@@ -92,7 +92,7 @@ class ModelGenerator:
             properties.append(
                 self.column_reference(column_data.name, column_data.references)
             )
-        if not column_data.nullable and not column_data.name in table_pk:
+        if not column_data.nullable and column_data.name not in table_pk:
             properties.append(st.required)
         if column_data.default is not None:
             properties.append(self.column_default(column_data))
@@ -103,14 +103,14 @@ class ModelGenerator:
         if "columns" in table_data.alter:
             for alter_column in table_data.alter["columns"]:
                 if (
-                    alter_column['name'] == column_data.name
+                    alter_column["name"] == column_data.name
                     and not alter_column["constraint_name"]
                     and alter_column["references"]
                     and not column_data.references
                 ):
                     properties.append(
                         self.column_reference(
-                            alter_column['name'], alter_column["references"]
+                            alter_column["name"], alter_column["references"]
                         )
                     )
         return properties

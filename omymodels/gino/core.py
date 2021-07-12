@@ -92,7 +92,7 @@ class ModelGenerator:
             column = self.add_reference_to_the_column(
                 column_data.name, column, column_data.references
             )
-        if not column_data.nullable and not column_data.name in table_pk:
+        if not column_data.nullable and column_data.name not in table_pk:
             column += gt.required
         if column_data.default is not None:
             column = self.prepare_column_default(column_data, column)
@@ -104,13 +104,13 @@ class ModelGenerator:
         if "columns" in table_data.alter:
             for alter_column in table_data.alter["columns"]:
                 if (
-                    alter_column['name'] == column_data.name
+                    alter_column["name"] == column_data.name
                     and not alter_column["constraint_name"]
                     and alter_column["references"]
                 ):
 
                     column = self.add_reference_to_the_column(
-                        alter_column['name'], column, alter_column["references"]
+                        alter_column["name"], column, alter_column["references"]
                     )
         return column
 
@@ -222,12 +222,7 @@ class ModelGenerator:
         )
         for column in table.columns:
             model += self.generate_column(column, table.primary_key, table)
-        if (
-            table.indexes
-            or table.alter
-            or table.checks
-            or not schema_global
-        ):
+        if table.indexes or table.alter or table.checks or not schema_global:
             model = self.add_table_args(model, table, schema_global)
         # create sequence
         return model
