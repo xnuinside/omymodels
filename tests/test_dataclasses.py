@@ -50,7 +50,7 @@ CREATE table user_history (
 """
     result = create_models(ddl, models_type="dataclass")
     expected = """import datetime
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -61,7 +61,7 @@ class UserHistory:
     status: str
     runid: int = None
     job_id: int = None
-    event_time: datetime.datetime = datetime.datetime.now()
+    event_time: datetime.datetime = field(default_factory=datetime.datetime.now)
     comment: str = 'none'
 """
     assert expected == result["code"]
@@ -71,7 +71,7 @@ def test_enums_in_dataclasses():
     expected = """from enum import Enum
 import datetime
 from typing import Union
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 class MaterialType(str, Enum):
@@ -89,7 +89,7 @@ class Material:
     description: str = None
     type: MaterialType = None
     additional_properties: Union[dict, list] = None
-    created_at: datetime.datetime = datetime.datetime.now()
+    created_at: datetime.datetime = field(default_factory=datetime.datetime.now)
     updated_at: datetime.datetime = None
 """
     ddl = """
@@ -117,7 +117,7 @@ def test_defaults_off():
     expected = """from enum import Enum
 import datetime
 from typing import Union
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 class MaterialType(str, Enum):
@@ -157,3 +157,49 @@ CREATE TABLE "material" (
 """
     result = create_models(ddl, models_type="dataclass", defaults_off=True)
     assert expected == result["code"]
+
+
+def test_upper_now_produces_same_result():
+    expected = """from enum import Enum
+import datetime
+from typing import Union
+from dataclasses import dataclass, field
+
+
+class MaterialType(str, Enum):
+
+    article = 'article'
+    video = 'video'
+
+
+@dataclass
+class Material:
+
+    id: int
+    title: str
+    link: str
+    description: str = None
+    type: MaterialType = None
+    additional_properties: Union[dict, list] = None
+    created_at: datetime.datetime = field(default_factory=datetime.datetime.now)
+    updated_at: datetime.datetime = None
+"""
+    ddl = """
+CREATE TYPE "material_type" AS ENUM (
+  'video',
+  'article'
+);
+
+CREATE TABLE "material" (
+  "id" SERIAL PRIMARY KEY,
+  "title" varchar NOT NULL,
+  "description" text,
+  "link" varchar NOT NULL,
+  "type" material_type,
+  "additional_properties" json,
+  "created_at" timestamp DEFAULT (NOW()),
+  "updated_at" timestamp
+);
+"""
+    result = create_models(ddl, models_type="dataclass")["code"]
+    assert expected == result

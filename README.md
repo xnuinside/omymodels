@@ -269,6 +269,7 @@ And result will be this:
 
 1. Add Sequence generation in Models (Gino, SQLAlchemy)
 2. Generate Tortoise ORM models (https://tortoise-orm.readthedocs.io/en/latest/)
+3. Convert SQLAlchemy models to DjangoORM, Pydantic, SQLAlchemy Tables, Dataclasses (?)
 
 ## How to contribute
 
@@ -277,6 +278,12 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
+**v0.8.3**
+1. Added fundamental concept of TableMetaModel - class that unifies metadata parsed from different classes/ORM models types/DDLs to one standard to allow easy way convert one models to another
+in next releases it will be used for converter from one type of models to another.
+2. Fixed issue: https://github.com/xnuinside/omymodels/issues/18 "NOW() not recognized as now()"
+3. Fixed issue: https://github.com/xnuinside/omymodels/issues/19 "Default value of now() always returns same time, use field for dataclass"
+
 **v0.8.1**
 1. Parser version is updated (fixed several issues with generation)
 2. Fixed issue with Unique Constraint after schema in SQLAlchemy Core

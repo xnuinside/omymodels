@@ -23,15 +23,15 @@ class ModelGenerator:
         return _type
 
     def generate_attr(self, column: Dict, defaults_off: bool) -> str:
-        if column["nullable"]:
+        if column.nullable:
             self.typing_imports.add("Optional")
             column_str = pt.pydantic_optional_attr
         else:
             column_str = pt.pydantic_attr
-        if "." in column["type"]:
-            _type = column["type"].split(".")[1]
+        if "." in column.type:
+            _type = column.type.split(".")[1]
         else:
-            _type = column["type"].lower().split("[")[0]
+            _type = column.type.lower().split("[")[0]
         if self.custom_types:
             _type = self.add_custom_type(_type)
         if _type == _type:
@@ -40,28 +40,28 @@ class ModelGenerator:
             self.imports.add(_type)
         elif "datetime" in _type:
             self.datetime_import = True
-        elif "[" in column["type"]:
+        elif "[" in column.type:
             self.typing_imports.add("List")
             _type = f"List[{_type}]"
         if _type == "UUID":
             self.uuid_import = True
 
-        column_str = column_str.format(arg_name=column["name"], type=_type)
+        column_str = column_str.format(arg_name=column.name, type=_type)
 
-        if column["default"] and defaults_off is False:
+        if column.default and defaults_off is False:
             column_str = self.add_default_values(column_str, column)
 
         return column_str
 
     @staticmethod
     def add_default_values(column_str: str, column: Dict) -> str:
-        if column["type"].upper() in datetime_types:
-            if "now" in column["default"]:
+        if column.type.upper() in datetime_types:
+            if "now" in column.default.lower():
                 # todo: need to add other popular PostgreSQL & MySQL functions
-                column["default"] = "datetime.datetime.now()"
-            elif "'" not in column["default"]:
-                column["default"] = f"'{column['default']}'"
-        column_str += pt.pydantic_default_attr.format(default=column["default"])
+                column.default = "datetime.datetime.now()"
+            elif "'" not in column.default:
+                column.default = f"'{column['default']}'"
+        column_str += pt.pydantic_default_attr.format(default=column.default)
         return column_str
 
     def generate_model(
@@ -74,20 +74,17 @@ class ModelGenerator:
         **kwargs,
     ) -> str:
         model = ""
-        if table.get("table_name"):
-            # mean one model one table
-            model += "\n\n"
-            model += (
-                pt.pydantic_class.format(
-                    class_name=create_class_name(
-                        table["table_name"], singular, exceptions
-                    ),
-                    table_name=table["table_name"],
-                )
-            ) + "\n\n"
+        # mean one model one table
+        model += "\n\n"
+        model += (
+            pt.pydantic_class.format(
+                class_name=create_class_name(table.name, singular, exceptions),
+                table_name=table.name,
+            )
+        ) + "\n\n"
 
-            for column in table["columns"]:
-                model += self.generate_attr(column, defaults_off) + "\n"
+        for column in table.columns:
+            model += self.generate_attr(column, defaults_off) + "\n"
 
         return model
 
@@ -115,10 +112,10 @@ class ModelGenerator:
     ) -> str:
         """ method to prepare one Model defention - name & tablename & columns """
         type_class = ""
-        if _type["properties"].get("values"):
+        if _type.properties.get("values"):
             # mean this is a Enum
-            _type["properties"]["values"].sort()
-            for num, value in enumerate(_type["properties"]["values"]):
+            _type.properties["values"].sort()
+            for num, value in enumerate(_type.properties["values"]):
                 _value = value.replace("'", "")
                 if not _value.isnumeric():
                     type_class += (
@@ -136,7 +133,7 @@ class ModelGenerator:
                     )
                     sub_type = "IntEnum"
                     self.enum_imports.add("IntEnum")
-            class_name = create_class_name(_type["type_name"], singular, exceptions)
+            class_name = create_class_name(_type.name, singular, exceptions)
             type_class = (
                 "\n\n"
                 + (
@@ -145,5 +142,5 @@ class ModelGenerator:
                 )
                 + type_class
             )
-            self.custom_types[_type["type_name"]] = ("db.Enum", class_name)
+            self.custom_types[_type.name] = ("db.Enum", class_name)
         return type_class
