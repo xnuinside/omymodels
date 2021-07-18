@@ -16,7 +16,7 @@ def test_model_with_one_index():
     ,status_update_time   timestamp null default now()
     ) ;
     create unique index task_requests_pk on schema_name.task_requests (runid) ;"""
-    result = create_models(ddl, models_type="gino")['code']
+    result = create_models(ddl, models_type="gino")["code"]
     expected = """from gino import Gino
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import ARRAY

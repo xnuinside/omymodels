@@ -1,7 +1,3 @@
-postgresql_dialect = ["ARRAY", "JSON", "JSONB", "UUID"]
-
-# key - type from ddl, value - type from GinoORM
-
 types_mapping = {
     "varchar": "db.String",
     "float": "db.Float",

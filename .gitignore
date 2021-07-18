@@ -10,3 +10,4 @@ dist/
 .pytest_cache/
 .vscode/
 models/
+tests/generator/_models.py

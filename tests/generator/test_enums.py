@@ -71,7 +71,7 @@ class Notification(BaseModel):
     content_type: Optional[ContentType]
     period: Optional[Period]
 """
-    assert expected == result['code']
+    assert expected == result["code"]
 
 
 def test_enum_works_with_lower_case():

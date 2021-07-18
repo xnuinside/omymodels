@@ -216,7 +216,7 @@ class Attachments(db.Model):
     created_at = db.Column(db.TIMESTAMP())
     updated_at = db.Column(db.TIMESTAMP())
 """
-    assert expected == result['code']
+    assert expected == result["code"]
 
 
 def test_foreign_key_from_column():
@@ -231,7 +231,7 @@ def test_foreign_key_from_column():
     );
 
 """
-    result = create_models(ddl, schema_global=False)['code']
+    result = create_models(ddl, schema_global=False)["code"]
     expected = """from gino import Gino
 
 db = Gino()
