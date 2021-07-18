@@ -12,6 +12,7 @@ from omymodels.dataclass import core as d
 from omymodels.sqlalchemy import core as s
 from omymodels.sqlalchemy_core import core as sc
 from omymodels.meta_model import TableMeta, Type
+from omymodels.errors import NoTablesError
 
 
 def get_tables_information(
@@ -39,6 +40,7 @@ def create_models(
     models_type: str = "gino",
     schema_global: Optional[bool] = True,
     defaults_off: Optional[bool] = False,
+    exit_silent: Optional[bool] = False,
 ):
     """ models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
@@ -46,7 +48,10 @@ def create_models(
     data = remove_quotes_from_strings(data)
     data = convert_ddl_to_models(data)
     if not data["tables"]:
-        sys.exit(0)
+        if exit_silent:
+            sys.exit(0)
+        else:
+            raise NoTablesError()
     # generate code
     output = generate_models_file(
         data, singular, naming_exceptions, models_type, schema_global, defaults_off

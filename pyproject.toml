@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "omymodels"
-version = "0.8.3"
+version = "0.8.4"
 description = "O! My Models (omymodels) is a library to generate Python Models for SQLAlchemy (ORM & Core), GinoORM, Pydantic, Pydal tables & Python Dataclasses from SQL DDL. "
 authors = ["Iuliia Volkova <xnuinside@gmail.com>"]
 license = "MIT"
