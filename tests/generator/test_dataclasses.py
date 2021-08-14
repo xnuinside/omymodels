@@ -22,7 +22,7 @@ from dataclasses import dataclass
 @dataclass
 class Arrays2:
 
-    field_1: List[int]
+    field_1: List[float]
     field_2: List[int]
     field_3: List[str] = '{"none"}'
     squares: List[int] = '{1}'
@@ -59,8 +59,8 @@ class UserHistory:
     id: str
     user: str
     status: str
-    runid: int = None
-    job_id: int = None
+    runid: float = None
+    job_id: float = None
     event_time: datetime.datetime = field(default_factory=datetime.datetime.now)
     comment: str = 'none'
 """

@@ -1,11 +1,9 @@
 from typing import Optional, List, Dict
 import omymodels.sqlalchemy_core.templates as st
-from omymodels.sqlalchemy_core.types import (
-    types_mapping,
-    postgresql_dialect,
-    datetime_types,
-)
-from omymodels.utils import create_class_name, type_not_found, enum_number_name_list
+from omymodels.sqlalchemy.types import types_mapping, postgresql_dialect
+from omymodels.types import datetime_types
+
+from omymodels.utils import create_class_name, enum_number_name_list
 from omymodels.meta_model import Column
 
 
@@ -23,7 +21,7 @@ class ModelGenerator:
         if isinstance(column_type, tuple):
             column_data_type = column_type[1]
             column_type = column_type[0]
-        if column_type != type_not_found:
+        if column_type is not None:
             column_type = f"{column_type}({column_data_type})"
             self.no_need_par = True
         return column_type
@@ -31,14 +29,14 @@ class ModelGenerator:
     def prepare_column_type(self, column_data: Dict) -> str:
         """ extract and map column type """
         self.no_need_par = False
-        column_type = type_not_found
+        column_type = None
         if "." in column_data.type:
             column_data_type = column_data.type.split(".")[1]
         else:
             column_data_type = column_data.type.lower().split("[")[0]
         if self.custom_types:
             column_type = self.add_custom_type(column_data_type, column_type)
-        if column_type == type_not_found:
+        if column_type is None:
             column_type = types_mapping.get(column_data_type, column_type)
         if column_type in postgresql_dialect:
             self.postgresql_dialect_cols.add(column_type)

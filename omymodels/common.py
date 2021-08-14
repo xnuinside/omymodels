@@ -84,16 +84,7 @@ def save_models_to_file(models: str, dump_path: str) -> None:
         f.write(models)
 
 
-def generate_models_file(
-    data: Dict[str, List],
-    singular: bool = False,
-    exceptions: Optional[List] = None,
-    models_type: str = "gino",
-    schema_global: bool = True,
-    defaults_off: Optional[bool] = False,
-) -> str:
-    """ method to prepare full file with all Models &  """
-    models_str = ""
+def get_generator_by_type(models_type: str):
     models = {
         "gino": g,
         "pydantic": p,
@@ -106,7 +97,21 @@ def generate_models_file(
         raise ValueError(
             f"Unsupported models type {models_type}. Possible variants: {models.keys()}"
         )
-    model_generator = getattr(model, "ModelGenerator")()
+    return getattr(model, "ModelGenerator")()
+
+
+def generate_models_file(
+    data: Dict[str, List],
+    singular: bool = False,
+    exceptions: Optional[List] = None,
+    models_type: str = "gino",
+    schema_global: bool = True,
+    defaults_off: Optional[bool] = False,
+) -> str:
+    """ method to prepare full file with all Models &  """
+    models_str = ""
+    model_generator = get_generator_by_type(models_type)
+
     for _type in data["types"]:
         models_str += model_generator.generate_type(_type, singular, exceptions)
     for table in data["tables"]:

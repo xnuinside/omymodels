@@ -1,30 +1,36 @@
-types_mapping = {
-    "varchar": "str",
-    "float": "int",
-    "integer": "int",
+from omymodels.types import (
+    populate_types_mapping,
+    string_types,
+    integer_types,
+    big_integer_types,
+    float_types,
+    numeric_types,
+    boolean_types,
+    datetime_types,
+    json_types
+)
+
+mapper = {
+    string_types: "str",
+    integer_types: "int",
+    big_integer_types: "int",
+    float_types: "float",
+    numeric_types: "float",
+    boolean_types: "bool",
+    datetime_types: "datetime.datetime",
+    json_types: "Json",
+}
+
+types_mapping = populate_types_mapping(mapper)
+
+direct_types = {
     "date": "datetime.date",
     "timestamp": "datetime.datetime",
     "text": "str",
     "smallint": "int",
-    "boolean": "bool",
-    "bool": "bool",
-    "decimal": "int",
-    "bigint": "int",
-    "char": "str",
-    "time": "datetime.datetime",
-    "numeric": "int",
-    "character": "str",
-    "double": "int",
-    "character_vying": "str",
-    "varying": "str",
-    "serial": "int",
     "jsonb": "Json",
-    "json": "Json",
-    "int": "int",
-    "serial": "int",
-    "bigserial": "int",
     "uuid": "UUID",
 }
 
 
-datetime_types = ["TIMESTAMP", "DATETIME", "DATE"]
+types_mapping.update(direct_types)

@@ -1,7 +1,5 @@
 from typing import Optional, List, Text
 
-type_not_found = "OMM_UNMAPPED_TYPE"
-
 
 def get_singular_name(table_name: Text, exceptions: Optional[List] = None) -> Text:
     endings = {"ies": lambda x: x[:-3] + "y", "es": lambda x: x[:-1]}

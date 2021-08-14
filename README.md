@@ -278,6 +278,48 @@ Please describe issue that you want to solve and open the PR, I will review it a
 Any questions? Ping me in Telegram: https://t.me/xnuinside
 
 ## Changelog
+**v0.9.0**
+Features:
+1. Added beta models converter from one type of models to another.
+To use models convertor:
+
+```python
+from omymodels import convert_models
+
+
+models_from = """
+
+class MaterialType(str, Enum):
+
+    article = "article"
+    video = "video"
+
+
+@dataclass
+class Material:
+
+    id: int
+    title: str
+    description: str
+    link: str
+    type: MaterialType
+    additional_properties: Union[dict, list]
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+
+"""
+
+result = convert_models(models_from, models_type="gino")
+print(result)
+```
+
+where `models_type` - type of models that you want to get as a result
+
+2. Now if O!MyModels does not know how to convert type - he just leave it as is.
+
+Fixes:
+1. In Dataclass & Pydantic generators now Decimals & Floats converted to float (previously was int).
+
 **v0.8.4**
 1. Now if tables was not found in input DDL - models generator raise NoTable error. if you want to have still silent exit if no tables, please use flag: exit_silent
 

@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict
 import omymodels.sqlalchemy.templates as st
-from omymodels.sqlalchemy.types import types_mapping, datetime_types
+from omymodels.sqlalchemy.types import types_mapping
+from omymodels.types import datetime_types
 from omymodels.utils import create_class_name, enum_number_name_list
 from omymodels import logic
 

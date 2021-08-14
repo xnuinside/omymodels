@@ -33,7 +33,7 @@ class TableMeta(BaseModel):
     table_schema: Optional[str] = Field(alias="schema")
     columns: List[Column]
     indexes: Optional[List[dict]] = Field(alias="index")
-    alter: Optional[dict]
+    alter: Optional[dict] = {}
     checks: Optional[List[dict]]
     properties: Optional[TableProperties]
     primary_key: List
