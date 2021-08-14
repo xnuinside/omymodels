@@ -2,7 +2,7 @@ from omymodels import convert_models
 
 
 def test_convert_models():
-    
+
     models_from = """
 
     class MaterialType(str, Enum):

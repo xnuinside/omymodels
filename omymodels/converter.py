@@ -18,7 +18,6 @@ def prepare_columns_data(columns: List[Dict]) -> List[Dict]:
         if column["type"] is None:
             if column["default"]:
                 column["type"] = type(column["default"]).__name__
-                print(column["type"])
     return columns
 
 
@@ -26,7 +25,6 @@ def models_to_meta(data: List[Dict]) -> List[TableMeta]:
     tables = []
     types = []
     for model in data:
-        print(model["parents"])
         if "Enum" not in model["parents"]:
             model["table_name"] = model["name"]
             model["columns"] = prepare_columns_data(model["attrs"])

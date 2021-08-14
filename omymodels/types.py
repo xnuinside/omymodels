@@ -108,11 +108,8 @@ def prepare_column_type_orm(obj: object, column_data: Dict) -> str:
     if "[" in column_data.type and column_data.type not in json_types:
         obj.postgresql_dialect_cols.add("ARRAY")
         column_type = f"ARRAY({column_type})"
-    print(column_type)
     return column_type
 
-
-from typing import Dict
 
 string_types = (
     "str",
