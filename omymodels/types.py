@@ -1,4 +1,3 @@
-from omymodels.utils import type_not_found
 from typing import Dict
 
 postgresql_dialect = ["ARRAY", "JSON", "JSONB", "UUID"]
@@ -55,10 +54,12 @@ def prepare_types(column_type: str) -> str:
 
 
 def prepare_type(column_data: Dict, models_types_mapping: Dict) -> str:
-    column_type = type_not_found
+    column_type = None
     column_data_type = column_data.type.lower().split("[")[0]
-    if column_type == type_not_found:
+    if not column_type:
         column_type = models_types_mapping.get(column_data_type, column_type)
+    if not column_type:
+        column_type = column_data_type
     return column_type
 
 
@@ -104,7 +105,60 @@ def prepare_column_type_orm(obj: object, column_data: Dict) -> str:
         obj.postgresql_dialect_cols.add(column_type)
 
     column_type = add_size_to_orm_column(column_type, column_data)
-    if "[" in column_data.type:
+    if "[" in column_data.type and column_data.type not in json_types:
         obj.postgresql_dialect_cols.add("ARRAY")
         column_type = f"ARRAY({column_type})"
+    print(column_type)
     return column_type
+
+
+from typing import Dict
+
+string_types = (
+    "str",
+    "Text",
+    "varchar",
+    "character",
+    "character_vying",
+    "varying",
+    "char",
+)
+
+datetime_types = (
+    "DATETIME",
+    "time",
+    "datetime.datetime",
+    "datetime",
+    "datetime.date",
+    "date",
+)
+
+json_types = ("Union[dict, list]", "json", "union")
+
+integer_types = ("integer", "int", "serial")
+
+big_integer_types = ("bigint", "bigserial")
+
+float_types = ("float",)
+
+numeric_types = ("decimal", "numeric", "double")
+
+boolean_types = ("boolean", "bool")
+
+datetime_types = (
+    "TIMESTAMP",
+    "DATETIME",
+    "DATE",
+    "datetime.datetime",
+    "datetime",
+    "datetime.date",
+    "date",
+)
+
+
+def populate_types_mapping(mapper: Dict) -> Dict:
+    types_mapping = {}
+    for type_group, value in mapper.items():
+        for type_ in type_group:
+            types_mapping[type_] = value
+    return types_mapping

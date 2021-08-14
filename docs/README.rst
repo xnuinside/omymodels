@@ -293,6 +293,53 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside
 Changelog
 ---------
 
+**v0.9.0**
+Features:
+
+
+#. Added beta models converter from one type of models to another.
+   To use models convertor:
+
+.. code-block:: python
+
+   from omymodels import convert_models
+
+
+   models_from = """
+
+   class MaterialType(str, Enum):
+
+       article = "article"
+       video = "video"
+
+
+   @dataclass
+   class Material:
+
+       id: int
+       title: str
+       description: str
+       link: str
+       type: MaterialType
+       additional_properties: Union[dict, list]
+       created_at: datetime.datetime
+       updated_at: datetime.datetime
+
+   """
+
+   result = convert_models(models_from, models_type="gino")
+   print(result)
+
+where ``models_type`` - type of models that you want to get as a result
+
+
+#. Now if O!MyModels does not know how to convert type - he just leave it as is.
+
+Fixes:
+
+
+#. In Dataclass & Pydantic generators now Decimals & Floats converted to float (previously was int).
+
 **v0.8.4**
 
 

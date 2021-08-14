@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict
 import omymodels.gino.templates as gt
-from omymodels.gino.types import types_mapping, datetime_types
+from omymodels.gino.types import types_mapping
+from omymodels.types import datetime_types
 from omymodels.utils import create_class_name, enum_number_name_list
 from omymodels import logic
 

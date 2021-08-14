@@ -330,7 +330,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "py-models-parser"
-version = "0.5.0"
+version = "0.5.1"
 description = "Parser for Different Python Models (Pydantic, Enums, ORMs: Tortoise, SqlAlchemy, GinoORM, PonyORM, Pydal tables) to extract information about columns(attrs), model, table args,etc in one format."
 category = "main"
 optional = false
@@ -804,8 +804,8 @@ py = [
     {file = "py-1.10.0.tar.gz", hash = "sha256:21b81bda15b66ef5e1a777a21c4dcd9c20ad3efd0b3f817e7a809035269e1bd3"},
 ]
 py-models-parser = [
-    {file = "py-models-parser-0.5.0.tar.gz", hash = "sha256:e6e0553463aa0560eb4d849a25d852d7a926427b7e70698dcde1661b0e758ac0"},
-    {file = "py_models_parser-0.5.0-py3-none-any.whl", hash = "sha256:7319b05598288a8588dcd57497572f51ea11a4dae57ed5597a749b2e63127525"},
+    {file = "py-models-parser-0.5.1.tar.gz", hash = "sha256:2cde2fe95d7dd3b26242c5a338cbc28a0f558fb13db70fd854ad69f2cb7eff13"},
+    {file = "py_models_parser-0.5.1-py3-none-any.whl", hash = "sha256:db3530ba126cf8bb9c484612e63dd2115ff2113316aeea7444b641ae978abdfd"},
 ]
 pycparser = [
     {file = "pycparser-2.20-py2.py3-none-any.whl", hash = "sha256:7582ad22678f0fcd81102833f60ef8d0e57288b6b5fb00323d101be910e35705"},

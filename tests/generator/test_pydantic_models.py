@@ -25,8 +25,8 @@ from pydantic import BaseModel
 
 class UserHistory(BaseModel):
 
-    runid: Optional[int]
-    job_id: Optional[int]
+    runid: Optional[float]
+    job_id: Optional[float]
     id: str
     user: str
     status: str
@@ -43,7 +43,7 @@ from pydantic import BaseModel
 
 class Arrays2(BaseModel):
 
-    field_1: List[int]
+    field_1: List[float]
     field_2: List[int]
     field_3: List[str] = '{"none"}'
     squares: List[int] = '{1}'

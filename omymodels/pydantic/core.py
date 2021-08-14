@@ -1,7 +1,8 @@
 from typing import Optional, List, Dict
 from omymodels.pydantic import templates as pt
 from omymodels.utils import create_class_name, enum_number_name_list
-from omymodels.pydantic.types import types_mapping, datetime_types
+from omymodels.pydantic.types import types_mapping
+from omymodels.types import datetime_types
 
 
 class ModelGenerator:
