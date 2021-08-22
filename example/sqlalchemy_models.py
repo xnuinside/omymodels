@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class MaterialType(Enum):
+class MaterialType(str, Enum):
 
     article = "article"
     video = "video"

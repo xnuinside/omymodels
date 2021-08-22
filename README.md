@@ -4,7 +4,31 @@
 
 Big example you can find in example/ folder on the github: https://github.com/xnuinside/omymodels/tree/main/example
 
-O! My Models (omymodels) is a library to generate from SQL DDL Python Models for SQLAlchemy (models), SQLAlchemy Core (tables), GinoORM (I hope to add several more ORMs in future), Pydantic classes and Python Dataclasses (dataclasses module).
+O! My Models (omymodels) is a library that allow you to **generate** different ORM & pure Python models from SQL DDL or **convert** one models type to another (exclude SQLAlchemy Table, it does not supported yet by py-models-parser).
+
+Supported Models:
+
+- SQLAlchemy (https://docs.sqlalchemy.org/en/14/orm/), 
+- SQLAlchemy Core (Tables) (https://docs.sqlalchemy.org/en/14/core/metadata.html#accessing-tables-and-columns),
+- GinoORM (https://python-gino.org/), 
+- Pydantic (https://pydantic-docs.helpmanual.io/),
+- Python Enum (https://docs.python.org/3/library/enum.html) - generated only from DDL SQL Types,
+- Python Dataclasses (dataclasses module) (https://docs.python.org/3/library/dataclasses.html),
+
+
+## How to install
+
+```bash
+
+    pip install omymodels
+
+```
+
+
+## How to use
+
+### From Python code
+### Create Models from DDL
 
 By default method **create_models** generate GinoORM models, to get Pydantic models output use the argument `models_type='pydantic'` ('sqlalchemy' for SQLAlchemy models; 'dataclass' for Dataclasses; 'sqlalchemy_core' for Sqlalchemy Core Tables).
 
@@ -130,17 +154,6 @@ and you will get output:
 
 ```
 
-### How to install
-
-
-```bash
-
-    pip install omymodels
-
-```
-
-### How to use
-
 #### From cli
 
 ```bash
@@ -175,7 +188,7 @@ If you want generate the Pydantic or Dataclasses models - just use flag **-m** o
 Small library is used for parse DDL- https://github.com/xnuinside/simple-ddl-parser.
 
 
-### What to do if types not supported in O! My Models and you cannot wait until PR will be approved
+### What to do if types not supported in O!MyModels and you cannot wait until PR will be approved
 
 First of all, to parse types correct from DDL to models - they must be in types mypping, for Gino it exitst in this file:
 
@@ -187,7 +200,7 @@ for example:
 
 ```python
 
-    from omymodels.gino import types
+    from omymodels.models.gino import types
     from omymodels import create_models
 
     types.types_mapping.update({'your_type_from_ddl': 'db.TypeInGino'})
@@ -198,7 +211,7 @@ for example:
 
     #### And similar for Pydantic types
 
-    from omymodels.pydantic import types  types_mapping
+    from omymodels.models.pydantic import types  types_mapping
     from omymodels import create_models
 
     types.types_mapping.update({'your_type_from_ddl': 'db.TypeInGino'})
@@ -268,16 +281,41 @@ And result will be this:
 ## TODO in next releases
 
 1. Add Sequence generation in Models (Gino, SQLAlchemy)
-2. Generate Tortoise ORM models (https://tortoise-orm.readthedocs.io/en/latest/)
-3. Convert SQLAlchemy models to DjangoORM, Pydantic, SQLAlchemy Tables, Dataclasses (?)
+2. Add support for pure Python Classes (https://docs.python.org/3/tutorial/classes.html#class-objects)
+3. Add support for Tortoise ORM (https://tortoise-orm.readthedocs.io/en/latest/),
+4. Add support for DjangoORM Models
+5. Add support for Pydal Models
+6. Add support for Encode/orm Models
+
 
 ## How to contribute
-
 Please describe issue that you want to solve and open the PR, I will review it as soon as possible.
 
-Any questions? Ping me in Telegram: https://t.me/xnuinside
+Any questions? Ping me in Telegram: https://t.me/xnuinside or mail xnuinside@gmail.com
+
+If you see any bugs or have any suggestions - feel free to open the issue. Any help will be appritiated.
+
 
 ## Changelog
+**v0.10.0**
+### Improvements:
+1. Meta models moved to separate package - https://github.com/xnuinside/table-meta
+2. `common` module renamed to `from_ddl`, but anyway please use public API as imports from main module:
+
+`from omymodels import create_models` or `from omymodels import convert_models`
+
+### Fixes:
+
+1. Fixed bunch of bugs in converter, but it stil in 'beta'.
+2. Previously you can generate models if was any tables in ddl. Now you can also generate Enum models if in ddl you have only CREATE TYPE statements.
+3. String enums now in any models types will be inherit from (str, Enum)
+
+
+### Features:
+
+1. Added converter feature to convert one model type to another (excluding SQLAlchemy Core (Tables)). 
+Now with more tests for supported models, but still in Beta with bucnh of issues.
+
 **v0.9.0**
 Features:
 1. Added beta models converter from one type of models to another.

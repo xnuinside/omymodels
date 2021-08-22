@@ -1,8 +1,10 @@
 from typing import List, Dict
 
 from py_models_parser import parse
-from omymodels.meta_model import TableMeta, Type
-from omymodels.common import get_generator_by_type, render_jinja2_template
+from table_meta import TableMeta, Type
+from omymodels.generators import get_generator_by_type, render_jinja2_template
+from omymodels.helpers import from_class_to_table_name, add_custom_types_to_generator
+from omymodels.models.enum import core as enum
 
 
 def get_primary_keys(columns: List[Dict]) -> List[str]:
@@ -26,7 +28,7 @@ def models_to_meta(data: List[Dict]) -> List[TableMeta]:
     types = []
     for model in data:
         if "Enum" not in model["parents"]:
-            model["table_name"] = model["name"]
+            model["table_name"] = from_class_to_table_name(model["name"])
             model["columns"] = prepare_columns_data(model["attrs"])
             model["properties"]["indexes"] = model["properties"].get("indexes") or []
             model["primary_key"] = get_primary_keys(model["columns"])
@@ -35,20 +37,28 @@ def models_to_meta(data: List[Dict]) -> List[TableMeta]:
             model["type_name"] = model["name"]
             model["base_type"] = model["parents"][-1]
             types.append(Type(**model))
-
     return tables, types
 
 
 def convert_models(model_from: str, models_type: str = "gino") -> str:
     result = parse(model_from)
-    meta_tables, types = models_to_meta(result)
+    tables, types = models_to_meta(result)
     generator = get_generator_by_type(models_type)
     models_str = ""
-    for _type in types:
-        generator.custom_types[_type.name] = ("db.Enum", _type.name)
-        models_str += generator.generate_type(_type)
-    for table in meta_tables:
-        models_str += generator.generate_model(table)
-    header = generator.create_header(meta_tables)
+    header = ""
+    if types:
+        types_generator = enum.ModelGenerator(types)
+        models_str += types_generator.create_types()
+        header += types_generator.create_header()
+    if tables:
+
+        add_custom_types_to_generator(types, generator)
+
+        for table in tables:
+            models_str += generator.generate_model(table)
+        header += generator.create_header(tables)
+    else:
+        header += enum.create_header(generator.enum_imports)
+        models_type = "enum"
     output = render_jinja2_template(models_type, models_str, header)
     return output

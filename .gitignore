@@ -1,13 +1,8 @@
-models.py
 *.pyc
 omymodels/__pycache__
-omymodels/gino/__pycache__
-omymodels/pydantic/__pycache__
-omymodels/dataclass/__pycache__
-omymodels/sqlalchemy/__pycache__
-omymodels/sqlalchemy_core/__pycache__
+omymodels/models/**/__pycache__
 dist/
 .pytest_cache/
 .vscode/
-models/
 tests/generator/_models.py
+./models.py

@@ -1,4 +1,4 @@
-from omymodels.common import create_models
+from omymodels.from_ddl import create_models
 from omymodels.converter import convert_models
 
 

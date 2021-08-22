@@ -6,7 +6,7 @@ from gino import Gino
 db = Gino()
 
 
-class MaterialType(Enum):
+class MaterialType(str, Enum):
 
     article = "article"
     video = "video"
