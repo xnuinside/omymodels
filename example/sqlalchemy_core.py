@@ -8,7 +8,7 @@ from sqlalchemy import Table, Column, MetaData
 metadata = MetaData()
 
 
-class MaterialType(Enum):
+class MaterialType(str, Enum):
 
     article = "article"
     video = "video"

@@ -1,0 +1,6 @@
+{% for _type in custom_types %}
+
+class {{_type['name']}}({{_type['parents']}}):
+
+    {% for key, value in _type['properties']['values'].items() %}{{key}} = {{value}}
+    {% endfor %}{% endfor %}

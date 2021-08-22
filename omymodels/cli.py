@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 from omymodels import create_models
+from omymodels.generators import supported_models
 import pprint
 
 
@@ -10,6 +11,7 @@ def version(**kwargs):
 
 
 def cli():
+
     omm_cli = argparse.ArgumentParser(
         description="O! My Models. Create GinoORM models from SQL DDL"
     )
@@ -19,7 +21,7 @@ def cli():
         "--models_type",
         type=str,
         default="gino",
-        help="The type of model you want to generate, pass as argument one of the supported: [gino, pydantic]",
+        help=f"The type of model you want to generate, pass as argument one of the supported: {supported_models}",
     )
 
     omm_cli.add_argument(

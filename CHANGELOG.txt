@@ -1,3 +1,22 @@
+**v0.10.0**
+### Improvements:
+1. Meta models moved to separate package - https://github.com/xnuinside/table-meta
+2. `common` module renamed to `from_ddl`, but anyway please use public API as imports from main module:
+
+`from omymodels import create_models` or `from omymodels import convert_models`
+
+### Fixes:
+
+1. Fixed bunch of bugs in converter, but it stil in 'beta'.
+2. Previously you can generate models if was any tables in ddl. Now you can also generate Enum models if in ddl you have only CREATE TYPE statements.
+3. String enums now in any models types will be inherit from (str, Enum)
+
+
+### Features:
+
+1. Added converter feature to convert one model type to another (excluding SQLAlchemy Core (Tables)). 
+Now with more tests for supported models, but still in Beta with bucnh of issues.
+
 **v0.9.0**
 Features:
 1. Added beta models converter from one type of models to another.
