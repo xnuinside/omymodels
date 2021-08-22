@@ -508,7 +508,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "table-meta"
-version = "0.1.4"
+version = "0.1.5"
 description = "Universal class that created to be a middleware, universal mapping for data from different parsers - simple-ddl-parser and py-models-parser"
 category = "main"
 optional = false
@@ -618,7 +618,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "92153fc34312b0f7f7475b29dd4f79c2df714bef5d2db3dc643de1bf9e2f75e6"
+content-hash = "056b0952602ba3655937b0d7232c49f8dee406fe88861f1084b5abf02101e197"
 
 [metadata.files]
 appdirs = [
@@ -935,8 +935,8 @@ six = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 table-meta = [
-    {file = "table-meta-0.1.4.tar.gz", hash = "sha256:78e9cf220604a474745a82f63f80a0676ffdeb653fe67f61332a7f146dcc509d"},
-    {file = "table_meta-0.1.4-py3-none-any.whl", hash = "sha256:5685a8b0b36b158197f3ebb5deb58d00f154e787cbd0a35efafd67264690aa29"},
+    {file = "table-meta-0.1.5.tar.gz", hash = "sha256:66de6770ead04198f4fbce202e0091bc24d1391429df37d644328e5d54d3bb87"},
+    {file = "table_meta-0.1.5-py3-none-any.whl", hash = "sha256:94166eea85db1e332f6860b7ca7f4361e51d66ce42d7596774a861d39029afb3"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
