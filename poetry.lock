@@ -493,7 +493,7 @@ jeepney = ">=0.6"
 
 [[package]]
 name = "simple-ddl-parser"
-version = "0.21.1"
+version = "0.21.2"
 description = "Simple DDL Parser to parse SQL & dialects like HQL, TSQL (MSSQL), Oracle, AWS Redshift, Snowflake, MySQL, PostgreSQL, etc ddl files to json/python dict with full information about columns: types, defaults, primary keys, etc.; sequences, alters, custom types & other entities from ddl."
 category = "main"
 optional = false
@@ -625,7 +625,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "84b868279c7e16c0064024e3c0a297dafca8838ec180e185821c1db9c2844af2"
+content-hash = "df0b3a46a659810bf940038c960a00fc0a3048872785e6c2fac64944467aa8b4"
 
 [metadata.files]
 appdirs = [
@@ -950,8 +950,8 @@ secretstorage = [
     {file = "SecretStorage-3.3.1.tar.gz", hash = "sha256:fd666c51a6bf200643495a04abb261f83229dcb6fd8472ec393df7ffc8b6f195"},
 ]
 simple-ddl-parser = [
-    {file = "simple-ddl-parser-0.21.1.tar.gz", hash = "sha256:5db3d690a7ed18f2d8d3f501cda2c23fba808e9df9121008a646aced607c3641"},
-    {file = "simple_ddl_parser-0.21.1-py3-none-any.whl", hash = "sha256:ba7b7367c32f234db13ea04e851bf2d1085e3e90db7e422740ba5ff74d074ef1"},
+    {file = "simple-ddl-parser-0.21.2.tar.gz", hash = "sha256:2e49ffb29364d8781223bc9f159cea52634621f36841817ba5507b57faf6dce9"},
+    {file = "simple_ddl_parser-0.21.2-py3-none-any.whl", hash = "sha256:d5165161f4837dd3a45ada1693d43debfe56280585f0b54d5ac163762e2e25c7"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
