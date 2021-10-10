@@ -314,6 +314,11 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 Changelog
 ---------
 
+**v0.10.1**
+
+
+#. Update simple-ddl-parser version
+
 **v0.10.0**
 
 Improvements:
