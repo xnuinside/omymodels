@@ -57,4 +57,4 @@ class UsersWorkSchedule(db.Model):
     start_history = db.Column(datetime2(7), nullable=False)
     end_history = db.Column(datetime2(7), nullable=False)
 """
-    assert expected == result['code']
+    assert expected == result["code"]

@@ -1,13 +1,14 @@
 import os
-import sys
 import re
-from typing import Optional, List, Dict
+import sys
+from typing import Dict, List, Optional
 
 from simple_ddl_parser import DDLParser, parse_from_file
 from table_meta import TableMeta, Type
-from omymodels.helpers import add_custom_types_to_generator
-from omymodels.generators import get_generator_by_type, render_jinja2_template
+
 from omymodels.errors import NoTablesError
+from omymodels.generators import get_generator_by_type, render_jinja2_template
+from omymodels.helpers import add_custom_types_to_generator
 from omymodels.models.enum import core as enum
 
 
@@ -24,6 +25,7 @@ def get_tables_information(
     elif ddl_file:
         tables = parse_from_file(ddl_file, group_by_type=True)
     return tables
+
 
 def create_models(
     ddl: Optional[str] = None,
@@ -59,14 +61,15 @@ def create_models(
 
 
 def snake_case(string: str) -> str:
-    return re.sub(r'(?<!^)(?=[A-Z])', '_', string).lower()
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", string).lower()
+
 
 def convert_ddl_to_models(data):
     final_data = {"tables": [], "types": []}
     tables = []
     for table in data["tables"]:
         for column in table["columns"]:
-            column['name'] = snake_case(column['name'])
+            column["name"] = snake_case(column["name"])
         tables.append(TableMeta(**table))
     final_data["tables"] = tables
     _types = []
@@ -134,7 +137,7 @@ def prepare_data(item: Dict) -> Dict:
 
 def clean_value(string: str) -> str:
     string = string.replace('"', "")
-    if string.startswith('[') and string.endswith(']'):
+    if string.startswith("[") and string.endswith("]"):
         string = string[1:-1]
     return string
 

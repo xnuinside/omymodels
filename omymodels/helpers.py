@@ -1,6 +1,5 @@
 import re
-
-from typing import Optional, List, Text
+from typing import List, Optional, Text
 
 from table_meta import Type
 
@@ -58,7 +57,7 @@ def create_class_name(
         if table_name.lower() != table_name and table_name.upper() != table_name:
             # mean already table in PascalCase
             return pascal_case(table_name)
-    
+
     model_name = model_name.replace("-", "_").replace("__", "_")
     previous_symbol = None
     final_model_name = ""
@@ -71,9 +70,10 @@ def create_class_name(
 
     return pascal_case(final_model_name)
 
+
 def pascal_case(string: str) -> str:
     final_string = ""
-    string = string.split('_')
+    string = string.split("_")
     for item in string:
         item = item[0].upper() + item[1:]
         final_string += item
