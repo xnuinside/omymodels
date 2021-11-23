@@ -314,6 +314,15 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 Changelog
 ---------
 
+**v0.11.0**
+
+Fixes:
+^^^^^^
+
+
+#. MSSQL column & tables names in [] now is parsed validly  - https://github.com/xnuinside/omymodels/issues/28
+#. names like 'users_WorkSchedule' now converted correctly to PascalCase like UsersWorkSchedule
+
 **v0.10.1**
 
 

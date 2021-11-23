@@ -297,6 +297,14 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 
 
 ## Changelog
+**v0.11.0**
+
+### Fixes:
+
+1. MSSQL column & tables names in [] now is parsed validly  - https://github.com/xnuinside/omymodels/issues/28
+2. names like 'users_WorkSchedule' now converted correctly to PascalCase like UsersWorkSchedule
+
+
 **v0.10.1**
 1. Update simple-ddl-parser version to 0.21.2
 
