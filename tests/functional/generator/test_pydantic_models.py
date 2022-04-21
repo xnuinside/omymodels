@@ -177,3 +177,23 @@ class Material(BaseModel):
     updated_at: Optional[datetime.datetime]
 """
     assert expected == result
+
+
+def test_pydantic_with_bytes():
+    expected = """from pydantic import BaseModel
+
+
+class User(BaseModel):
+
+    avatar: bytes
+"""
+
+    ddl = """
+CREATE TABLE "User" (
+    "avatar" BINARY  NOT NULL
+);
+"""
+    result = create_models(ddl, models_type="pydantic")
+
+    assert expected == result["code"]
+

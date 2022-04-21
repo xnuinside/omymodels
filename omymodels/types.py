@@ -24,6 +24,13 @@ datetime_types = (
     "date",
 )
 
+binary_types = (
+    "BINARY",
+    "VARBINARY",
+    "binary",
+    "varbinary",
+)
+
 json_types = ("union[dict, list]", "json", "union")
 
 integer_types = ("integer", "int", "serial")
