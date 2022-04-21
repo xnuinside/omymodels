@@ -196,4 +196,4 @@ CREATE TABLE "User" (
     result = create_models(ddl, models_type="pydantic")
 
     assert expected == result["code"]
-    
+
