@@ -314,6 +314,15 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 Changelog
 ---------
 
+**v0.11.1**
+
+Improvements:
+^^^^^^^^^^^^^
+
+
+#. added bytes type to pydantic - https://github.com/xnuinside/omymodels/pull/31
+#. parser version updated to the latest 
+
 **v0.11.0**
 
 Fixes:
