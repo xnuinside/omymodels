@@ -7,7 +7,7 @@ from typing import Optional
 import pytest
 
 current_path = os.path.dirname(os.path.abspath(__file__))
-package = ".".join(__file__.replace("/", ".").split("omymodels.")[1].split(".")[:-2])
+package = os.path.dirname(os.path.relpath(__file__)).replace("/", ".")
 
 
 @pytest.fixture
