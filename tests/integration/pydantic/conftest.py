@@ -22,8 +22,7 @@ def load_generated_code():
 
         with open(os.path.join(current_path, f"{module_name}.py"), "w+") as f:
             f.write(code_text)
-        print(current_path, "current_path")
-        print(package, "package")
+
         module = importlib.import_module(f"{package}.{module_name}")
 
         return module
