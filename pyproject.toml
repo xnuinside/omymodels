@@ -23,7 +23,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.6.2,<4.0"
-simple-ddl-parser = "0.22.5"
+simple-ddl-parser = "0.26.1"
 Jinja2 = "^3.0.1"
 py-models-parser = "^0.5.0"
 pydantic = "^1.8.2"
@@ -34,6 +34,7 @@ pytest = "^5.2"
 m2r = "^0.2.1"
 black = "^20.8b1"
 twine = "^3.3.0"
+mistune = "0.8.4"
 
 [tool.poetry.scripts]
 omm = 'omymodels.cli:main'
