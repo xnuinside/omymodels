@@ -1,6 +1,5 @@
 import importlib
 import os
-import platform
 import uuid
 from types import ModuleType
 from typing import Optional
@@ -23,13 +22,9 @@ def load_generated_code():
 
         with open(os.path.join(current_path, f"{module_name}.py"), "w+") as f:
             f.write(code_text)
-
-        if platform.sys.version_info.minor == 6:
-            module = importlib.import_module(
-                f"{package}.{module_name}", package=package
-            )
-        else:
-            module = importlib.import_module(f"{package}.{module_name}")
+        print(current_path, "current_path")
+        print(package, "package")
+        module = importlib.import_module(f"{package}.{module_name}")
 
         return module
 
