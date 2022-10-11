@@ -1,11 +1,12 @@
 from typing import Dict, List
+
 import omymodels.types as t
 
 
 def generate_column(
     column_data: Dict, table_pk: List[str], table_data: Dict, templates, obj
 ) -> str:
-    """ method to generate full column defention for sqlalchemy & gino ORM models """
+    """method to generate full column defention for sqlalchemy & gino ORM models"""
     column_type = t.prepare_column_type_orm(obj, column_data)
     column = templates.column_template.format(
         column_name=column_data.name, column_type=column_type
@@ -25,7 +26,19 @@ def setup_column_attributes(
     templates,
     obj,
 ) -> str:
+    # foreign is a positional - so it should be before keyword args
+    if "columns" in table_data.alter:
+        for alter_column in table_data.alter["columns"]:
+            if (
+                alter_column["name"] == column_data.name
+                and not alter_column["constraint_name"]
+                and alter_column["references"]
+            ):
 
+                column = add_reference_to_the_column(
+                    alter_column["name"], column, alter_column["references"], templates
+                )
+    # keyword named args
     if column_data.type.lower() == "serial" or column_data.type.lower() == "bigserial":
         column += templates.autoincrement
     if column_data.references:
@@ -41,17 +54,6 @@ def setup_column_attributes(
     if column_data.unique:
         column += templates.unique
 
-    if "columns" in table_data.alter:
-        for alter_column in table_data.alter["columns"]:
-            if (
-                alter_column["name"] == column_data.name
-                and not alter_column["constraint_name"]
-                and alter_column["references"]
-            ):
-
-                column = add_reference_to_the_column(
-                    alter_column["name"], column, alter_column["references"], templates
-                )
     return column
 
 

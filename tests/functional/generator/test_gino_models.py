@@ -1,4 +1,5 @@
 import os
+
 from omymodels import create_models
 
 
@@ -273,3 +274,42 @@ class OrderItems(db.Model):
     """
     result = create_models(ddl, schema_global=False)["code"]
     assert result == expected
+
+
+def test_no_auto_snake_case():
+    expected = """from gino import Gino
+
+db = Gino()
+
+
+class Merchants(db.Model):
+
+    __tablename__ = 'merchants'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    merchant_name = db.Column(db.String())
+
+
+class Products(db.Model):
+
+    __tablename__ = 'products'
+
+    ID = db.Column(db.Integer(), primary_key=True)
+    merchant_id = db.Column(db.Integer(), db.ForeignKey('merchants.id'), nullable=False)
+"""
+
+    ddl = """
+    CREATE TABLE "merchants" (
+    "id" int PRIMARY KEY,
+    "merchant_name" varchar
+    );
+
+    CREATE TABLE "products" (
+    "ID" int PRIMARY KEY,
+    "merchant_id" int NOT NULL
+    );
+
+    ALTER TABLE "products" ADD FOREIGN KEY ("merchant_id") REFERENCES "merchants" ("id");
+    """
+    result = create_models(ddl, models_type="gino", no_auto_snake_case=True)["code"]
+    assert expected == result

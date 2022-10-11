@@ -38,12 +38,13 @@ def create_models(
     schema_global: Optional[bool] = True,
     defaults_off: Optional[bool] = False,
     exit_silent: Optional[bool] = False,
+    no_auto_snake_case: Optional[bool] = False
 ):
     """ models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
     data = get_tables_information(ddl, ddl_path)
     data = prepare_data(data)
-    data = convert_ddl_to_models(data)
+    data = convert_ddl_to_models(data, no_auto_snake_case)
     if not data["tables"] and not data["types"]:
         if exit_silent:
             sys.exit(0)
@@ -61,15 +62,18 @@ def create_models(
 
 
 def snake_case(string: str) -> str:
+    if string.lower() in ['id']:
+        return string.lower()
     return re.sub(r"(?<!^)(?=[A-Z])", "_", string).lower()
 
 
-def convert_ddl_to_models(data):
+def convert_ddl_to_models(data: Dict, no_auto_snake_case: bool) -> Dict[str, list]:
     final_data = {"tables": [], "types": []}
     tables = []
     for table in data["tables"]:
         for column in table["columns"]:
-            column["name"] = snake_case(column["name"])
+            if not no_auto_snake_case:
+                column["name"] = snake_case(column["name"])
         tables.append(TableMeta(**table))
     final_data["tables"] = tables
     _types = []

@@ -80,6 +80,7 @@ class ModelGenerator:
 
         # mean one model one table
         model += "\n\n"
+        # generate class name
         model += (
             dt.dataclass_class.format(
                 class_name=create_class_name(table.name, singular, exceptions),
@@ -87,6 +88,8 @@ class ModelGenerator:
             )
         ) + "\n\n"
         columns = {"default": [], "non_default": []}
+        
+        # generate columns / attrs
         for column in table.columns:
             column = t.prepare_column_data(column)
             column_str = self.generate_attr(column, defaults_off) + "\n"
