@@ -96,3 +96,44 @@ attachments = Table("attachments", metadata,
 
     result = create_models(ddl, models_type="sqlalchemy_core")["code"]
     assert result == expected
+
+
+def test_keyword_args():
+    expected = """import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+
+
+Base = declarative_base()
+
+
+class Merchants(Base):
+
+    __tablename__ = 'merchants'
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+    merchant_name = sa.Column(sa.String())
+
+
+class Products(Base):
+
+    __tablename__ = 'products'
+
+    id = sa.Column(sa.Integer(), nullable=False)
+    merchant_id = sa.Column(sa.Integer(), sa.ForeignKey('merchants.id'), nullable=False)
+"""
+
+    ddl = """
+    CREATE TABLE "merchants" (
+    "id" int PRIMARY KEY,
+    "merchant_name" varchar
+    );
+
+    CREATE TABLE "products" (
+    "ID" int PRIMARY KEY,
+    "merchant_id" int NOT NULL
+    );
+
+    ALTER TABLE "products" ADD FOREIGN KEY ("merchant_id") REFERENCES "merchants" ("id");
+    """
+    result = create_models(ddl, models_type='sqlalchemy')['code']
+    assert result == expected

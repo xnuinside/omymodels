@@ -314,6 +314,21 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 Changelog
 ---------
 
+**v0.12.0**
+
+Fixes
+^^^^^
+
+
+#. Now named arguments always went after positional. Fix for https://github.com/xnuinside/omymodels/issues/35
+
+New feature:
+^^^^^^^^^^^^
+
+
+#. Availability to disable auto-name convertion - https://github.com/xnuinside/omymodels/issues/36. 
+   Now, if you want to keep names 1-to-1 as in your DDL file, you can set argument ``no_auto_snake_case=True`` and O!MyModels will do nothing with the table or column names.
+
 **v0.11.1**
 
 Improvements:

@@ -25,7 +25,19 @@ def setup_column_attributes(
     templates,
     obj,
 ) -> str:
+    # foreign is a positional - so it should be before keyword args
+    if "columns" in table_data.alter:
+        for alter_column in table_data.alter["columns"]:
+            if (
+                alter_column["name"] == column_data.name
+                and not alter_column["constraint_name"]
+                and alter_column["references"]
+            ):
 
+                column = add_reference_to_the_column(
+                    alter_column["name"], column, alter_column["references"], templates
+                )
+    # keyword named args
     if column_data.type.lower() == "serial" or column_data.type.lower() == "bigserial":
         column += templates.autoincrement
     if column_data.references:
@@ -41,17 +53,7 @@ def setup_column_attributes(
     if column_data.unique:
         column += templates.unique
 
-    if "columns" in table_data.alter:
-        for alter_column in table_data.alter["columns"]:
-            if (
-                alter_column["name"] == column_data.name
-                and not alter_column["constraint_name"]
-                and alter_column["references"]
-            ):
-
-                column = add_reference_to_the_column(
-                    alter_column["name"], column, alter_column["references"], templates
-                )
+    
     return column
 
 
