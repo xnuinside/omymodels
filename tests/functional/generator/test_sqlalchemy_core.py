@@ -135,5 +135,5 @@ class Products(Base):
 
     ALTER TABLE "products" ADD FOREIGN KEY ("merchant_id") REFERENCES "merchants" ("id");
     """
-    result = create_models(ddl, models_type='sqlalchemy')['code']
+    result = create_models(ddl, models_type="sqlalchemy")["code"]
     assert result == expected

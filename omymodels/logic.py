@@ -1,11 +1,12 @@
 from typing import Dict, List
+
 import omymodels.types as t
 
 
 def generate_column(
     column_data: Dict, table_pk: List[str], table_data: Dict, templates, obj
 ) -> str:
-    """ method to generate full column defention for sqlalchemy & gino ORM models """
+    """method to generate full column defention for sqlalchemy & gino ORM models"""
     column_type = t.prepare_column_type_orm(obj, column_data)
     column = templates.column_template.format(
         column_name=column_data.name, column_type=column_type
@@ -53,7 +54,6 @@ def setup_column_attributes(
     if column_data.unique:
         column += templates.unique
 
-    
     return column
 
 

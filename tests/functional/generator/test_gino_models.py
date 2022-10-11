@@ -1,4 +1,5 @@
 import os
+
 from omymodels import create_models
 
 
@@ -296,7 +297,7 @@ class Products(db.Model):
     ID = db.Column(db.Integer(), primary_key=True)
     merchant_id = db.Column(db.Integer(), db.ForeignKey('merchants.id'), nullable=False)
 """
-        
+
     ddl = """
     CREATE TABLE "merchants" (
     "id" int PRIMARY KEY,
@@ -310,5 +311,5 @@ class Products(db.Model):
 
     ALTER TABLE "products" ADD FOREIGN KEY ("merchant_id") REFERENCES "merchants" ("id");
     """
-    result = create_models(ddl, models_type='gino', no_auto_snake_case=True)['code']
+    result = create_models(ddl, models_type="gino", no_auto_snake_case=True)["code"]
     assert expected == result
