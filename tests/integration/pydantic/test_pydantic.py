@@ -13,6 +13,7 @@ def test_pydantic_models_are_working_as_expected(load_generated_code) -> None:
         ,status                varchar(10) not null
         ,event_time            timestamp not null default now()
         ,comment           varchar(1000) not null default 'none'
+        ,event_time2           timestamp not null default current_timestamp
         ) ;
 
 
