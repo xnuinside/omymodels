@@ -297,9 +297,14 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 
 
 ## Changelog
+**v0.12.1**
+### Improvements
+
+1. current_timestamp https://github.com/xnuinside/omymodels/pull/38 processed now same was as now()
+
+
 **v0.12.0**
 ### Fixes
-
 1. Now named arguments always went after positional. Fix for https://github.com/xnuinside/omymodels/issues/35
 
 ### New feature:

@@ -314,6 +314,14 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 Changelog
 ---------
 
+**v0.12.1**
+
+Improvements
+^^^^^^^^^^^^
+
+
+#. current_timestamp https://github.com/xnuinside/omymodels/pull/38 processed now same was as now()
+
 **v0.12.0**
 
 Fixes
