@@ -25,7 +25,7 @@ class ModelGenerator:
         if isinstance(column_type, tuple):
             _type = column_type[1]
         return _type
-    
+
     def get_not_custom_type(self, column: Column):
         _type = None
         if "." in column.type:
@@ -44,7 +44,7 @@ class ModelGenerator:
         if _type == "UUID":
             self.uuid_import = True
         return _type
-    
+
     def generate_attr(self, column: Dict, defaults_off: bool) -> str:
 
         _type = None
@@ -69,7 +69,7 @@ class ModelGenerator:
     @staticmethod
     def add_default_values(column_str: str, column: Dict) -> str:
         if column.type.upper() in datetime_types:
-            if "now" in column.default.lower():
+            if "now" in column.default.lower() or "current_timestamp" in column.default.lower():
                 # todo: need to add other popular PostgreSQL & MySQL functions
                 column.default = "datetime.datetime.now()"
             elif "'" not in column.default:
