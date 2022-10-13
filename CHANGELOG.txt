@@ -1,6 +1,11 @@
+**v0.12.1**
+### Improvements
+
+1. current_timestamp function processed now same was as "now()" function from ddl
+
+
 **v0.12.0**
 ### Fixes
-
 1. Now named arguments always went after positional. Fix for https://github.com/xnuinside/omymodels/issues/35
 
 ### New feature:

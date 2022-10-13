@@ -1,9 +1,10 @@
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
+
 import omymodels.models.sqlalchemy.templates as st
+from omymodels import logic
+from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.sqlalchemy.types import types_mapping
 from omymodels.types import datetime_types
-from omymodels.helpers import create_class_name
-from omymodels import logic
 
 
 class GeneratorBase:
@@ -25,7 +26,7 @@ class ModelGenerator(GeneratorBase):
     def prepare_column_default(self, column_data: Dict, column: str) -> str:
         if isinstance(column_data.default, str):
             if column_data.type.upper() in datetime_types:
-                if "now" in column_data.default.lower():
+                if datetime_now_check(column_data.default.lower()):
                     # todo: need to add other popular PostgreSQL & MySQL functions
                     column_data.default = "func.now()"
                     self.state.add("func")
@@ -48,7 +49,7 @@ class ModelGenerator(GeneratorBase):
         *args,
         **kwargs,
     ) -> str:
-        """ method to prepare one Model defention - name & tablename  & columns """
+        """method to prepare one Model defention - name & tablename  & columns"""
         model = ""
 
         model = st.model_template.format(
@@ -62,7 +63,7 @@ class ModelGenerator(GeneratorBase):
         return model
 
     def create_header(self, tables: List[Dict], schema: bool = False) -> str:
-        """ header of the file - imports & sqlalchemy init """
+        """header of the file - imports & sqlalchemy init"""
         header = ""
         if "func" in self.state:
             header += st.sql_alchemy_func_import + "\n"

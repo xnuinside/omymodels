@@ -1,10 +1,12 @@
-from typing import List, Dict
-import omymodels.models.sqlalchemy_core.templates as st
-from omymodels.models.sqlalchemy.types import types_mapping, postgresql_dialect
-from omymodels.types import datetime_types
-import omymodels.types as t
+from typing import Dict, List
 
 from table_meta.model import Column
+
+import omymodels.models.sqlalchemy_core.templates as st
+import omymodels.types as t
+from omymodels.helpers import datetime_now_check
+from omymodels.models.sqlalchemy.types import postgresql_dialect, types_mapping
+from omymodels.types import datetime_types
 
 
 class ModelGenerator:
@@ -27,7 +29,7 @@ class ModelGenerator:
         return column_type
 
     def prepare_column_type(self, column_data: Dict) -> str:
-        """ extract and map column type """
+        """extract and map column type"""
         self.no_need_par = False
         column_type = None
         if "." in column_data.type:
@@ -59,10 +61,10 @@ class ModelGenerator:
             return f"({','.join([str(x) for x in size])})"
 
     def column_default(self, column_data: Dict) -> str:
-        """ extract & format column default values """
+        """extract & format column default values"""
         if isinstance(column_data.default, str):
             if column_data.type.upper() in datetime_types:
-                if "now" in column_data.default.lower():
+                if datetime_now_check(column_data.default.lower()):
                     # todo: need to add other popular PostgreSQL & MySQL functions
                     column_data.default = "func.now()"
                     self.state.add("func")
@@ -114,7 +116,7 @@ class ModelGenerator:
 
     @staticmethod
     def column_reference(column_name: str, reference: Dict[str, str]) -> str:
-        """ ForeignKey property creator """
+        """ForeignKey property creator"""
         ref_property = st.fk_in_column.format(
             ref_table=reference["table"], ref_column=reference["column"] or column_name
         )
@@ -127,7 +129,7 @@ class ModelGenerator:
     def generate_column(
         self, column_data: Column, table_pk: List[str], table_data: Dict
     ) -> str:
-        """ method to generate full column defention """
+        """method to generate full column defention"""
         column_data = t.prepare_column_data(column_data)
         column_type = self.prepare_column_type(column_data)
         properties = "".join(
@@ -174,7 +176,7 @@ class ModelGenerator:
         return indexes, unique_constr
 
     def generate_model(self, data: Dict, *args, **kwargs) -> str:
-        """ method to prepare one Model defention - name & tablename  & columns """
+        """method to prepare one Model defention - name & tablename  & columns"""
         model = ""
         # mean this is a table
         table = data
@@ -207,7 +209,7 @@ class ModelGenerator:
         return model
 
     def create_header(self, tables: List[Dict], schema: bool = False) -> str:
-        """ header of the file - imports & sqlalchemy init """
+        """header of the file - imports & sqlalchemy init"""
         header = ""
         if "func" in self.state:
             header += st.sql_alchemy_func_import + "\n"

@@ -48,7 +48,7 @@ def get_singular_name(table_name: Text, exceptions: Optional[List] = None) -> Te
 def create_class_name(
     table_name: Text, singular: bool = False, exceptions: Optional[List] = None
 ) -> Text:
-    """ create correct class name for table in PascalCase """
+    """create correct class name for table in PascalCase"""
     if singular:
         model_name = get_singular_name(table_name)
     else:
@@ -97,3 +97,9 @@ def add_custom_types_to_generator(types: List[Type], generator: object) -> objec
         for _type in types
     }
     return generator
+
+
+def datetime_now_check(string: str) -> bool:
+    if "now" in string or "current_timestamp" in string:
+        return True
+    return False

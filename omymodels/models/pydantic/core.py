@@ -1,10 +1,12 @@
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
+
+from table_meta.model import Column
+
+import omymodels.types as t
+from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.pydantic import templates as pt
-from omymodels.helpers import create_class_name
 from omymodels.models.pydantic.types import types_mapping
 from omymodels.types import datetime_types
-import omymodels.types as t
-from table_meta.model import Column
 
 
 class ModelGenerator:
@@ -69,7 +71,7 @@ class ModelGenerator:
     @staticmethod
     def add_default_values(column_str: str, column: Dict) -> str:
         if column.type.upper() in datetime_types:
-            if "now" in column.default.lower() or "current_timestamp" in column.default.lower():
+            if datetime_now_check(column.default.lower()):
                 # todo: need to add other popular PostgreSQL & MySQL functions
                 column.default = "datetime.datetime.now()"
             elif "'" not in column.default:
