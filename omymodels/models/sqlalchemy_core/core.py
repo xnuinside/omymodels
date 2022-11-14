@@ -79,7 +79,11 @@ class ModelGenerator:
         return default_property
 
     def get_column_attributes(
-        self, column_data: Dict, table_pk: List[str], table_data: Dict
+        self,
+        column_data: Dict,
+        table_pk: List[str],
+        table_data: Dict,
+        schema_global: bool,
     ) -> List[str]:
         properties = []
         if (
@@ -89,7 +93,9 @@ class ModelGenerator:
             properties.append(st.autoincrement)
         if column_data.references:
             properties.append(
-                self.column_reference(column_data.name, column_data.references)
+                self.column_reference(
+                    column_data.name, column_data.references, schema_global
+                )
             )
         if not column_data.nullable and column_data.name not in table_pk:
             properties.append(st.required)
@@ -109,17 +115,30 @@ class ModelGenerator:
                 ):
                     properties.append(
                         self.column_reference(
-                            alter_column["name"], alter_column["references"]
+                            alter_column["name"],
+                            alter_column["references"],
+                            schema_global,
                         )
                     )
         return properties
 
     @staticmethod
-    def column_reference(column_name: str, reference: Dict[str, str]) -> str:
+    def column_reference(
+        column_name: str, reference: Dict[str, str], schema_global: bool
+    ) -> str:
         """ForeignKey property creator"""
-        ref_property = st.fk_in_column.format(
-            ref_table=reference["table"], ref_column=reference["column"] or column_name
-        )
+        if reference["schema"] and not schema_global:
+            ref_property = st.fk_in_column.format(
+                ref_schema=reference["schema"],
+                ref_table=reference["table"],
+                ref_column=reference["column"] or column_name,
+            )
+        else:
+            ref_property = st.fk_in_column_without_schema.format(
+                ref_table=reference["table"],
+                ref_column=reference["column"] or column_name,
+            )
+
         if reference["on_delete"]:
             ref_property += st.on_delete.format(mode=reference["on_delete"].upper())
         if reference["on_update"]:
@@ -127,13 +146,17 @@ class ModelGenerator:
         return ref_property
 
     def generate_column(
-        self, column_data: Column, table_pk: List[str], table_data: Dict
+        self,
+        column_data: Column,
+        table_pk: List[str],
+        table_data: Dict,
+        schema_global: bool,
     ) -> str:
         """method to generate full column defention"""
         column_data = t.prepare_column_data(column_data)
         column_type = self.prepare_column_type(column_data)
         properties = "".join(
-            self.get_column_attributes(column_data, table_pk, table_data)
+            self.get_column_attributes(column_data, table_pk, table_data, schema_global)
         )
 
         column = st.column_template.format(
@@ -181,9 +204,12 @@ class ModelGenerator:
         # mean this is a table
         table = data
         columns = ""
+        schema_global = kwargs["schema_global"]
 
         for column in table.columns:
-            columns += self.generate_column(column, table.primary_key, table)
+            columns += self.generate_column(
+                column, table.primary_key, table, schema_global
+            )
 
         table_var_name = table.name.replace("-", "_")
 

@@ -32,7 +32,8 @@ fk_constraint_template = """
     {fk_name} = db.ForeignKeyConstraint(
         [{fk_columns}], [{fk_references_columns}])
 """
-fk_in_column = ", db.ForeignKey('{ref_table}.{ref_column}')"
+fk_in_column = ", db.ForeignKey('{ref_schema}.{ref_table}.{ref_column}')"
+fk_in_column_without_schema = ", sa.ForeignKey('{ref_table}.{ref_column}')"
 unique_index_template = """
     UniqueConstraint({columns}, name={name})"""
 
