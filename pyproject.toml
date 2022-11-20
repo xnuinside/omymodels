@@ -23,7 +23,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.6.2,<4.0"
-simple-ddl-parser = "0.27.0"
+simple-ddl-parser = "^0.28"
 Jinja2 = "^3.0.1"
 py-models-parser = "0.6.0"
 pydantic = "^1.8.2"

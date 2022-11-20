@@ -19,6 +19,7 @@ pk_template = ", primary_key=True"
 unique = ", unique=True"
 autoincrement = ", autoincrement=True"
 index = ", index=True"
+fk_in_column_without_schema = ", sa.ForeignKey('{ref_table}.{ref_column}')"
 
 
 fk_constraint_template = """
