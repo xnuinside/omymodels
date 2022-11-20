@@ -314,13 +314,21 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 Changelog
 ---------
 
+**v0.13.0**
+
+New feature
+-----------
+
+
+#. Added argument 'schema_global=' to support SQLAlchemy & Gino different table schemas https://github.com/xnuinside/omymodels/issues/41
+
 **v0.12.1**
 
 Improvements
 ^^^^^^^^^^^^
 
 
-#. current_timestamp https://github.com/xnuinside/omymodels/pull/38 processed now same was as now()
+#. current_timestamp function processed now same was as "now()" function from ddl
 
 **v0.12.0**
 
