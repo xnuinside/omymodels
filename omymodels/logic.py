@@ -4,7 +4,12 @@ import omymodels.types as t
 
 
 def generate_column(
-    column_data: Dict, table_pk: List[str], table_data: Dict, templates, obj
+    column_data: Dict,
+    table_pk: List[str],
+    table_data: Dict,
+    schema_global: bool,
+    templates,
+    obj,
 ) -> str:
     """method to generate full column defention for sqlalchemy & gino ORM models"""
     column_type = t.prepare_column_type_orm(obj, column_data)
@@ -12,7 +17,7 @@ def generate_column(
         column_name=column_data.name, column_type=column_type
     )
     column = setup_column_attributes(
-        column_data, table_pk, column, table_data, templates, obj
+        column_data, table_pk, column, table_data, schema_global, templates, obj
     )
     column += ")\n"
     return column
@@ -23,6 +28,7 @@ def setup_column_attributes(
     table_pk: List[str],
     column: str,
     table_data: Dict,
+    schema_global: bool,
     templates,
     obj,
 ) -> str:
@@ -36,14 +42,18 @@ def setup_column_attributes(
             ):
 
                 column = add_reference_to_the_column(
-                    alter_column["name"], column, alter_column["references"], templates
+                    alter_column["name"],
+                    column,
+                    alter_column["references"],
+                    schema_global,
+                    templates,
                 )
     # keyword named args
     if column_data.type.lower() == "serial" or column_data.type.lower() == "bigserial":
         column += templates.autoincrement
     if column_data.references:
         column = add_reference_to_the_column(
-            column_data.name, column, column_data.references, templates
+            column_data.name, column, column_data.references, schema_global, templates
         )
     if not column_data.nullable and column_data.name not in table_pk:
         column += templates.required
@@ -58,11 +68,23 @@ def setup_column_attributes(
 
 
 def add_reference_to_the_column(
-    column_name: str, column: str, reference: Dict[str, str], templates
+    column_name: str,
+    column: str,
+    reference: Dict[str, str],
+    schema_global: bool,
+    templates,
 ) -> str:
-    column += templates.fk_in_column.format(
-        ref_table=reference["table"], ref_column=reference["column"] or column_name
-    )
+    if reference["schema"] and not schema_global:
+        column += templates.fk_in_column.format(
+            ref_schema=reference["schema"],
+            ref_table=reference["table"],
+            ref_column=reference["column"] or column_name,
+        )
+    else:
+        column += templates.fk_in_column_without_schema.format(
+            ref_table=reference["table"],
+            ref_column=reference["column"] or column_name,
+        )
     if reference["on_delete"]:
         column += templates.on_delete.format(mode=reference["on_delete"].upper())
     if reference["on_update"]:

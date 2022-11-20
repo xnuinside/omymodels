@@ -1,3 +1,8 @@
+**v0.13.0**
+## New feature
+
+1. Added argument 'schema_global=' to support SQLAlchemy & Gino different table schemas https://github.com/xnuinside/omymodels/issues/41
+
 **v0.12.1**
 ### Improvements
 

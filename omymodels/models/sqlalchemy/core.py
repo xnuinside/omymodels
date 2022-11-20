@@ -57,7 +57,9 @@ class ModelGenerator(GeneratorBase):
             table_name=table.name,
         )
         for column in table.columns:
-            model += logic.generate_column(column, table.primary_key, table, st, self)
+            model += logic.generate_column(
+                column, table.primary_key, table, schema_global, st, self
+            )
         if table.indexes or table.alter or table.checks or not schema_global:
             model = logic.add_table_args(self, model, table, schema_global)
         return model

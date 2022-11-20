@@ -173,3 +173,59 @@ CREATE TABLE "material" (
 """
     result = create_models(ddl, models_type="sqlalchemy")
     assert expected == result["code"]
+
+
+def test_foreign_keys_in_different_schema():
+    expected = """import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+
+
+Base = declarative_base()
+
+
+class Table1(Base):
+
+    __tablename__ = 'table1'
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+    reference_to_table_in_another_schema = sa.Column(sa.Integer(), sa.ForeignKey('schema2.table2.id'), nullable=False)
+
+    __table_args__ = (
+                
+    dict(schema="schema1")
+            )
+
+
+
+class Table2(Base):
+
+    __tablename__ = 'table2'
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+
+    __table_args__ = (
+                
+    dict(schema="schema2")
+            )
+
+"""
+    ddl = """
+CREATE SCHEMA "schema1";
+
+CREATE SCHEMA "schema2";
+
+CREATE TABLE "schema1"."table1" (
+  "id" int PRIMARY KEY,
+  "reference_to_table_in_another_schema" int NOT NULL
+);
+
+CREATE TABLE "schema2"."table2" (
+  "id" int PRIMARY KEY
+);
+
+ALTER TABLE "schema1"."table1" ADD FOREIGN KEY
+("reference_to_table_in_another_schema") REFERENCES "schema2"."table2" ("id");
+"""
+    result = create_models(ddl, schema_global=False, models_type="sqlalchemy")["code"]
+    print(result)
+    assert result == expected

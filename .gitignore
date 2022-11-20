@@ -6,3 +6,4 @@ dist/
 .vscode/
 tests/generator/_models.py
 ./models.py
+poetry.lock
