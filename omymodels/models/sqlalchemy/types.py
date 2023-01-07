@@ -32,6 +32,7 @@ direct_types = {
     "smallint": "sa.SmallInteger",
     "jsonb": "JSONB",
     "uuid": "UUID",
+    "real": "sa.REAL",
 }
 
 types_mapping.update(direct_types)
