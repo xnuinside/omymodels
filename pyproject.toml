@@ -8,10 +8,10 @@ readme = "docs/README.rst"
 homepage = "https://github.com/xnuinside/omymodels"
 repository = "https://github.com/xnuinside/omymodels"
 classifiers = [
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Programming Language :: PL/SQL",
     "Programming Language :: SQL",
     "Topic :: Software Development",
@@ -22,7 +22,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.6.2,<4.0"
+python = ">=3.7,<4.0"
 simple-ddl-parser = "^0.28"
 Jinja2 = "^3.0.1"
 py-models-parser = "0.6.0"
@@ -30,7 +30,7 @@ pydantic = "^1.8.2"
 table-meta = "^0.1.5"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "^7.2"
 m2r = "^0.2.1"
 black = "^20.8b1"
 twine = "^3.3.0"
