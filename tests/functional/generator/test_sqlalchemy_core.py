@@ -165,5 +165,3 @@ def test_real():
 
     result = create_models(ddl, models_type="sqlalchemy")["code"]
     assert result == expected
-
-
