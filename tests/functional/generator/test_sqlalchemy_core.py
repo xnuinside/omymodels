@@ -141,20 +141,20 @@ class Products(Base):
 
 def test_real():
     expected = """import sqlalchemy as sa
-    from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base
 
 
-    Base = declarative_base()
+Base = declarative_base()
 
 
-    class Measurements(Base):
+class Measurements(Base):
 
-        __tablename__ = 'measurements'
+    __tablename__ = 'measurements'
 
-        id = sa.Column(sa.String(32), primary_key=True)
-        date = sa.Column(sa.TIMESTAMP())
-        value = sa.Column(sa.REAL())
-    """
+    id = sa.Column(sa.String(32), primary_key=True)
+    date = sa.Column(sa.TIMESTAMP())
+    value = sa.Column(sa.REAL())
+"""
 
     ddl = """
     CREATE TABLE "measurements" (
