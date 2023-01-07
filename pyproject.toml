@@ -8,10 +8,11 @@ readme = "docs/README.rst"
 homepage = "https://github.com/xnuinside/omymodels"
 repository = "https://github.com/xnuinside/omymodels"
 classifiers = [
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: PL/SQL",
     "Programming Language :: SQL",
     "Topic :: Software Development",
