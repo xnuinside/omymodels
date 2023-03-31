@@ -5,6 +5,8 @@ from typing import Optional
 
 class BaseGenerator(BaseProvider):
 
+    name = 'define-name-of-your-generator'
+
     def run(self, input, params):
         pass
 

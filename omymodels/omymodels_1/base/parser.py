@@ -5,6 +5,8 @@ from .provider import BaseProvider
 
 class BaseParser(BaseProvider):
 
+    name = 'base-parser'
+
     def run(self, input, params):
         pass
 
