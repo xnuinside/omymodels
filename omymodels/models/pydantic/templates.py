@@ -16,3 +16,8 @@ enum_value = """    {name} = {value}"""
 enum_import = "from enum import {enums}"
 
 uuid_import = "from uuid import UUID"
+
+field = "Field({field_keys})"
+
+# jinja2 template strokes
+field_keys = """{% for key, value in field_keys.items() %}{{key}}={{value}}{% endfor %},"""

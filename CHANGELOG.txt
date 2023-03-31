@@ -1,3 +1,20 @@
+**1.0.0**
+
+O!MyModels became a framework for transpailing code from one source to another.
+Now you can plug-in your own parsers or model generators to work with O!MyModels.
+
+From the box, right now supported generator for Pydantic & Dataclasses:
+https://github.com/koxudaxi/datamodel-code-generator
+
+To use it install omymodels with extras: pip install omymodels[datamodel].
+After send argument `generator=datamodel` to cli or method.
+
+## Improvements
+# In basic
+1. Field size now is described in `max_length` arg in Pydantic models and if coliumn has default, size or other properties - it will be described as Field in Pydantic model.
+Issue: https://github.com/xnuinside/omymodels/issues/48
+
+
 **v0.13.0**
 ## New feature
 

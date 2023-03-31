@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "omymodels"
-version = "0.13.0"
-description = "O! My Models (omymodels) is a library to generate Python Models for SQLAlchemy (ORM & Core), GinoORM, Pydantic, Pydal tables & Python Dataclasses from SQL DDL. And convert one models to another."
+version = "1.0.0"
+description = "O! My Models (omymodels) is a Transpile Framework to generate & convert from different formats Python Models for SQLAlchemy (ORM & Core), GinoORM, Pydantic, Pydal tables & Python Dataclasses from SQL DDL."
 authors = ["Iuliia Volkova <xnuinside@gmail.com>"]
 license = "MIT"
 readme = "docs/README.rst"
@@ -23,11 +23,12 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-simple-ddl-parser = "^0.28"
+simple-ddl-parser = "^0.30"
 Jinja2 = "^3.0.1"
 py-models-parser = "0.6.0"
 pydantic = "^1.8.2"
 table-meta = "^0.1.5"
+datamodel-code-generator = {version = "^0.17.1", extras = ["datamodel"]}
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.2"

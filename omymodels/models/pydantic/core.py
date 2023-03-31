@@ -1,12 +1,29 @@
 from typing import Dict, List, Optional
 
 from table_meta.model import Column
-
+from abc import ABC, abstractmethod
 import omymodels.types as t
 from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.pydantic import templates as pt
 from omymodels.models.pydantic.types import types_mapping
 from omymodels.types import datetime_types
+
+
+
+class ColumnGenerator(ABC):
+    # class that generates column based on provided data
+    @abstractmethod
+    def generate_column():
+        pass
+
+
+    def generate_column():
+        pass
+
+
+class SimpleColumn(ColumnGenerator):
+    def generate_column():
+        pass
 
 
 class ModelGenerator:
@@ -47,10 +64,15 @@ class ModelGenerator:
             self.uuid_import = True
         return _type
 
-    def generate_attr(self, column: Dict, defaults_off: bool) -> str:
+    def generate_attr(self, column: Column, defaults_off: bool) -> str:
 
         _type = None
+        
+        field = False
 
+        if column.size:
+            self.imports.append('Field')
+            field = True
         if column.nullable:
             self.typing_imports.add("Optional")
             column_str = pt.pydantic_optional_attr

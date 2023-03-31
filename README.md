@@ -15,6 +15,48 @@ Supported Models:
 - Python Enum (https://docs.python.org/3/library/enum.html) - generated only from DDL SQL Types,
 - Python Dataclasses (dataclasses module) (https://docs.python.org/3/library/dataclasses.html),
 
+## Important changes from version 1.0.0
+
+O!MyModels became a framework for data models transpiling source-to-source.
+It provide a base to plug-in different parsers for different types of inputs (SQL, Pydantic, dataclasses, PythonORM and etc) and plug-in different types of generators.
+
+It also provide a set of pre-installed and tested parses & generators, but also you can add you own custom without needs to fork project - just use a provided APIs.
+
+
+### How it works
+
+O!MyModels is a framework for transpiling data models code from one source to another.
+
+It has several separate steps:
+
+- Parse input
+- Convert Source Input to expected standard 
+- Call Model Generator with provided Source Input
+- Thats it!
+
+
+Because there is a lot of varios possible inputs and various of possible outputs it is no make sense to write all parser and generators from scratch because some of them already exists.
+
+For example, for Pydantic & dataclasses exists greate models generator - https://github.com/koxudaxi/datamodel-code-generator. Why not use this? 
+
+And you can do it right now with O!MyModels!
+
+datamodel-code-generator is a first supported by Framework
+
+Of couse, O!MyModels default generator also in place. 
+
+To use datamodel-code-generator as an output generator you should install O!MyModels with extras:
+
+`pip install omymodels[datamodel]`
+
+And after, when you will use library provide argument: `generator='datamodel'`
+
+If you want send any configs that supported by datamodel-code-generator you can do with argument
+`generator_params={# and send in dict everything that you need}`
+
+Let's see the example:
+
+
 
 ## How to install
 
