@@ -8,7 +8,7 @@ class BaseProvider(ABC, EqualByNameMixIn):
 
     def __init_subclass__(cls, /, **kwargs):
         if not isinstance(cls.name, str):
-            raise ValueError("`name`should be a class variable of type string")
+            raise ValueError("`name` variable of Provider class should have a string type")
         if cls.name == cls.mro()[1].name and cls.__name__ != cls.mro()[1].__name__:
             raise ValueError("You should define `name` class variable in your Provider class. "
                              "Name should be user friendly and will be used to choose provider with config")

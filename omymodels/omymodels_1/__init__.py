@@ -1,4 +1,4 @@
-from .providers import Providers
+from .main import ProvidersCatalog
 
 
-providers = Providers()
+providers = ProvidersCatalog()
