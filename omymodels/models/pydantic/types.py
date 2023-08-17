@@ -1,14 +1,14 @@
 from omymodels.types import (
-    populate_types_mapping,
-    string_types,
-    integer_types,
     big_integer_types,
-    float_types,
-    numeric_types,
+    binary_types,
     boolean_types,
     datetime_types,
-    binary_types,
+    float_types,
+    integer_types,
     json_types,
+    numeric_types,
+    populate_types_mapping,
+    string_types,
     text_types,
 )
 
@@ -22,7 +22,7 @@ mapper = {
     datetime_types: "datetime.datetime",
     json_types: "Json",
     text_types: "str",
-    binary_types: "bytes"
+    binary_types: "bytes",
 }
 
 types_mapping = populate_types_mapping(mapper)

@@ -1,9 +1,10 @@
 import argparse
 import os
+import pprint
 import sys
+
 from omymodels import create_models
 from omymodels.generators import supported_models
-import pprint
 
 
 def version(**kwargs):
@@ -11,7 +12,6 @@ def version(**kwargs):
 
 
 def cli():
-
     omm_cli = argparse.ArgumentParser(
         description="O! My Models. Create GinoORM models from SQL DDL"
     )

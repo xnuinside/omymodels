@@ -11,7 +11,6 @@ from omymodels.types import datetime_types
 
 class ModelGenerator:
     def __init__(self):
-
         self.imports = set([pt.base_model])
         self.types_for_import = ["Json"]
         self.datetime_import = False
@@ -21,7 +20,6 @@ class ModelGenerator:
         self.prefix = ""
 
     def add_custom_type(self, target_type):
-
         column_type = self.custom_types.get(target_type, None)
         _type = None
         if isinstance(column_type, tuple):
@@ -48,7 +46,6 @@ class ModelGenerator:
         return _type
 
     def generate_attr(self, column: Dict, defaults_off: bool) -> str:
-
         _type = None
 
         if column.nullable:

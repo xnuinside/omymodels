@@ -1,19 +1,18 @@
 from enum import Enum
-from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import JSON, ARRAY
+
 from gino import Gino
+from sqlalchemy.dialects.postgresql import ARRAY, JSON
+from sqlalchemy.sql import func
 
 db = Gino()
 
 
 class MaterialType(str, Enum):
-
     article = "article"
     video = "video"
 
 
 class Material(db.Model):
-
     __tablename__ = "material"
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
@@ -27,7 +26,6 @@ class Material(db.Model):
 
 
 class Author(db.Model):
-
     __tablename__ = "author"
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
@@ -36,7 +34,6 @@ class Author(db.Model):
 
 
 class MaterialAuthors(db.Model):
-
     __tablename__ = "material_authors"
 
     category = db.Column(db.Integer(), db.ForeignKey("author.id"))
@@ -44,7 +41,6 @@ class MaterialAuthors(db.Model):
 
 
 class MaterialPlatforms(db.Model):
-
     __tablename__ = "material_platforms"
 
     category = db.Column(db.Integer(), db.ForeignKey("platform.id"))
@@ -52,7 +48,6 @@ class MaterialPlatforms(db.Model):
 
 
 class Platform(db.Model):
-
     __tablename__ = "platform"
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
@@ -61,7 +56,6 @@ class Platform(db.Model):
 
 
 class MaterialCategories(db.Model):
-
     __tablename__ = "material_categories"
 
     category = db.Column(db.Integer(), db.ForeignKey("category.id"))
@@ -69,7 +63,6 @@ class MaterialCategories(db.Model):
 
 
 class Category(db.Model):
-
     __tablename__ = "category"
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
@@ -80,7 +73,6 @@ class Category(db.Model):
 
 
 class ContentFilters(db.Model):
-
     __tablename__ = "content_filters"
 
     category = db.Column(db.Integer(), db.ForeignKey("category.id"))

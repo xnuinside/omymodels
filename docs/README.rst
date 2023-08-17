@@ -20,7 +20,18 @@ O! My Models
    :alt: workflow
 
 
-Big example you can find in example/ folder on the github: https://github.com/xnuinside/omymodels/tree/main/example
+Try in Web-UI
+-------------
+
+Try the online O!MyModels converter or simply use it online: https://archon-omymodels-online.hf.space/ (A big thanks for that goes to https://github.com/archongum)
+
+Examples
+--------
+
+You can find usage examples in the example/ folder on GitHub: https://github.com/xnuinside/omymodels/tree/main/example
+
+About library
+-------------
 
 O! My Models (omymodels) is a library that allow you to **generate** different ORM & pure Python models from SQL DDL or **convert** one models type to another (exclude SQLAlchemy Table, it does not supported yet by py-models-parser).
 
@@ -311,8 +322,21 @@ Any questions? Ping me in Telegram: https://t.me/xnuinside or mail xnuinside@gma
 
 If you see any bugs or have any suggestions - feel free to open the issue. Any help will be appritiated.
 
+Appretiation & thanks
+---------------------
+
+One more time, big 'thank you!' goes to https://github.com/archongum for Web-version: https://archon-omymodels-online.hf.space/ 
+
 Changelog
 ---------
+
+**v0.14.0**
+
+Updates
+-------
+
+
+#. Python 3.11 support. 
 
 **v0.13.0**
 

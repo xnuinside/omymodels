@@ -2,7 +2,6 @@ from omymodels import create_models
 
 
 def test_no_unexpected_logs(capsys):
-
     ddl = """
     CREATE EXTERNAL TABLE test (
     test STRING NULL COMMENT 'xxxx',

@@ -1,13 +1,13 @@
 from omymodels.types import (
-    populate_types_mapping,
-    string_types,
-    integer_types,
     big_integer_types,
-    float_types,
-    numeric_types,
     boolean_types,
     datetime_types,
+    float_types,
+    integer_types,
     json_types,
+    numeric_types,
+    populate_types_mapping,
+    string_types,
 )
 
 postgresql_dialect = ["ARRAY", "JSON", "JSONB", "UUID"]

@@ -1,13 +1,13 @@
 import pathlib
 from types import ModuleType
+
 from jinja2 import Template
 
+from omymodels.models.dataclass import core as d
 from omymodels.models.gino import core as g
 from omymodels.models.pydantic import core as p
-from omymodels.models.dataclass import core as d
 from omymodels.models.sqlalchemy import core as s
 from omymodels.models.sqlalchemy_core import core as sc
-
 
 models = {
     "gino": g,

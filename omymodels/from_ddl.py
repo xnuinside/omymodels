@@ -38,9 +38,9 @@ def create_models(
     schema_global: Optional[bool] = True,
     defaults_off: Optional[bool] = False,
     exit_silent: Optional[bool] = False,
-    no_auto_snake_case: Optional[bool] = False
+    no_auto_snake_case: Optional[bool] = False,
 ):
-    """ models_type can be: "gino", "dataclass", "pydantic" """
+    """models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
     data = get_tables_information(ddl, ddl_path)
     data = prepare_data(data)
@@ -62,7 +62,7 @@ def create_models(
 
 
 def snake_case(string: str) -> str:
-    if string.lower() in ['id']:
+    if string.lower() in ["id"]:
         return string.lower()
     return re.sub(r"(?<!^)(?=[A-Z])", "_", string).lower()
 
@@ -99,7 +99,7 @@ def generate_models_file(
     schema_global: bool = True,
     defaults_off: Optional[bool] = False,
 ) -> str:
-    """ method to prepare full file with all Models &  """
+    """method to prepare full file with all Models &"""
     models_str = ""
     generator = get_generator_by_type(models_type)
     header = ""
@@ -108,7 +108,6 @@ def generate_models_file(
         models_str += types_generator.create_types()
         header += types_generator.create_header()
     if data["tables"]:
-
         add_custom_types_to_generator(data["types"], generator)
 
         for table in data["tables"]:
@@ -147,7 +146,7 @@ def clean_value(string: str) -> str:
 
 
 def iterate_over_the_list(items: List) -> str:
-    """ simple ddl parser return " in strings if in DDL them was used, we need to remove them"""
+    """simple ddl parser return " in strings if in DDL them was used, we need to remove them"""
     for item in items:
         if isinstance(item, dict):
             prepare_data(item)

@@ -307,6 +307,12 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 One more time, big 'thank you!' goes to https://github.com/archongum for Web-version: https://archon-omymodels-online.hf.space/ 
 
 ## Changelog
+**v0.14.0**
+## Updates
+
+1. Python 3.11 support. 
+
+
 **v0.13.0**
 ## New feature
 

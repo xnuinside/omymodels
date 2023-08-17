@@ -2,7 +2,6 @@ from omymodels import create_models
 
 
 def test_enum_only():
-
     ddl = """
     CREATE TYPE "material_type" AS ENUM (
     'video',

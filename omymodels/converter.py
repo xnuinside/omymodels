@@ -1,9 +1,10 @@
-from typing import List, Dict
+from typing import Dict, List
 
 from py_models_parser import parse
 from table_meta import TableMeta, Type
+
 from omymodels.generators import get_generator_by_type, render_jinja2_template
-from omymodels.helpers import from_class_to_table_name, add_custom_types_to_generator
+from omymodels.helpers import add_custom_types_to_generator, from_class_to_table_name
 from omymodels.models.enum import core as enum
 
 
@@ -51,7 +52,6 @@ def convert_models(model_from: str, models_type: str = "gino") -> str:
         models_str += types_generator.create_types()
         header += types_generator.create_header()
     if tables:
-
         add_custom_types_to_generator(types, generator)
 
         for table in tables:

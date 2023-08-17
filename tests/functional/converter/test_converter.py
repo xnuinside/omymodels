@@ -1,10 +1,10 @@
 import pytest
-from omymodels import convert_models
 from helpers import generate_params_for_converter
+
+from omymodels import convert_models
 
 
 def test_convert_models():
-
     models_from = """
 
     class MaterialType(str, Enum):

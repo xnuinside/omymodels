@@ -9,7 +9,6 @@ def from_class_to_table_name(name: str) -> str:
 
 
 def pluralize(word: str) -> str:
-
     no_plural = ["childrens"]
     if word in no_plural:
         return word
