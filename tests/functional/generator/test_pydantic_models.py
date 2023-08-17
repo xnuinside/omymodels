@@ -2,7 +2,6 @@ from omymodels import create_models
 
 
 def test_pydantic_models_generator():
-
     ddl = """
 CREATE table user_history (
         runid                 decimal(21) null

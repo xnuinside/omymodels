@@ -40,7 +40,6 @@ def setup_column_attributes(
                 and not alter_column["constraint_name"]
                 and alter_column["references"]
             ):
-
                 column = add_reference_to_the_column(
                     alter_column["name"],
                     column,
@@ -97,7 +96,6 @@ def add_table_args(obj, model: str, table: Dict, schema_global: bool = True) -> 
     t = obj.templates
     if table.indexes:
         for index in table.indexes:
-
             if not index["unique"]:
                 obj.im_index = True
                 statements.append(

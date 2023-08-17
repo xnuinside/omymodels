@@ -3,6 +3,7 @@ ddl must produce same output as model created directly from ddl
 """
 
 from typing import List, Tuple
+
 from omymodels import create_models
 from omymodels.generators import supported_models
 

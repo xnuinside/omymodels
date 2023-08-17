@@ -1,4 +1,5 @@
 from typing import Dict
+
 from table_meta.model import Column
 
 postgresql_dialect = ["ARRAY", "JSON", "JSONB", "UUID"]

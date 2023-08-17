@@ -1,3 +1,9 @@
+**v0.14.0**
+## Updates
+
+1. Python 3.11 support. 
+
+
 **v0.13.0**
 ## New feature
 

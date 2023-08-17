@@ -9,7 +9,6 @@ from omymodels.types import datetime_types
 
 class ModelGenerator:
     def __init__(self):
-
         self.types_for_import = ["Union"]
         self.datetime_import = False
         self.typing_imports = set()

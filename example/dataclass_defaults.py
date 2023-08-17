@@ -1,18 +1,16 @@
-from enum import Enum
 import datetime
-from typing import List, Union
 from dataclasses import dataclass
+from enum import Enum
+from typing import List, Union
 
 
 class MaterialType(str, Enum):
-
     article = "article"
     video = "video"
 
 
 @dataclass
 class Material:
-
     id: int
     title: str
     link: str
@@ -25,7 +23,6 @@ class Material:
 
 @dataclass
 class Author:
-
     id: int
     name: str = None
     link: str = None
@@ -33,21 +30,18 @@ class Author:
 
 @dataclass
 class MaterialAuthors:
-
     category: int = None
     material: int = None
 
 
 @dataclass
 class MaterialPlatforms:
-
     category: int = None
     material: int = None
 
 
 @dataclass
 class Platform:
-
     id: int
     name: str
     link: str
@@ -55,14 +49,12 @@ class Platform:
 
 @dataclass
 class MaterialCategories:
-
     category: int = None
     material: int = None
 
 
 @dataclass
 class Category:
-
     id: int
     name: str
     description: str = None
@@ -72,7 +64,6 @@ class Category:
 
 @dataclass
 class ContentFilters:
-
     category: int = None
     channels: List[str] = None
     words: List[str] = None

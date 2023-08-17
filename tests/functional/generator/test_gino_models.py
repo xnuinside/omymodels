@@ -116,7 +116,6 @@ class Table(db.Model):
 
 
 def test_schema_not_global():
-
     ddl = """
     CREATE TABLE "prefix--schema-name"."table" (
     _id uuid PRIMARY KEY,
@@ -150,7 +149,6 @@ class Table(db.Model):
 
 
 def test_foreign_key_from_alter():
-
     ddl = """
 
     CREATE TABLE "materials" (
@@ -221,7 +219,6 @@ class Attachments(db.Model):
 
 
 def test_foreign_key_from_column():
-
     ddl = """
 
     CREATE TABLE order_items (

@@ -1,15 +1,14 @@
 from enum import Enum
-from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import ARRAY, JSON
-import sqlalchemy as sa
-from sqlalchemy import Table, Column, MetaData
 
+import sqlalchemy as sa
+from sqlalchemy import Column, MetaData, Table
+from sqlalchemy.dialects.postgresql import ARRAY, JSON
+from sqlalchemy.sql import func
 
 metadata = MetaData()
 
 
 class MaterialType(str, Enum):
-
     article = "article"
     video = "video"
 
