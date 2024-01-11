@@ -244,7 +244,7 @@ class LinkedTo(Base):
   "complexpk_complex_id" int,
   "complexpk_date_part" int,
   "comment" varchar,
-  CONSTRAINT "id_date_part_ibfk" FOREIGN KEY ("complexpk_complex_id", "complexpk_date_part") 
+  CONSTRAINT "id_date_part_ibfk" FOREIGN KEY ("complexpk_complex_id", "complexpk_date_part")
     REFERENCES "complexpk" ("complex_id", "date_part")
   );
 

@@ -25,9 +25,8 @@ def get_tables_information(
         tables = DDLParser(ddl, normalize_names=True).run(group_by_type=True)
     elif ddl_file:
         tables = parse_from_file(
-            ddl_file, 
-            parser_settings={"normalize_names": True}, 
-            group_by_type=True)
+            ddl_file, parser_settings={"normalize_names": True}, group_by_type=True
+        )
     return tables
 
 
@@ -81,13 +80,17 @@ def convert_ddl_to_models(data: Dict, no_auto_snake_case: bool) -> Dict[str, lis
             # reference per column and then attach it to the column in the next
             # loop.
             for i in range(len(ref["columns"])):
-                ref_name = ref["name"].split(",")[i] if isinstance(ref["name"], str) else ref["name"][i]
+                ref_name = (
+                    ref["name"].split(",")[i]
+                    if isinstance(ref["name"], str)
+                    else ref["name"][i]
+                )
                 if not no_auto_snake_case:
                     ref_name = snake_case(ref_name)
                 single_ref = copy.deepcopy(ref)
                 single_ref["column"] = ref["columns"][i]
                 del single_ref["columns"]
-                ref_name = ref_name.replace('"', '')
+                ref_name = ref_name.replace('"', "")
                 refs[ref_name] = single_ref
         for column in table["columns"]:
             if not no_auto_snake_case:
