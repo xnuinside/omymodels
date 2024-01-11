@@ -1,3 +1,4 @@
+import copy
 import os
 import re
 import sys
@@ -21,9 +22,12 @@ def get_tables_information(
             "contains ddl or ddl_file that contains path to ddl file to parse"
         )
     if ddl:
-        tables = DDLParser(ddl).run(group_by_type=True)
+        tables = DDLParser(ddl, normalize_names=True).run(group_by_type=True)
     elif ddl_file:
-        tables = parse_from_file(ddl_file, group_by_type=True)
+        tables = parse_from_file(
+            ddl_file, 
+            parser_settings={"normalize_names": True}, 
+            group_by_type=True)
     return tables
 
 
@@ -69,11 +73,27 @@ def snake_case(string: str) -> str:
 
 def convert_ddl_to_models(data: Dict, no_auto_snake_case: bool) -> Dict[str, list]:
     final_data = {"tables": [], "types": []}
+    refs = {}
     tables = []
     for table in data["tables"]:
+        for ref in table.get("constraints", {}).get("references", []):
+            # References can be compopund references.  Here we split into one
+            # reference per column and then attach it to the column in the next
+            # loop.
+            for i in range(len(ref["columns"])):
+                ref_name = ref["name"].split(",")[i] if isinstance(ref["name"], str) else ref["name"][i]
+                if not no_auto_snake_case:
+                    ref_name = snake_case(ref_name)
+                single_ref = copy.deepcopy(ref)
+                single_ref["column"] = ref["columns"][i]
+                del single_ref["columns"]
+                ref_name = ref_name.replace('"', '')
+                refs[ref_name] = single_ref
         for column in table["columns"]:
             if not no_auto_snake_case:
                 column["name"] = snake_case(column["name"])
+            if column["name"] in refs:
+                column["references"] = refs[column["name"]]
         tables.append(TableMeta(**table))
     final_data["tables"] = tables
     _types = []

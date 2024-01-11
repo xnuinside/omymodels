@@ -7,3 +7,4 @@ dist/
 tests/generator/_models.py
 ./models.py
 poetry.lock
+*~
