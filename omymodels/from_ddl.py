@@ -47,6 +47,7 @@ def create_models(
     # extract data from ddl file
     data = get_tables_information(ddl, ddl_path)
     data = prepare_data(data)
+    print(data)
     data = convert_ddl_to_models(data, no_auto_snake_case)
     if not data["tables"] and not data["types"]:
         if exit_silent:

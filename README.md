@@ -309,6 +309,11 @@ One more time, big 'thank you!' goes to https://github.com/archongum for Web-ver
 ## Changelog
 **v0.14.0**
 ## Updates
+1. Foreign Key processing updates - https://github.com/xnuinside/omymodels/pull/55
+2. Move to simple-ddl-parser version 1.X
+
+**v0.14.0**
+## Updates
 
 1. Python 3.11 support. 
 

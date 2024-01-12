@@ -336,6 +336,15 @@ Updates
 -------
 
 
+#. Foreign Key processing updates - https://github.com/xnuinside/omymodels/pull/55
+#. Move to simple-ddl-parser version 1.X
+
+**v0.14.0**
+
+Updates
+-------
+
+
 #. Python 3.11 support. 
 
 **v0.13.0**
