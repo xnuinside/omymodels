@@ -330,7 +330,7 @@ One more time, big 'thank you!' goes to https://github.com/archongum for Web-ver
 Changelog
 ---------
 
-**v0.14.0**
+**v0.15.1**
 
 Updates
 -------
