@@ -307,6 +307,11 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 One more time, big 'thank you!' goes to https://github.com/archongum for Web-version: https://archon-omymodels-online.hf.space/ 
 
 ## Changelog
+**v0.15.1**
+## Updates
+1. Foreign Key processing updates - https://github.com/xnuinside/omymodels/pull/55
+2. Move to simple-ddl-parser version 1.X
+
 **v0.14.0**
 ## Updates
 
