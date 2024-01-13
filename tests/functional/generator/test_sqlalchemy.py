@@ -356,5 +356,4 @@ ALTER TABLE "schema1"."table1" ADD FOREIGN KEY
 ("reference_to_table_in_another_schema") REFERENCES "schema2"."table2" ("id");
 """
     result = create_models(ddl, schema_global=False, models_type="sqlalchemy")["code"]
-    print(result)
     assert result == expected
