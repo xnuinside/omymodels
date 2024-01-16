@@ -1,6 +1,6 @@
 # imports
 postgresql_dialect_import = """from sqlalchemy.dialects.postgresql import {types}
-from pydantic import JsonValue, UUID4"""
+from pydantic import Json, UUID4"""
 sql_alchemy_func_import = "from sqlalchemy.sql import func"
 index_import = "from sqlalchemy import Index"
 
@@ -30,7 +30,7 @@ sa_type = ", sa_type={satype}"
 
 table_args = """
     __table_args__ = (
-                {statements}
+                {statements},
             )
 
 """
@@ -45,7 +45,7 @@ unique_index_template = """
     UniqueConstraint({columns}, name={name})"""
 
 index_template = """
-    Index({name}, {columns})"""
+    Index({name}, '{columns}')"""
 
 schema = """
     dict(schema="{schema_name}")"""

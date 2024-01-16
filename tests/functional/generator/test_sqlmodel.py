@@ -10,7 +10,7 @@ from enum import Enum
 import sqlalchemy as sa
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
-from pydantic import JsonValue, UUID4
+from pydantic import Json, UUID4
 
 
 
@@ -29,7 +29,7 @@ class Material(SQLModel, table=True):
     description: Optional[str] = Field(sa_type=sa.Text())
     link: str = Field()
     type: Optional[MaterialType] = Field(sa_type=sa.Enum(MaterialType))
-    additional_properties: Optional[JsonValue] = Field(sa_column_kwargs={'server_default': '{"key": "value"}'}, sa_type=JSON())
+    additional_properties: Optional[Json] = Field(sa_column_kwargs={'server_default': '{"key": "value"}'}, sa_type=JSON())
     created_at: Optional[datetime.datetime] = Field(sa_column_kwargs={'server_default': func.now()})
     updated_at: Optional[datetime.datetime] = Field()
 """  # noqa: E501
@@ -267,7 +267,7 @@ from enum import Enum
 import sqlalchemy as sa
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
-from pydantic import JsonValue, UUID4
+from pydantic import Json, UUID4
 
 
 
@@ -286,7 +286,7 @@ class Material(SQLModel, table=True):
     description: Optional[str] = Field(sa_type=sa.Text())
     link: str = Field()
     type: Optional[MaterialType] = Field(sa_type=sa.Enum(MaterialType))
-    additional_properties: Optional[JsonValue] = Field(sa_column_kwargs={'server_default': '{"key": "value"}'}, sa_type=JSON())
+    additional_properties: Optional[Json] = Field(sa_column_kwargs={'server_default': '{"key": "value"}'}, sa_type=JSON())
     created_at: Optional[datetime.datetime] = Field(sa_column_kwargs={'server_default': func.now()})
     updated_at: Optional[datetime.datetime] = Field()
 """  # noqa: E501
@@ -329,7 +329,7 @@ class Table1(SQLModel, table=True):
 
     __table_args__ = (
                 
-    dict(schema="schema1")
+    dict(schema="schema1"),
             )
 
 
@@ -342,7 +342,7 @@ class Table2(SQLModel, table=True):
 
     __table_args__ = (
                 
-    dict(schema="schema2")
+    dict(schema="schema2"),
             )
 
 """

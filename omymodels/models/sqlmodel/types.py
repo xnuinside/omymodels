@@ -20,7 +20,7 @@ mapper = {
     numeric_types: {"pydantic": "decimal.Decimal", "sa": "sa.Numeric"},
     boolean_types: {"pydantic": "bool", "sa": None},
     datetime_types: {"pydantic": "datetime.datetime", "sa": None},
-    json_types: {"pydantic": "JsonValue", "sa": "JSON"},
+    json_types: {"pydantic": "Json", "sa": "JSON"},
 }
 
 types_mapping = populate_types_mapping(mapper)
@@ -37,7 +37,7 @@ direct_types = {
     },  # confirm this is proper SA type.
     "tinytext": {"pydantic": "str", "sa": "sa.Text"},  # confirm this is proper SA type.
     "smallint": {"pydantic": "int", "sa": "sa.SmallInteger"},
-    "jsonb": {"pydantic": "JsonValue", "sa": "JSONB"},
+    "jsonb": {"pydantic": "Json", "sa": "JSONB"},
     "uuid": {"pydantic": "UUID4", "sa": "UUID"},
     "real": {"pydantic": "float", "sa": "sa.REAL"},
     "int unsigned": {

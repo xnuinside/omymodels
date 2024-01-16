@@ -80,6 +80,35 @@ class ModelGenerator(GeneratorBase):
             column_type = f"ARRAY({column_type})"
         return column_type
 
+    def add_table_args(
+        self, model: str, table: Dict, schema_global: bool = True
+    ) -> str:
+        statements = []
+        t = self.templates
+        if table.indexes:
+            for index in table.indexes:
+                if not index["unique"]:
+                    self.im_index = True
+                    statements.append(
+                        t.index_template.format(
+                            columns="', '".join(index["columns"]),
+                            name=f"'{index['index_name']}'",
+                        )
+                    )
+                else:
+                    self.constraint = True
+                    statements.append(
+                        t.unique_index_template.format(
+                            columns=",".join(index["columns"]),
+                            name=f"'{index['index_name']}'",
+                        )
+                    )
+        if not schema_global and table.table_schema:
+            statements.append(t.schema.format(schema_name=table.table_schema))
+        if statements:
+            model += t.table_args.format(statements=",".join(statements))
+        return model
+
     def generate_model(
         self,
         table: Dict,
@@ -117,7 +146,7 @@ class ModelGenerator(GeneratorBase):
 
             model += col_str
         if table.indexes or table.alter or table.checks or not schema_global:
-            model = logic.add_table_args(self, model, table, schema_global)
+            model = self.add_table_args(model, table, schema_global)
         return model
 
     def create_header(self, tables: List[Dict], schema: bool = False) -> str:
