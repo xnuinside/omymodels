@@ -8,6 +8,7 @@ from omymodels.models.gino import core as g
 from omymodels.models.pydantic import core as p
 from omymodels.models.sqlalchemy import core as s
 from omymodels.models.sqlalchemy_core import core as sc
+from omymodels.models.sqlmodel import core as sm
 
 models = {
     "gino": g,
@@ -15,6 +16,7 @@ models = {
     "dataclass": d,
     "sqlalchemy": s,
     "sqlalchemy_core": sc,
+    "sqlmodel": sm,
 }
 
 
