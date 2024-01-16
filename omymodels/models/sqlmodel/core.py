@@ -71,7 +71,6 @@ class ModelGenerator(GeneratorBase):
 
         if not column_type:
             column_type = types.prepare_type(column_data, self.types_mapping)
-        print("prep type", column_data, column_type)
         if column_type["sa"] in types.postgresql_dialect:
             self.postgresql_dialect_cols.add(column_type["sa"])
 
@@ -103,7 +102,7 @@ class ModelGenerator(GeneratorBase):
             if column.nullable or column.name in table.primary_key:
                 pydantic_type_str = f"Optional[{pydantic_type_str}]"
             col_str = st.column_template.format(
-                column_name=column.name, column_type=pydantic_type_str
+                column_name=column.name.replace(" ", "_"), column_type=pydantic_type_str
             )
 
             col_str = logic.setup_column_attributes(

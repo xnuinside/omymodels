@@ -17,7 +17,7 @@ mapper = {
     integer_types: {"pydantic": "int", "sa": None},
     big_integer_types: {"pydantic": "int", "sa": "sa.BigInteger"},
     float_types: {"pydantic": "float", "sa": None},
-    numeric_types: {"pydantic": "int", "sa": "sa.Numeric"},
+    numeric_types: {"pydantic": "decimal.Decimal", "sa": "sa.Numeric"},
     boolean_types: {"pydantic": "bool", "sa": None},
     datetime_types: {"pydantic": "datetime.datetime", "sa": None},
     json_types: {"pydantic": "JsonValue", "sa": "JSON"},
@@ -31,6 +31,11 @@ direct_types = {
     "time": {"pydantic": "datetime.time", "sa": "sa.Time"},
     "text": {"pydantic": "str", "sa": "sa.Text"},
     "longtext": {"pydantic": "str", "sa": "sa.Text"},  # confirm this is proper SA type.
+    "mediumtext": {
+        "pydantic": "str",
+        "sa": "sa.Text",
+    },  # confirm this is proper SA type.
+    "tinytext": {"pydantic": "str", "sa": "sa.Text"},  # confirm this is proper SA type.
     "smallint": {"pydantic": "int", "sa": "sa.SmallInteger"},
     "jsonb": {"pydantic": "JsonValue", "sa": "JSONB"},
     "uuid": {"pydantic": "UUID4", "sa": "UUID"},
@@ -44,6 +49,20 @@ direct_types = {
         "pydantic": "int",
         "sa": None,
     },  # what's the proper type for this?
+    "smallint unsigned": {
+        "pydantic": "int",
+        "sa": None,
+    },  # what's the proper type for this?
+    "bigint unsigned": {"pydantic": "int", "sa": "sa.BigInteger"},
+    # see https://sqlmodel.tiangolo.com/advanced/decimal/#decimals-in-sqlmodel
+    "decimal unsigned": {"pydantic": "decimal.Decimal", "sa": None},
+    "decimalunsigned": {"pydantic": "decimal.Decimal", "sa": None},
+    # Points need extensions:
+    #  geojson_pydantic and this import: from geojson_pydantic.geometries import Point
+    #  geoalchemy2 and this import: from geoalchemy2 import Geometry
+    # NOTE: SRID is not parsed currently.  Default values likely not correct.
+    "point": {"pydantic": "Point", "sa": "Geography(geometry_type='POINT')"},
+    "blob": {"pydantic": "bytes", "sa": "sa.LargeBinary"},
 }
 
 types_mapping.update(direct_types)
