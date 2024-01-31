@@ -118,7 +118,7 @@ class Products(Base):
 
     __tablename__ = 'products'
 
-    id = sa.Column(sa.Integer(), nullable=False)
+    id = sa.Column(sa.Integer(), primary_key=True)
     merchant_id = sa.Column(sa.Integer(), sa.ForeignKey('merchants.id'), nullable=False)
 """
 

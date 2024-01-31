@@ -3,6 +3,7 @@ from omymodels import create_models
 
 def test_with_enums():
     expected = """import datetime
+import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
@@ -56,6 +57,7 @@ CREATE TABLE "material" (
 
 def test_foreign_keys():
     expected = """import datetime
+import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
@@ -133,6 +135,7 @@ def test_foreign_keys_defined_inline():
     different, yet valid input DDL.
     """
     expected = """import datetime
+import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
@@ -206,6 +209,7 @@ def test_multi_col_pk_and_fk():
     FOREIGN keys.
     """
     expected = """import datetime
+import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
@@ -260,6 +264,7 @@ class LinkedTo(SQLModel, table=True):
 
 def test_upper_name_produces_the_same_result():
     expected = """import datetime
+import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
@@ -313,6 +318,7 @@ CREATE TABLE "material" (
 
 def test_foreign_keys_in_different_schema():
     expected = """import datetime
+import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
