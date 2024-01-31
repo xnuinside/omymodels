@@ -70,7 +70,9 @@ def snake_case(string: str) -> str:
     return re.sub(r"(?<!^)(?=[A-Z])", "_", string).lower()
 
 
-def convert_ddl_to_models(data: Dict, no_auto_snake_case: bool) -> Dict[str, list]:
+def convert_ddl_to_models(  # noqa: C901
+    data: Dict, no_auto_snake_case: bool
+) -> Dict[str, list]:
     final_data = {"tables": [], "types": []}
     refs = {}
     tables = []
@@ -97,6 +99,16 @@ def convert_ddl_to_models(data: Dict, no_auto_snake_case: bool) -> Dict[str, lis
                 column["name"] = snake_case(column["name"])
             if column["name"] in refs:
                 column["references"] = refs[column["name"]]
+        if not no_auto_snake_case:
+            table["primary_key"] = [snake_case(pk) for pk in table["primary_key"]]
+            for uniq in table.get("constraints", {}).get("uniques", []):
+                uniq["columns"] = [snake_case(c) for c in uniq["columns"]]
+            # NOTE: We are not going to try and parse check constraint statements
+            # and update the snake case.
+            for idx in table.get("index", []):
+                idx["columns"] = [snake_case(c) for c in idx["columns"]]
+                for col_detail in idx["detailed_columns"]:
+                    col_detail["name"] = snake_case(col_detail["name"])
         tables.append(TableMeta(**table))
     final_data["tables"] = tables
     _types = []
