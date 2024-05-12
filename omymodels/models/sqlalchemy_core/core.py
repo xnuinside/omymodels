@@ -234,7 +234,9 @@ class ModelGenerator:
             model += index
         return model
 
-    def create_header(self, tables: List[Dict], schema: bool = False, *args, **kwargs ) -> str:
+    def create_header(
+        self, tables: List[Dict], schema: bool = False, *args, **kwargs
+    ) -> str:
         """header of the file - imports & sqlalchemy init"""
         header = ""
         if "func" in self.state:

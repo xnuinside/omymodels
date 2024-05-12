@@ -154,9 +154,8 @@ def generate_models_file(
                 defaults_off=defaults_off,
             )
         header += generator.create_header(
-            data["tables"],
-            schema=schema_global,
-            models_str=models_str)
+            data["tables"], schema=schema_global, models_str=models_str
+        )
     else:
         models_type = "enum"
     output = render_jinja2_template(models_type, models_str, header)

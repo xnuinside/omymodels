@@ -364,7 +364,7 @@ def test_sqlmodel_varying():
         name character varying(255),
     );
     """
-    result = create_models(ddl, models_type='sqlmodel')['code']
+    result = create_models(ddl, models_type="sqlmodel")["code"]
     expected = """import datetime
 import decimal
 from typing import Optional

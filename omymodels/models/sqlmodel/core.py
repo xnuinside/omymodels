@@ -130,17 +130,16 @@ class ModelGenerator(GeneratorBase):
             if column.nullable or column.name in table.primary_key:
                 pydantic_type_str = f"Optional[{pydantic_type_str}]"
             col_str = st.column_template.format(
-                column_name=column.name.replace(" ", "_"),
-                column_type=pydantic_type_str
+                column_name=column.name.replace(" ", "_"), column_type=pydantic_type_str
             )
             attrs_col_str = logic.setup_column_attributes(
-                column, table.primary_key, '', table, schema_global, st, self
+                column, table.primary_key, "", table, schema_global, st, self
             )
             if column_type["sa"]:
                 sa_type = types.add_size_to_orm_column(column_type["sa"], column)
                 attrs_col_str += st.sa_type.format(satype=sa_type)
             if attrs_col_str:
-                attrs_col_str = attrs_col_str.replace(',', '', 1).strip()
+                attrs_col_str = attrs_col_str.replace(",", "", 1).strip()
                 col_str += st.field_template.format(attr_data=attrs_col_str)
             col_str += "\n"
             model += col_str
@@ -148,10 +147,15 @@ class ModelGenerator(GeneratorBase):
             model = self.add_table_args(model, table, schema_global)
         return model
 
-    def create_header(self, tables: List[Dict], models_str: str, schema: bool = False, ) -> str:
+    def create_header(
+        self,
+        tables: List[Dict],
+        models_str: str,
+        schema: bool = False,
+    ) -> str:
         """header of the file - imports & sqlalchemy init"""
         header = ""
-        if 'sa.' in models_str:
+        if "sa." in models_str:
             header += st.sqlalchemy_import  # Do we always need this import?
         if "func" in self.state:
             header += st.sql_alchemy_func_import + "\n"
