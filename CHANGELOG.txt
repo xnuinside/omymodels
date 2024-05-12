@@ -1,9 +1,14 @@
-**v0.16.0**
+**v0.17.0**
 
 ### Updates
 1. fix character varying type - https://github.com/xnuinside/omymodels/issues/59
 2. sqlalchemy import removed from generation in sqlmodels if it is not used
 3.  = Field() - is not placed in SQLModel if there is no defaults or other settings to the field
+
+**v0.16.0**
+
+### Updates
+1. Initial SQLModel Support
 
 
 **v0.15.1**

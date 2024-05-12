@@ -330,7 +330,7 @@ One more time, big 'thank you!' goes to https://github.com/archongum for Web-ver
 Changelog
 ---------
 
-**v0.16.0**
+**v0.17.0**
 
 Updates
 ^^^^^^^
@@ -339,6 +339,14 @@ Updates
 #. fix character varying type - https://github.com/xnuinside/omymodels/issues/59
 #. sqlalchemy import removed from generation in sqlmodels if it is not used
 #. = Field() - is not placed in SQLModel if there is no defaults or other settings to the field
+
+**v0.16.0**
+
+Updates
+^^^^^^^
+
+
+#. Initial SQLModel Support
 
 **v0.15.1**
 
