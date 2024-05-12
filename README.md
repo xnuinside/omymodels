@@ -307,6 +307,14 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 One more time, big 'thank you!' goes to https://github.com/archongum for Web-version: https://archon-omymodels-online.hf.space/ 
 
 ## Changelog
+**v0.16.0**
+
+### Updates
+1. fix character varying type - https://github.com/xnuinside/omymodels/issues/59
+2. sqlalchemy import removed from generation in sqlmodels if it is not used
+3.  = Field() - is not placed in SQLModel if there is no defaults or other settings to the field
+
+
 **v0.15.1**
 ## Updates
 1. Foreign Key processing updates - https://github.com/xnuinside/omymodels/pull/55

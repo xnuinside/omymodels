@@ -13,7 +13,8 @@ def version(**kwargs):
 
 def cli():
     omm_cli = argparse.ArgumentParser(
-        description="O! My Models. Create GinoORM models from SQL DDL"
+        description="O! My Models. "
+                    "Create SQLModels, SQLAlchemy, GinoORM and other models from SQL DDL or another models"
     )
 
     omm_cli.add_argument(

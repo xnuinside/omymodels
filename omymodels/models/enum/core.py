@@ -74,7 +74,7 @@ class ModelGenerator:
         self.custom_types = {x.name: ("db.Enum", x.name) for x in self.types}
         return types_str
 
-    def create_header(self) -> str:
+    def create_header(self, *args, **kwargs) -> str:
         self.enum_imports = list(self.enum_imports)
         self.enum_imports.sort()
         return enum_import.format(enums=", ".join(self.enum_imports)) + "\n"
