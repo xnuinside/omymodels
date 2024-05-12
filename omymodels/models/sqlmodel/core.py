@@ -119,7 +119,6 @@ class ModelGenerator(GeneratorBase):
         **kwargs,
     ) -> str:
         """method to prepare one Model defention - name & tablename  & columns"""
-        model = ""
 
         model = st.model_template.format(
             model_name=create_class_name(table.name, singular, exceptions),
@@ -133,26 +132,31 @@ class ModelGenerator(GeneratorBase):
             col_str = st.column_template.format(
                 column_name=column.name.replace(" ", "_"), column_type=pydantic_type_str
             )
-
-            col_str = logic.setup_column_attributes(
-                column, table.primary_key, col_str, table, schema_global, st, self
+            attrs_col_str = logic.setup_column_attributes(
+                column, table.primary_key, "", table, schema_global, st, self
             )
             if column_type["sa"]:
                 sa_type = types.add_size_to_orm_column(column_type["sa"], column)
-                col_str += st.sa_type.format(satype=sa_type)
-            col_str += ")\n"
-
-            col_str = col_str.replace("(, ", "(")
-
+                attrs_col_str += st.sa_type.format(satype=sa_type)
+            if attrs_col_str:
+                attrs_col_str = attrs_col_str.replace(",", "", 1).strip()
+                col_str += st.field_template.format(attr_data=attrs_col_str)
+            col_str += "\n"
             model += col_str
         if table.indexes or table.alter or table.checks or not schema_global:
             model = self.add_table_args(model, table, schema_global)
         return model
 
-    def create_header(self, tables: List[Dict], schema: bool = False) -> str:
+    def create_header(
+        self,
+        tables: List[Dict],
+        models_str: str,
+        schema: bool = False,
+    ) -> str:
         """header of the file - imports & sqlalchemy init"""
         header = ""
-        header += st.sqlalchemy_import  # Do we always need this import?
+        if "sa." in models_str:
+            header += st.sqlalchemy_import  # Do we always need this import?
         if "func" in self.state:
             header += st.sql_alchemy_func_import + "\n"
         if self.postgresql_dialect_cols:

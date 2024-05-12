@@ -8,7 +8,7 @@ string_types = (
     "str",
     "varchar",
     "character",
-    "character_vying",
+    "character varying",
     "varying",
     "char",
     "string",

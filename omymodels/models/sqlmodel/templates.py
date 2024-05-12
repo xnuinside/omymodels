@@ -17,7 +17,8 @@ class {model_name}(SQLModel, table=True):\n
 """
 
 # columns defenition
-column_template = """    {column_name}: {column_type} = Field("""
+column_template = """    {column_name}: {column_type}"""
+field_template = """ = Field({attr_data})"""
 required = ""
 default = ", sa_column_kwargs={{'server_default': {default}}}"
 pk_template = ", default=None, primary_key=True"

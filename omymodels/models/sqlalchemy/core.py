@@ -64,7 +64,9 @@ class ModelGenerator(GeneratorBase):
             model = logic.add_table_args(self, model, table, schema_global)
         return model
 
-    def create_header(self, tables: List[Dict], schema: bool = False) -> str:
+    def create_header(
+        self, tables: List[Dict], schema: bool = False, *args, **kwargs
+    ) -> str:
         """header of the file - imports & sqlalchemy init"""
         header = ""
         if "func" in self.state:

@@ -6,13 +6,11 @@ def test_with_enums():
 import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
-
 from enum import Enum
 import sqlalchemy as sa
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
 from pydantic import Json, UUID4
-
 
 
 class MaterialType(str, Enum):
@@ -26,13 +24,13 @@ class Material(SQLModel, table=True):
     __tablename__ = 'material'
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    title: str = Field()
+    title: str
     description: Optional[str] = Field(sa_type=sa.Text())
-    link: str = Field()
+    link: str
     type: Optional[MaterialType] = Field(sa_type=sa.Enum(MaterialType))
     additional_properties: Optional[Json] = Field(sa_column_kwargs={'server_default': '{"key": "value"}'}, sa_type=JSON())
     created_at: Optional[datetime.datetime] = Field(sa_column_kwargs={'server_default': func.now()})
-    updated_at: Optional[datetime.datetime] = Field()
+    updated_at: Optional[datetime.datetime]
 """  # noqa: E501
     ddl = """
 CREATE TYPE "material_type" AS ENUM (
@@ -61,20 +59,17 @@ import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
-import sqlalchemy as sa
-
-
 
 class Materials(SQLModel, table=True):
 
     __tablename__ = 'materials'
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    title: str = Field()
-    description: Optional[str] = Field()
-    link: Optional[str] = Field()
-    created_at: Optional[datetime.datetime] = Field()
-    updated_at: Optional[datetime.datetime] = Field()
+    title: str
+    description: Optional[str]
+    link: Optional[str]
+    created_at: Optional[datetime.datetime]
+    updated_at: Optional[datetime.datetime]
 
 
 class MaterialAttachments(SQLModel, table=True):
@@ -90,10 +85,10 @@ class Attachments(SQLModel, table=True):
     __tablename__ = 'attachments'
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    title: Optional[str] = Field()
-    description: Optional[str] = Field()
-    created_at: Optional[datetime.datetime] = Field()
-    updated_at: Optional[datetime.datetime] = Field()
+    title: Optional[str]
+    description: Optional[str]
+    created_at: Optional[datetime.datetime]
+    updated_at: Optional[datetime.datetime]
 """
     ddl = """
 
@@ -139,20 +134,17 @@ import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
 
-import sqlalchemy as sa
-
-
 
 class Materials(SQLModel, table=True):
 
     __tablename__ = 'materials'
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    title: str = Field()
-    description: Optional[str] = Field()
-    link: Optional[str] = Field()
-    created_at: Optional[datetime.datetime] = Field()
-    updated_at: Optional[datetime.datetime] = Field()
+    title: str
+    description: Optional[str]
+    link: Optional[str]
+    created_at: Optional[datetime.datetime]
+    updated_at: Optional[datetime.datetime]
 
 
 class MaterialAttachments(SQLModel, table=True):
@@ -168,10 +160,10 @@ class Attachments(SQLModel, table=True):
     __tablename__ = 'attachments'
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    title: Optional[str] = Field()
-    description: Optional[str] = Field()
-    created_at: Optional[datetime.datetime] = Field()
-    updated_at: Optional[datetime.datetime] = Field()
+    title: Optional[str]
+    description: Optional[str]
+    created_at: Optional[datetime.datetime]
+    updated_at: Optional[datetime.datetime]
 """
     ddl = """
 
@@ -212,10 +204,7 @@ def test_multi_col_pk_and_fk():
 import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
-
-import sqlalchemy as sa
 from sqlalchemy.sql import func
-
 
 
 class Complexpk(SQLModel, table=True):
@@ -224,8 +213,8 @@ class Complexpk(SQLModel, table=True):
 
     complex_id: Optional[int] = Field(default=None, primary_key=True)
     date_part: Optional[datetime.datetime] = Field(sa_column_kwargs={'server_default': func.now()}, default=None, primary_key=True)
-    title: str = Field()
-    description: Optional[str] = Field()
+    title: str
+    description: Optional[str]
 
 
 class LinkedTo(SQLModel, table=True):
@@ -235,7 +224,7 @@ class LinkedTo(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     complexpk_complex_id: Optional[int] = Field(foreign_key='complexpk.complex_id')
     complexpk_date_part: Optional[int] = Field(foreign_key='complexpk.date_part')
-    comment: Optional[str] = Field()
+    comment: Optional[str]
 """  # noqa: E501
 
     ddl = """
@@ -267,13 +256,11 @@ def test_upper_name_produces_the_same_result():
 import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
-
 from enum import Enum
 import sqlalchemy as sa
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
 from pydantic import Json, UUID4
-
 
 
 class MaterialType(str, Enum):
@@ -287,13 +274,13 @@ class Material(SQLModel, table=True):
     __tablename__ = 'material'
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    title: str = Field()
+    title: str
     description: Optional[str] = Field(sa_type=sa.Text())
-    link: str = Field()
+    link: str
     type: Optional[MaterialType] = Field(sa_type=sa.Enum(MaterialType))
     additional_properties: Optional[Json] = Field(sa_column_kwargs={'server_default': '{"key": "value"}'}, sa_type=JSON())
     created_at: Optional[datetime.datetime] = Field(sa_column_kwargs={'server_default': func.now()})
-    updated_at: Optional[datetime.datetime] = Field()
+    updated_at: Optional[datetime.datetime]
 """  # noqa: E501
     ddl = """
 CREATE TYPE "material_type" AS ENUM (
@@ -321,9 +308,6 @@ def test_foreign_keys_in_different_schema():
 import decimal
 from typing import Optional
 from sqlmodel import Field, SQLModel
-
-import sqlalchemy as sa
-
 
 
 class Table1(SQLModel, table=True):
@@ -371,3 +355,27 @@ ALTER TABLE "schema1"."table1" ADD FOREIGN KEY
 """
     result = create_models(ddl, schema_global=False, models_type="sqlmodel")["code"]
     assert result == expected
+
+
+def test_sqlmodel_varying():
+    ddl = """
+    CREATE TABLE qwe (
+        id integer NOT NULL,
+        name character varying(255),
+    );
+    """
+    result = create_models(ddl, models_type="sqlmodel")["code"]
+    expected = """import datetime
+import decimal
+from typing import Optional
+from sqlmodel import Field, SQLModel
+
+
+class Qwe(SQLModel, table=True):
+
+    __tablename__ = 'qwe'
+
+    id: int
+    name: Optional[str]
+"""
+    assert expected == result
