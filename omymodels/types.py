@@ -116,7 +116,7 @@ def process_types_after_models_parser(column_data: Column) -> Column:
     return column_data
 
 
-def prepare_column_data(column_data: Column) -> str:
+def prepare_column_data(column_data: Column) -> Column:
     if "." in column_data.type or "(":
         column_data = process_types_after_models_parser(column_data)
     return column_data
