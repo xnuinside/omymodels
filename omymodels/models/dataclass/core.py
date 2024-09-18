@@ -52,9 +52,9 @@ class ModelGenerator:
         if column.default and defaults_off is False:
             column_str = self.add_column_default(column_str, column)
         if (
-            column.nullable
-            and not (column.default and not defaults_off)
-            and not defaults_off
+                column.nullable
+                and not (column.default and not defaults_off)
+                and not defaults_off
         ):
             column_str += dt.dataclass_default_attr.format(default=None)
         return column_str
@@ -71,11 +71,13 @@ class ModelGenerator:
         return column_str
 
     def generate_model(
-        self,
-        table: TableMeta,
-        singular: bool = True,
-        exceptions: Optional[List] = None,
-        defaults_off: Optional[bool] = False,
+            self,
+            table: TableMeta,
+            singular: bool = True,
+            exceptions: Optional[List] = None,
+            defaults_off: Optional[bool] = False,
+            *args,
+            **kwargs,
     ) -> str:
         model = ""
 
@@ -83,11 +85,11 @@ class ModelGenerator:
         model += "\n\n"
         # generate class name
         model += (
-            dt.dataclass_class.format(
-                class_name=create_class_name(table.name, singular, exceptions),
-                table_name=table.name,
-            )
-        ) + "\n\n"
+                     dt.dataclass_class.format(
+                         class_name=create_class_name(table.name, singular, exceptions),
+                         table_name=table.name,
+                     )
+                 ) + "\n\n"
         columns = {"default": [], "non_default": []}
 
         # generate columns / attrs
@@ -104,7 +106,7 @@ class ModelGenerator:
             model += column
         return model
 
-    def create_header(self) -> str:
+    def create_header(self, *args, **kwargs) -> str:
         header = ""
         if self.uuid_import:
             header += dt.uuid_import + "\n"

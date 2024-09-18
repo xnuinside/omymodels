@@ -84,21 +84,23 @@ class ModelGenerator:
         return column_str
 
     def generate_model(
-        self,
-        table: TableMeta,
-        singular: bool = True,
-        exceptions: Optional[List] = None,
-        defaults_off: Optional[bool] = False,
+            self,
+            table: TableMeta,
+            singular: bool = True,
+            exceptions: Optional[List] = None,
+            defaults_off: Optional[bool] = False,
+            *args,
+            **kwargs,
     ) -> str:
         model = ""
         # mean one model one table
         model += "\n\n"
         model += (
-            pt.pydantic_class.format(
-                class_name=create_class_name(table.name, singular, exceptions),
-                table_name=table.name,
-            )
-        ) + "\n\n"
+                     pt.pydantic_class.format(
+                         class_name=create_class_name(table.name, singular, exceptions),
+                         table_name=table.name,
+                     )
+                 ) + "\n\n"
 
         for column in table.columns:
             column = t.prepare_column_data(column)
@@ -106,7 +108,7 @@ class ModelGenerator:
 
         return model
 
-    def create_header(self) -> str:
+    def create_header(self, *args, **kwargs) -> str:
         header = ""
         if self.uuid_import:
             header += pt.uuid_import + "\n"
