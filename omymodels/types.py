@@ -109,8 +109,10 @@ mapper = {
     binary_types: "bytes",
     json_types: "Any",
     uuid_types: "str",  # Map to 'str' to be compatible with Pydantic and then validated as UUID
+    ("point",): "List[float]",  # Representing point as [float, float]
+    ("linestring",): "List[List[float]]",  # List of points
+    ("polygon",): "List[List[List[float]]]",  # List of LineStrings
 }
-
 
 def populate_types_mapping(mapper_dict: Dict[tuple, str]) -> Dict[str, str]:
     """

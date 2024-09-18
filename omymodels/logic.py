@@ -1,10 +1,12 @@
 from typing import Dict, List
 
+from table_meta.model import Column
+
 import omymodels.types as t
 
 
 def generate_column(
-    column_data: Dict,
+    column_data: Column,
     table_pk: List[str],
     table_data: Dict,
     schema_global: bool,
@@ -24,7 +26,7 @@ def generate_column(
 
 
 def setup_column_attributes(
-    column_data: Dict,
+    column_data: Column,
     table_pk: List[str],
     column: str,
     table_data: Dict,

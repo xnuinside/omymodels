@@ -1,4 +1,4 @@
-datetime_import = """import datetime"""
+datetime_import = """import datetime as datetime"""
 typing_imports = """from typing import {typing_types}"""
 uuid_import = """from uuid import UUID"""
 
