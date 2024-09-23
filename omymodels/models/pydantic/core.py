@@ -104,20 +104,20 @@ class ModelGenerator:
         if not self._is_valid_identifier(column.name):
             params.append(f'alias="{column.name}"')
 
-        if column.default is not None and not defaults_off:
-            default_value = self.get_default_value(column)
-            if any(t in column.type.lower() for t in ["json", "jsonb"]):
-                return ""
-            if default_value:
-                if any(
-                    t in column.type.lower() for t in integer_types + big_integer_types
-                ):
-                    # Remove quotes for integer types
-                    default_value = default_value.strip("'")
-                    params.append(f"default={default_value}")
-                else:
-                    # Keep quotes for other types
-                    params.append(f"default={default_value}")
+        if not any(t in column.type.lower() for t in ["json", "jsonb"]):
+            if column.default is not None and not defaults_off:
+                default_value = self.get_default_value(column)
+                if default_value:
+                    if any(
+                        t in column.type.lower()
+                        for t in integer_types + big_integer_types
+                    ):
+                        # Remove quotes for integer types
+                        default_value = default_value.strip("'")
+                        params.append(f"default={default_value}")
+                    else:
+                        # Keep quotes for other types
+                        params.append(f"default={default_value}")
 
         if params:
             return f" = Field({', '.join(params)})"
@@ -125,9 +125,6 @@ class ModelGenerator:
 
     def get_default_value(self, column: Column) -> str:
         if column.default is None or column.default.lower() == "null":
-            return ""
-
-        if any(t in column.type.lower() for t in ["json", "jsonb"]):
             return ""
 
         if column.type.lower() in datetime_types:
@@ -169,7 +166,8 @@ class ModelGenerator:
         # If the default is 'NULL', don't set a default in Pydantic (it already defaults to None)
         if column.default.lower() == "null":
             return ""
-
+        if any(t in column.type.lower() for t in ["json", "jsonb"]):
+            return ""
         # Remove quotes for integer types
         if any(t in column.type.lower() for t in integer_types + big_integer_types):
             default_value = column.default.strip("'")
