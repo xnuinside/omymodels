@@ -5,8 +5,14 @@ from table_meta.model import Column, TableMeta
 import omymodels.types as t
 from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.pydantic import templates as pt
-from omymodels.models.pydantic.types import types_mapping
-from omymodels.types import datetime_types
+from omymodels.types import (
+    big_integer_types,
+    datetime_types,
+    integer_types,
+    string_types,
+    text_types,
+    types_mapping,
+)
 
 
 class ModelGenerator:
@@ -42,9 +48,15 @@ class ModelGenerator:
             _type = f"List[{_type}]"
         if _type == "UUID":
             self.uuid_import = True
-        if _type.startswith("varchar"):
-            # Remove character set and collation information
-            # Example: varchar(10)character set utf8mb4 collation utf8mb4_unicode_ci
+        # Handle integer types
+        if any(t in _type for t in integer_types):
+            _type = "int"
+        # Handle big integer types
+        if any(t in _type for t in big_integer_types):
+            _type = "float"
+        # Remove character set and collation information
+        # Example: varchar(10) character set utf8mb4 collation utf8mb4_unicode_ci
+        if any(t in _type for t in string_types + text_types):
             _type = "str"
         if "List" in _type:
             self.typing_imports.add("List")
