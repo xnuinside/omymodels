@@ -1,3 +1,4 @@
+from keyword import iskeyword
 from typing import List, Optional
 
 from table_meta.model import Column, TableMeta
@@ -78,14 +79,71 @@ class ModelGenerator:
         if not _type:
             _type = self.get_not_custom_type(column)
 
-        column_str = column_str.format(arg_name=column.name, type=_type)
+        field_params = self.get_field_params(column, defaults_off)
+        if field_params:
+            self.imports.add("Field")
 
-        if column.default is not None and not defaults_off:
-            column_str = self.add_default_values(column_str, column)
-            if "datetime.now()" in column_str:
-                self.datetime_import = True
+        column_str = column_str.format(
+            arg_name=self._generate_valid_identifier(column.name),
+            type=_type,
+            field_params=field_params,
+        )
 
         return column_str
+
+    def get_field_params(self, column: Column, defaults_off: bool) -> str:
+        params = []
+
+        if not self._is_valid_identifier(column.name):
+            params.append(f'alias="{column.name}"')
+
+        if column.default is not None and not defaults_off:
+            default_value = self.get_default_value(column)
+            if default_value:
+                if any(
+                    t in column.type.lower() for t in integer_types + big_integer_types
+                ):
+                    # Remove quotes for integer types
+                    default_value = default_value.strip("'")
+                    params.append(f"default={default_value}")
+                else:
+                    # Keep quotes for other types
+                    params.append(f"default={default_value}")
+
+        if params:
+            return f" = Field({', '.join(params)})"
+        return ""
+
+    def get_default_value(self, column: Column) -> str:
+        if column.default is None or column.default.lower() == "null":
+            return ""
+
+        if column.type.lower() in datetime_types:
+            if datetime_now_check(column.default.lower()):
+                self.datetime_import = True
+                return "datetime.now()"
+            else:
+                return column.default.strip("'")
+
+        return column.default
+
+    @staticmethod
+    def _is_valid_identifier(name: str) -> bool:
+        """Check if the given name is a valid Python identifier."""
+        return name.isidentifier() and not iskeyword(name)
+
+    @staticmethod
+    def _generate_valid_identifier(name: str) -> str:
+        """Generate a valid Python identifier from a given name."""
+        # Replace non-alphanumeric characters with underscores
+        valid_name = "".join(c if c.isalnum() else "_" for c in name)
+        # Ensure the name doesn't start with a number
+        if valid_name[0].isdigit():
+            valid_name = f"f_{valid_name}"
+        # Ensure it's not a Python keyword
+        if iskeyword(valid_name):
+            valid_name += "_"
+        return valid_name
 
     @staticmethod
     def add_default_values(column_str: str, column: Column) -> str:
