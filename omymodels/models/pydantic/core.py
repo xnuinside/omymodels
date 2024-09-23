@@ -66,21 +66,22 @@ class ModelGenerator:
 
         if column.default is not None and not defaults_off:
             column_str = self.add_default_values(column_str, column)
+            if "datetime.now()" in column_str:
+                self.datetime_import = True
 
         return column_str
 
     @staticmethod
     def add_default_values(column_str: str, column: Column) -> str:
         # Handle datetime default values
-        if column.type.upper() in datetime_types:
+        if column.type.lower() in datetime_types:
             if datetime_now_check(column.default.lower()):
-                # Handle functions like CURRENT_TIMESTAMP
-                column.default = "datetime.datetime.now()"
-            elif column.default.upper() != "NULL" and "'" not in column.default:
+                column.default = "datetime.now()"
+            elif column.default.lower() != "null" and "'" not in column.default:
                 column.default = f"'{column.default}'"
 
         # If the default is 'NULL', don't set a default in Pydantic (it already defaults to None)
-        if column.default.upper() == "NULL":
+        if column.default.lower() == "null":
             return column_str
 
         # Append the default value if it's not None (e.g., explicit default values like '0' or CURRENT_TIMESTAMP)

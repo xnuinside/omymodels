@@ -99,6 +99,17 @@ def add_custom_types_to_generator(types: List[Type], generator: object) -> objec
 
 
 def datetime_now_check(string: str) -> bool:
-    if "now" in string or "current_timestamp" in string:
-        return True
-    return False
+    now_keywords = [
+        "now",
+        "current_timestamp",
+        "current_date",
+        "current_time",
+        "localtime",
+        "localtimestamp",
+        "sysdate",
+        "getdate",
+        "current",
+        "curdate",
+        "curtime",
+    ]
+    return any(keyword in string.lower() for keyword in now_keywords)
