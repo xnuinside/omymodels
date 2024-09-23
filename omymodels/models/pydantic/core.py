@@ -76,11 +76,11 @@ class ModelGenerator:
             if datetime_now_check(column.default.lower()):
                 # Handle functions like CURRENT_TIMESTAMP
                 column.default = "datetime.datetime.now()"
-            elif column.default.upper() != 'NULL' and "'" not in column.default:
+            elif column.default.upper() != "NULL" and "'" not in column.default:
                 column.default = f"'{column.default}'"
 
         # If the default is 'NULL', don't set a default in Pydantic (it already defaults to None)
-        if column.default.upper() == 'NULL':
+        if column.default.upper() == "NULL":
             return column_str
 
         # Append the default value if it's not None (e.g., explicit default values like '0' or CURRENT_TIMESTAMP)
@@ -88,23 +88,23 @@ class ModelGenerator:
         return column_str
 
     def generate_model(
-            self,
-            table: TableMeta,
-            singular: bool = True,
-            exceptions: Optional[List] = None,
-            defaults_off: Optional[bool] = False,
-            *args,
-            **kwargs,
+        self,
+        table: TableMeta,
+        singular: bool = True,
+        exceptions: Optional[List] = None,
+        defaults_off: Optional[bool] = False,
+        *args,
+        **kwargs,
     ) -> str:
         model = ""
         # mean one model one table
         model += "\n\n"
         model += (
-                     pt.pydantic_class.format(
-                         class_name=create_class_name(table.name, singular, exceptions),
-                         table_name=table.name,
-                     )
-                 ) + "\n"
+            pt.pydantic_class.format(
+                class_name=create_class_name(table.name, singular, exceptions),
+                table_name=table.name,
+            )
+        ) + "\n"
 
         for column in table.columns:
             column = t.prepare_column_data(column)

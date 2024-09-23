@@ -1,9 +1,19 @@
-from typing import Dict, Any
+from typing import Any, Dict
 
 from table_meta.model import Column
 
 # Define PostgreSQL-specific dialect types
-postgresql_dialect = ["ARRAY", "JSON", "JSONB", "UUID", "TIMESTAMPTZ", "INTERVAL", "BYTEA", "SERIAL", "BIGSERIAL"]
+postgresql_dialect = [
+    "ARRAY",
+    "JSON",
+    "JSONB",
+    "UUID",
+    "TIMESTAMPTZ",
+    "INTERVAL",
+    "BYTEA",
+    "SERIAL",
+    "BIGSERIAL",
+]
 
 # Define MySQL-specific dialect types
 mysql_dialect = ["ENUM", "SET", "JSON"]
@@ -69,29 +79,25 @@ datetime_types = (
     "year",
 )
 
-json_types = (
-    "json",
-)
+json_types = ("json",)
 
-uuid_types = (
-    "uuid",
-)
+uuid_types = ("uuid",)
 
 # PostgreSQL-Specific Types
 postgresql_specific_mapper = {
-    "array": "List[Any]",       # PostgreSQL arrays can be mapped to Python lists
+    "array": "List[Any]",  # PostgreSQL arrays can be mapped to Python lists
     "json": "Any",
     "jsonb": "Any",
     "timestamptz": "datetime",  # For PostgreSQL's timezone-aware timestamp
-    "interval": "float",        # Intervals can be represented as floating-point seconds
-    "bytea": "bytes",           # PostgreSQL binary data
-    "serial": "int",            # PostgreSQL auto-incrementing serial type
-    "bigserial": "float",         # PostgreSQL auto-incrementing bigserial type
+    "interval": "float",  # Intervals can be represented as floating-point seconds
+    "bytea": "bytes",  # PostgreSQL binary data
+    "serial": "int",  # PostgreSQL auto-incrementing serial type
+    "bigserial": "float",  # PostgreSQL auto-incrementing bigserial type
 }
 
 # MySQL-Specific Types
 mysql_specific_mapper = {
-    "enum": "str",         # Alternatively, map to specific Enum classes
+    "enum": "str",  # Alternatively, map to specific Enum classes
     "set": "List[str]",
     "json": "Any",
 }
@@ -113,6 +119,7 @@ mapper = {
     ("linestring",): "List[List[float]]",  # List of points
     ("polygon",): "List[List[List[float]]]",  # List of LineStrings
 }
+
 
 def populate_types_mapping(mapper_dict: Dict[tuple, str]) -> Dict[str, str]:
     """
@@ -230,10 +237,12 @@ def prepare_column_type_orm(obj: Any, column_data: Column) -> str:
     column_data = prepare_column_data(column_data)
 
     # Determine dialect based on obj; assuming obj has a 'dialect' attribute
-    dialect = getattr(obj, 'dialect', 'mysql').lower()  # default to MySQL if not specified
+    dialect = getattr(
+        obj, "dialect", "mysql"
+    ).lower()  # default to MySQL if not specified
 
     # Handle custom types if any
-    if hasattr(obj, 'custom_types') and obj.custom_types:
+    if hasattr(obj, "custom_types") and obj.custom_types:
         column_type = add_custom_type_orm(
             obj.custom_types, column_data.type, column_type
         )
@@ -258,10 +267,18 @@ def prepare_column_type_orm(obj: Any, column_data: Column) -> str:
     column_type = add_size_to_orm_column(column_type, column_data)
 
     # Handle array types
-    if "[" in column_data.type and dialect == "postgresql" and column_data.type not in json_types:
+    if (
+        "[" in column_data.type
+        and dialect == "postgresql"
+        and column_data.type not in json_types
+    ):
         obj.postgresql_dialect_cols.add("ARRAY")
         column_type = f"List[{column_type}]"
-    elif "[" in column_data.type and dialect == "mysql" and column_data.type not in json_types:
+    elif (
+        "[" in column_data.type
+        and dialect == "mysql"
+        and column_data.type not in json_types
+    ):
         # MySQL doesn't support native arrays, consider using List or JSON
         obj.mysql_dialect_cols.add("ARRAY")
         column_type = f"List[{column_type}]"
