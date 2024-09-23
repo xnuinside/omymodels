@@ -142,7 +142,7 @@ def prepare_type(column_data: Column, models_types_mapping: Dict[str, str]) -> s
     Determines the Pydantic type for a given column, handling special cases.
     Specifically maps 'tinyint(1)' to 'bool' in MySQL.
     """
-    column_data_type = column_data.type.lower().split("[")[0]
+    column_data_type = column_data.type.split("[")[0]
 
     # Special handling for MySQL tinyint(1) -> bool
     if column_data_type.startswith("tinyint"):

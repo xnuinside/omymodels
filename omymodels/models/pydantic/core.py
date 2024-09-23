@@ -40,7 +40,7 @@ class ModelGenerator:
         if "." in type:
             _type = type.split(".")[1]
         else:
-            _type = type.lower().split("[")[0]
+            _type = type.split("[")[0]
         _type = types_mapping.get(_type, _type)
         if _type in self.types_for_import:
             self.imports.add(_type)
