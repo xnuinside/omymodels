@@ -4,19 +4,19 @@ from table_meta.model import Column
 
 # Define PostgreSQL-specific dialect types
 postgresql_dialect = [
-    "ARRAY",
-    "JSON",
-    "JSONB",
-    "UUID",
-    "TIMESTAMPTZ",
-    "INTERVAL",
-    "BYTEA",
-    "SERIAL",
-    "BIGSERIAL",
+    "array",
+    "json",
+    "jsonb",
+    "uuid",
+    "timestamptz",
+    "interval",
+    "bytea",
+    "serial",
+    "bigserial",
 ]
 
 # Define MySQL-specific dialect types
-mysql_dialect = ["ENUM", "SET", "JSON"]
+mysql_dialect = ["enum", "set", "json"]
 
 string_types = (
     "char",
@@ -253,13 +253,13 @@ def prepare_column_type_orm(obj: Any, column_data: Column) -> str:
 
     # Apply dialect-specific mappings
     if dialect == "postgresql":
-        if column_type.upper() in postgresql_dialect:
-            obj.postgresql_dialect_cols.add(column_type.upper())
+        if column_type.lower() in postgresql_dialect:
+            obj.postgresql_dialect_cols.add(column_type.lower())
         # Apply PostgreSQL-specific mappings
         column_type = postgresql_specific_mapper.get(column_type.lower(), column_type)
     elif dialect == "mysql":
-        if column_type.upper() in mysql_dialect:
-            obj.mysql_dialect_cols.add(column_type.upper())
+        if column_type.lower() in mysql_dialect:
+            obj.mysql_dialect_cols.add(column_type.lower())
         # Apply MySQL-specific mappings
         column_type = mysql_specific_mapper.get(column_type.lower(), column_type)
 
