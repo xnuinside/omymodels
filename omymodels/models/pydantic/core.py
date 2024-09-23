@@ -4,6 +4,7 @@ from typing import List, Optional
 from table_meta.model import Column, TableMeta
 
 import omymodels.types as t
+from omymodels import types
 from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.pydantic import templates as pt
 from omymodels.types import (
@@ -25,6 +26,7 @@ class ModelGenerator:
         self.custom_types = {}
         self.uuid_import = False
         self.prefix = ""
+        self.types_mapping = types_mapping
 
     def add_custom_type(self, target_type: str) -> Optional[str]:
         column_type = self.custom_types.get(target_type, None)
@@ -33,18 +35,18 @@ class ModelGenerator:
             _type = column_type[1]
         return _type
 
-    def get_not_custom_type(self, column: Column) -> str:
+    def get_not_custom_type(self, type: str) -> str:
         _type = None
-        if "." in column.type:
-            _type = column.type.split(".")[1]
+        if "." in type:
+            _type = type.split(".")[1]
         else:
-            _type = column.type.lower().split("[")[0]
+            _type = type.lower().split("[")[0]
         _type = types_mapping.get(_type, _type)
         if _type in self.types_for_import:
             self.imports.add(_type)
         elif "datetime" in _type:
             self.datetime_import = True
-        elif "[" in column.type:
+        elif "[" in type:
             self.typing_imports.add("List")
             _type = f"List[{_type}]"
         if _type == "UUID":
@@ -77,7 +79,8 @@ class ModelGenerator:
         if self.custom_types:
             _type = self.add_custom_type(column.type)
         if not _type:
-            _type = self.get_not_custom_type(column)
+            _type = types.prepare_type(column, self.types_mapping)
+            _type = self.get_not_custom_type(_type)
 
         arg_name = column.name
         field_params = None
