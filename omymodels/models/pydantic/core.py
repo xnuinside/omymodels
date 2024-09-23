@@ -42,6 +42,10 @@ class ModelGenerator:
             _type = f"List[{_type}]"
         if _type == "UUID":
             self.uuid_import = True
+        if _type.startswith("varchar"):
+            # Remove character set and collation information
+            # Example: varchar(10)character set utf8mb4 collation utf8mb4_unicode_ci
+            _type = "str"
         if "List" in _type:
             self.typing_imports.add("List")
         if "Any" == _type:
