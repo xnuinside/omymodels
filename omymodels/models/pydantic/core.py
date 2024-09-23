@@ -79,14 +79,21 @@ class ModelGenerator:
         if not _type:
             _type = self.get_not_custom_type(column)
 
-        field_params = self.get_field_params(column, defaults_off)
-        if field_params:
-            self.imports.add("Field")
+        arg_name = column.name
+        field_params = None
+        if not self._is_valid_identifier(column.name):
+            field_params = self.get_field_params(column, defaults_off)
+            if field_params:
+                self.imports.add("Field")
+            arg_name = self._generate_valid_identifier(column.name)
+        else:
+            if column.default is not None and not defaults_off:
+                field_params = self.get_default_value_string(column)
 
         column_str = column_str.format(
-            arg_name=self._generate_valid_identifier(column.name),
+            arg_name=arg_name,
             type=_type,
-            field_params=field_params,
+            field_params=field_params if field_params is not None else "",
         )
 
         return column_str
@@ -99,6 +106,8 @@ class ModelGenerator:
 
         if column.default is not None and not defaults_off:
             default_value = self.get_default_value(column)
+            if any(t in column.type.lower() for t in ["json", "jsonb"]):
+                return ""
             if default_value:
                 if any(
                     t in column.type.lower() for t in integer_types + big_integer_types
@@ -116,6 +125,9 @@ class ModelGenerator:
 
     def get_default_value(self, column: Column) -> str:
         if column.default is None or column.default.lower() == "null":
+            return ""
+
+        if any(t in column.type.lower() for t in ["json", "jsonb"]):
             return ""
 
         if column.type.lower() in datetime_types:
@@ -146,7 +158,7 @@ class ModelGenerator:
         return valid_name
 
     @staticmethod
-    def add_default_values(column_str: str, column: Column) -> str:
+    def get_default_value_string(column: Column) -> str:
         # Handle datetime default values
         if column.type.lower() in datetime_types:
             if datetime_now_check(column.default.lower()):
@@ -156,11 +168,16 @@ class ModelGenerator:
 
         # If the default is 'NULL', don't set a default in Pydantic (it already defaults to None)
         if column.default.lower() == "null":
-            return column_str
+            return ""
+
+        # Remove quotes for integer types
+        if any(t in column.type.lower() for t in integer_types + big_integer_types):
+            default_value = column.default.strip("'")
+        else:
+            default_value = column.default
 
         # Append the default value if it's not None (e.g., explicit default values like '0' or CURRENT_TIMESTAMP)
-        column_str += pt.pydantic_default_attr.format(default=column.default)
-        return column_str
+        return pt.pydantic_default_attr.format(default=default_value)
 
     def generate_model(
         self,
