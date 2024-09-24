@@ -82,6 +82,7 @@ class ModelGenerator:
             _type = types.prepare_type(column, self.types_mapping)
             _type = self.get_not_custom_type(_type)
 
+        column.type = _type
         arg_name = column.name
         field_params = None
         if not self._is_valid_identifier(column.name):
@@ -111,16 +112,7 @@ class ModelGenerator:
             if column.default is not None and not defaults_off:
                 default_value = self.get_default_value(column)
                 if default_value:
-                    if any(
-                        t in column.type.lower()
-                        for t in integer_types + big_integer_types
-                    ):
-                        # Remove quotes for integer types
-                        default_value = default_value.strip("'")
-                        params.append(f"default={default_value}")
-                    else:
-                        # Keep quotes for other types
-                        params.append(f"default={default_value}")
+                    params.append(f"default={default_value}")
 
         if params:
             return f" = Field({', '.join(params)})"
@@ -136,6 +128,9 @@ class ModelGenerator:
                 return "datetime.now()"
             else:
                 return column.default.strip("'")
+
+        if any(t in column.type.lower() for t in integer_types + big_integer_types):
+            return column.default.strip("'")
 
         return column.default
 
@@ -171,9 +166,13 @@ class ModelGenerator:
             return ""
         if any(t in column.type.lower() for t in ["json", "jsonb"]):
             return ""
-        # Remove quotes for integer types
+        if column.type.lower() == "any":
+            return ""
+
         if any(t in column.type.lower() for t in integer_types + big_integer_types):
             default_value = column.default.strip("'")
+        elif column.type.lower() == "bool":
+            default_value = "False" if column.default.strip("'") == "0" else "True"
         else:
             default_value = column.default
 

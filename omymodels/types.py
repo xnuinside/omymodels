@@ -145,12 +145,8 @@ def prepare_type(column_data: Column, models_types_mapping: Dict[str, str]) -> s
     column_data_type = column_data.type.split("[")[0]
 
     # Special handling for MySQL tinyint(1) -> bool
-    if column_data_type.startswith("tinyint"):
-        size = column_data.size
-        if size == 1:
-            return "bool"
-        else:
-            column_data_type = "tinyint"
+    if column_data_type == "tinyint" and column_data.size == 1:
+        return "bool"
 
     # Get the Pydantic type from the mapping
     column_type = models_types_mapping.get(column_data_type)
