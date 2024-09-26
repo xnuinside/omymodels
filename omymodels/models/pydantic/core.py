@@ -85,7 +85,11 @@ class ModelGenerator:
         column.type = _type
         arg_name = column.name
         field_params = None
-        if not self._is_valid_identifier(column.name):
+
+        if (
+            self._is_valid_identifier(column.name) is False
+            or column.generated_as is not None
+        ):
             field_params = self.get_field_params(column, defaults_off)
             if field_params:
                 self.imports.add("Field")
@@ -113,6 +117,9 @@ class ModelGenerator:
                 default_value = self.get_default_value(column)
                 if default_value:
                     params.append(f"default={default_value}")
+
+        if column.generated_as is not None:
+            params.append("exclude=True")
 
         if params:
             return f" = Field({', '.join(params)})"
@@ -158,8 +165,6 @@ class ModelGenerator:
         if column.type.lower() in datetime_types:
             if datetime_now_check(column.default.lower()):
                 column.default = "datetime.now()"
-            elif column.default.lower() != "null" and "'" not in column.default:
-                column.default = f"'{column.default}'"
 
         # If the default is 'NULL', don't set a default in Pydantic (it already defaults to None)
         if column.default.lower() == "null":

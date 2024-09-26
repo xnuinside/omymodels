@@ -99,6 +99,9 @@ def convert_ddl_to_models(  # noqa: C901
                 column["name"] = snake_case(column["name"])
             if column["name"] in refs:
                 column["references"] = refs[column["name"]]
+            if "generated" in column:
+                column["generated_as"] = column["generated"]["as"]
+
         if not no_auto_snake_case:
             table["primary_key"] = [snake_case(pk) for pk in table["primary_key"]]
             for uniq in table.get("constraints", {}).get("uniques", []):
