@@ -3,10 +3,10 @@ from typing import List, Optional
 
 from table_meta.model import Column, TableMeta
 
-import omymodels.types as t
-from omymodels import types
+import omymodels.types as types
 from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.pydantic import templates as pt
+from omymodels.models.pydantic import types as pydantic_types
 from omymodels.types import (
     big_integer_types,
     datetime_types,
@@ -26,7 +26,7 @@ class ModelGenerator:
         self.custom_types = {}
         self.uuid_import = False
         self.prefix = ""
-        self.types_mapping = types_mapping
+        self.types_mapping = pydantic_types.types_mapping
 
     def add_custom_type(self, target_type: str) -> Optional[str]:
         column_type = self.custom_types.get(target_type, None)
@@ -204,7 +204,7 @@ class ModelGenerator:
         ) + "\n"
 
         for column in table.columns:
-            column = t.prepare_column_data(column)
+            column = types.prepare_column_data(column)
             model += self.generate_attr(column, defaults_off) + "\n"
 
         return model
