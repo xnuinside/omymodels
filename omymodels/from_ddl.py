@@ -59,6 +59,12 @@ def create_models(
     output = generate_models_file(
         data,
         singular,
+        naming_exceptions,
+        models_type,
+        schema_global,
+        defaults_off,
+        table_prefix=table_prefix,
+        table_suffix=table_suffix,
     )
     if dump:
         save_models_to_file(output, dump_path)
@@ -139,6 +145,8 @@ def generate_models_file(
     models_type: str = "gino",
     schema_global: bool = True,
     defaults_off: Optional[bool] = False,
+    table_prefix: Optional[str] = "",
+    table_suffix: Optional[str] = "",
 ) -> str:
     """method to prepare full file with all Models &"""
     models_str = ""
@@ -158,6 +166,8 @@ def generate_models_file(
                 exceptions,
                 schema_global=schema_global,
                 defaults_off=defaults_off,
+                table_prefix=table_prefix,
+                table_suffix=table_suffix,
             )
         header += generator.create_header(
             data["tables"], schema=schema_global, models_str=models_str
