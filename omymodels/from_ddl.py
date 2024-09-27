@@ -42,6 +42,8 @@ def create_models(
     defaults_off: Optional[bool] = False,
     exit_silent: Optional[bool] = False,
     no_auto_snake_case: Optional[bool] = False,
+    table_prefix: Optional[str] = "",
+    table_suffix: Optional[str] = "",
 ):
     """models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
@@ -55,7 +57,8 @@ def create_models(
             raise NoTablesError()
     # generate code
     output = generate_models_file(
-        data, singular, naming_exceptions, models_type, schema_global, defaults_off
+        data,
+        singular,
     )
     if dump:
         save_models_to_file(output, dump_path)

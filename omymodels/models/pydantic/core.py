@@ -196,9 +196,18 @@ class ModelGenerator:
         model = ""
         # mean one model one table
         model += "\n\n"
+
+        table_prefix = kwargs.get("table_prefix", "")
+        table_suffix = kwargs.get("table_suffix", "")
+
+        class_name = (
+            table_prefix
+            + create_class_name(table.name, singular, exceptions)
+            + table_suffix
+        )
         model += (
             pt.pydantic_class.format(
-                class_name=create_class_name(table.name, singular, exceptions),
+                class_name=class_name,
                 table_name=table.name,
             )
         ) + "\n"
