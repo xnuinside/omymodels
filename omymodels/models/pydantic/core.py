@@ -147,7 +147,6 @@ class ModelGenerator:
 
         return column.default
 
-    @classmethod
     def get_default_value_string(self, column: Column) -> str:
         # Handle datetime default values
         if column.type.lower() in ["datetime", "timestamp"]:
@@ -176,7 +175,6 @@ class ModelGenerator:
         # Append the default value if it's not None (e.g., explicit default values like '0' or CURRENT_TIMESTAMP)
         return pt.pydantic_default_attr.format(default=default_value)
 
-    @classmethod
     def _is_valid_identifier(self, name: str) -> bool:
         return (
             name.isidentifier()
@@ -184,7 +182,6 @@ class ModelGenerator:
             and not self._is_pydantic_reserved_name(name)
         )
 
-    @classmethod
     def _is_pydantic_reserved_name(self, name: str) -> bool:
         """Check if the name is a Pydantic-specific reserved name or starts with a reserved prefix."""
         pydantic_reserved_prefixes = {"dict_", "json_"}
@@ -206,7 +203,6 @@ class ModelGenerator:
             or name in pydantic_reserved_names
         )
 
-    @classmethod
     def _generate_valid_identifier(self, name: str) -> str:
         """Generate a valid Python identifier from a given name."""
         # Replace non-alphanumeric characters with underscores
@@ -222,16 +218,14 @@ class ModelGenerator:
 
         return valid_name
 
-    @classmethod
-    def _convert_to_date_string(date_str: str) -> str:
+    def _convert_to_date_string(self, date_str: str) -> str:
         try:
             date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
             return f"date({date_obj.year}, {date_obj.month}, {date_obj.day})"
         except ValueError:
             return date_str  # Return original string if parsing fails
 
-    @classmethod
-    def _convert_to_time_string(time_str: str) -> str:
+    def _convert_to_time_string(self, time_str: str) -> str:
         try:
             time_obj = datetime.strptime(time_str, "%H:%M:%S").time()
             return f"time({time_obj.hour}, {time_obj.minute}, {time_obj.second})"
