@@ -148,19 +148,15 @@ class ModelGenerator:
         return column.default
 
     @staticmethod
-    def get_default_value_string(column: Column) -> str:
+    def get_default_value_string(self, column: Column) -> str:
         # Handle datetime default values
         if column.type.lower() in ["datetime", "timestamp"]:
             if datetime_now_check(column.default.lower()):
                 column.default = "datetime.now()"
         elif column.type.lower() == "date":
-            column.default = ModelGenerator._convert_to_date_string(
-                column.default.strip("'")
-            )
+            column.default = self._convert_to_date_string(column.default.strip("'"))
         elif column.type.lower() == "time":
-            column.default = ModelGenerator._convert_to_time_string(
-                column.default.strip("'")
-            )
+            column.default = self._convert_to_time_string(column.default.strip("'"))
 
         # If the default is 'NULL', don't set a default in Pydantic (it already defaults to None)
         if column.default.lower() == "null":
@@ -226,7 +222,7 @@ class ModelGenerator:
 
         return valid_name
 
-    @staticmethod
+    @classmethod
     def _convert_to_date_string(date_str: str) -> str:
         try:
             date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
@@ -234,7 +230,7 @@ class ModelGenerator:
         except ValueError:
             return date_str  # Return original string if parsing fails
 
-    @staticmethod
+    @classmethod
     def _convert_to_time_string(time_str: str) -> str:
         try:
             time_obj = datetime.strptime(time_str, "%H:%M:%S").time()
