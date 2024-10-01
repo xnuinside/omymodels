@@ -1,4 +1,7 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
+
+from table_meta import TableMeta
+from table_meta.model import Column
 
 import omymodels.types as t
 from omymodels.helpers import create_class_name, datetime_now_check
@@ -24,7 +27,7 @@ class ModelGenerator:
             column_type = column_type[0]
         return _type
 
-    def generate_attr(self, column: Dict, defaults_off: bool) -> str:
+    def generate_attr(self, column: Column, defaults_off: bool) -> str:
         column_str = dt.dataclass_attr
 
         if "." in column.type:
@@ -57,19 +60,19 @@ class ModelGenerator:
         return column_str
 
     @staticmethod
-    def add_column_default(column_str: str, column: Dict) -> str:
+    def add_column_default(column_str: str, column: Column) -> str:
         if column.type.upper() in datetime_types:
             if datetime_now_check(column.default.lower()):
                 # todo: need to add other popular PostgreSQL & MySQL functions
                 column.default = dt.field_datetime_now
             elif "'" not in column.default:
-                column.default = f"'{column['default']}'"
+                column.default = f"'{column.default}'"
         column_str += dt.dataclass_default_attr.format(default=column.default)
         return column_str
 
     def generate_model(
         self,
-        table: Dict,
+        table: TableMeta,
         singular: bool = True,
         exceptions: Optional[List] = None,
         defaults_off: Optional[bool] = False,

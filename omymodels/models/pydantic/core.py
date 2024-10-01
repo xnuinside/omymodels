@@ -37,6 +37,7 @@ class ModelGenerator:
             _type = type.split(".")[1]
         else:
             _type = type.split("[")[0]
+            
         _type = pydantic_types.types_mapping.get(_type, _type)
         if _type in self.types_for_import:
             self.imports.add(_type)
