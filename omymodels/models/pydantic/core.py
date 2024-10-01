@@ -147,7 +147,7 @@ class ModelGenerator:
 
         return column.default
 
-    @staticmethod
+    @classmethod
     def get_default_value_string(self, column: Column) -> str:
         # Handle datetime default values
         if column.type.lower() in ["datetime", "timestamp"]:
