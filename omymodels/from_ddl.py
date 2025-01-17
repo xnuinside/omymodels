@@ -172,7 +172,15 @@ def prepare_data(item: Dict) -> Dict:
                 item[key] = clean_value(value)
             elif isinstance(value, dict):
                 value = prepare_data(value)
+        else:
+            item[key] = format_to_py_var(value)
     return item
+
+
+def format_to_py_var(value: str) -> str:
+    if value in ["false", "true"]:
+        return value.capitalize()
+    return value
 
 
 def clean_value(string: str) -> str:
