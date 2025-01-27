@@ -12,12 +12,14 @@ from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
 from pydantic import Json, UUID4
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 class Material(SQLModel, table=True):
 
@@ -262,12 +264,14 @@ from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import JSON
 from pydantic import Json, UUID4
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 class Material(SQLModel, table=True):
 

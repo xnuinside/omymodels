@@ -7,13 +7,15 @@ from enum import Enum
 
 db = Gino(schema="schema--notification")
 
+ContentType = Enum(
+    value='ContentType',
+    names=[
+        ('HTML', 'HTML'),
+        ('MARKDOWN', 'MARKDOWN'),
+        ('TEXT', 'TEXT')
+    ]
+)
 
-class ContentType(str, Enum):
-
-    HTML = 'HTML'
-    MARKDOWN = 'MARKDOWN'
-    TEXT = 'TEXT'
-    
 
 class Notification(db.Model):
 
@@ -51,20 +53,24 @@ def test_pydantic_models():
 from typing import Optional
 from pydantic import BaseModel
 
+ContentType = Enum(
+    value='ContentType',
+    names=[
+        ('HTML', 'HTML'),
+        ('MARKDOWN', 'MARKDOWN'),
+        ('TEXT', 'TEXT')
+    ]
+)
 
-class ContentType(str, Enum):
+Period = Enum(
+    value='Period',
+    names=[
+        ('zero', 0),
+        ('one', 1),
+        ('two', 2)
+    ]
+)
 
-    HTML = 'HTML'
-    MARKDOWN = 'MARKDOWN'
-    TEXT = 'TEXT'
-    
-
-class Period(IntEnum):
-
-    zero = 0
-    one = 1
-    two = 2
-    
 
 class Notification(BaseModel):
 
@@ -102,12 +108,14 @@ from sqlalchemy.dialects.postgresql import JSON
 
 db = Gino()
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 class Material(db.Model):
 

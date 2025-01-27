@@ -12,12 +12,14 @@ def test_enum_only():
 
     expected = """from enum import Enum
 
-
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    """
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
+"""
 
     assert result == expected
 
@@ -33,18 +35,22 @@ def test_enum_models():
     result = create_models(ddl)["code"]
     expected = """from enum import Enum, IntEnum
 
+ContentType = Enum(
+    value='ContentType',
+    names=[
+        ('HTML', 'HTML'),
+        ('MARKDOWN', 'MARKDOWN'),
+        ('TEXT', 'TEXT')
+    ]
+)
 
-class ContentType(str, Enum):
-
-    HTML = 'HTML'
-    MARKDOWN = 'MARKDOWN'
-    TEXT = 'TEXT'
-    
-
-class Period(IntEnum):
-
-    zero = 0
-    one = 1
-    two = 2
-    """
+Period = Enum(
+    value='Period',
+    names=[
+        ('zero', 0),
+        ('one', 1),
+        ('two', 2)
+    ]
+)
+"""
     assert expected == result

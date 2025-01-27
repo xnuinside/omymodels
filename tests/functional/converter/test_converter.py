@@ -34,12 +34,14 @@ from sqlalchemy.dialects.postgresql import JSON
 
 db = Gino()
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', article),
+        ('video', video)
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = article
-    video = video
-    
 
 class Material(db.Model):
 
@@ -100,12 +102,14 @@ from sqlalchemy.dialects.postgresql import JSON
 
 db = Gino()
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 class Material(db.Model):
 
@@ -161,12 +165,14 @@ import datetime
 from typing import Optional
 from pydantic import BaseModel, Json
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 class Material(BaseModel):
 
