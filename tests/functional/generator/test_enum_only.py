@@ -54,3 +54,23 @@ Period = Enum(
 )
 """
     assert expected == result
+
+def test_enum_with_whitespace():
+    ddl = """
+    CREATE TYPE "enum_with_spaces" AS ENUM (
+    'some value',
+    'another value'
+    );
+    """
+    result = create_models(ddl)["code"]
+    expected = """from enum import Enum
+
+EnumWithSpaces = Enum(
+    value='EnumWithSpaces',
+    names=[
+        ('another value', 'another value'),
+        ('some value', 'some value')
+    ]
+)
+"""
+    assert result == expected
