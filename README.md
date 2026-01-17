@@ -15,12 +15,13 @@ O! My Models (omymodels) is a library that allow you to **generate** different O
 
 Supported Models:
 
-- SQLAlchemy (https://docs.sqlalchemy.org/en/14/orm/), 
-- SQLAlchemy Core (Tables) (https://docs.sqlalchemy.org/en/14/core/metadata.html#accessing-tables-and-columns),
-- GinoORM (https://python-gino.org/), 
-- Pydantic (https://pydantic-docs.helpmanual.io/),
-- Python Enum (https://docs.python.org/3/library/enum.html) - generated only from DDL SQL Types,
-- Python Dataclasses (dataclasses module) (https://docs.python.org/3/library/dataclasses.html),
+- SQLAlchemy ORM (https://docs.sqlalchemy.org/en/20/orm/)
+- SQLAlchemy Core (Tables) (https://docs.sqlalchemy.org/en/20/core/metadata.html)
+- SQLModel (https://sqlmodel.tiangolo.com/) - combines SQLAlchemy and Pydantic
+- GinoORM (https://python-gino.org/)
+- Pydantic v1/v2 (https://docs.pydantic.dev/)
+- Python Dataclasses (https://docs.python.org/3/library/dataclasses.html)
+- Python Enum (https://docs.python.org/3/library/enum.html) - generated from DDL SQL Types
 
 
 ## How to install
@@ -37,7 +38,12 @@ Supported Models:
 ### From Python code
 ### Create Models from DDL
 
-By default method **create_models** generate GinoORM models, to get Pydantic models output use the argument `models_type='pydantic'` ('sqlalchemy' for SQLAlchemy models; 'dataclass' for Dataclasses; 'sqlalchemy_core' for Sqlalchemy Core Tables).
+By default method **create_models** generates GinoORM models. Use the argument `models_type` to specify output format:
+- `'pydantic'` - Pydantic models
+- `'sqlalchemy'` - SQLAlchemy ORM models
+- `'sqlalchemy_core'` - SQLAlchemy Core Tables
+- `'dataclass'` - Python Dataclasses
+- `'sqlmodel'` - SQLModel models
 
 A lot of examples in tests/ - https://github.com/xnuinside/omymodels/tree/main/tests.
 
@@ -288,11 +294,9 @@ And result will be this:
 ## TODO in next releases
 
 1. Add Sequence generation in Models (Gino, SQLAlchemy)
-2. Add support for pure Python Classes (https://docs.python.org/3/tutorial/classes.html#class-objects)
-3. Add support for Tortoise ORM (https://tortoise-orm.readthedocs.io/en/latest/),
-4. Add support for DjangoORM Models
-5. Add support for Pydal Models
-6. Add support for Encode/orm Models
+2. Add support for Tortoise ORM (https://tortoise-orm.readthedocs.io/en/latest/)
+3. Add support for DjangoORM Models
+4. Add support for PyDAL Models (https://py4web.com/_documentation/static/en/chapter-07.html)
 
 
 ## How to contribute
@@ -307,6 +311,21 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 One more time, big 'thank you!' goes to https://github.com/archongum for Web-version: https://archon-omymodels-online.hf.space/ 
 
 ## Changelog
+**v1.0.0**
+
+### Breaking Changes
+1. Dropped support for Python 3.7 and 3.8
+2. Minimum required Python version is now 3.9
+
+### New Features
+1. Added support for Python 3.12 and 3.13
+2. Added tox configuration for local multi-version testing
+3. Updated Pydantic dependency to support both v1 and v2
+
+### Improvements
+1. Updated GitHub Actions workflow with latest action versions
+2. Added ARCHITECTURE.md with project documentation
+
 **v0.17.0**
 
 ### Updates

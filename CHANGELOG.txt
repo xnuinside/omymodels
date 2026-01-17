@@ -1,3 +1,18 @@
+**v1.0.0**
+
+### Breaking Changes
+1. Dropped support for Python 3.7 and 3.8
+2. Minimum required Python version is now 3.9
+
+### New Features
+1. Added support for Python 3.12 and 3.13
+2. Added tox configuration for local multi-version testing
+3. Updated Pydantic dependency to support both v1 and v2
+
+### Improvements
+1. Updated GitHub Actions workflow with latest action versions
+2. Added ARCHITECTURE.md with project documentation
+
 **v0.17.0**
 
 ### Updates
