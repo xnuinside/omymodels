@@ -6,12 +6,17 @@
 
 ### New Features
 1. Added support for Python 3.12 and 3.13
-2. Added tox configuration for local multi-version testing
-3. Updated Pydantic dependency to support both v1 and v2
+2. Added `pydantic_v2` models type with native Pydantic v2 syntax:
+   - Uses `X | None` instead of `Optional[X]`
+   - Uses `dict | list` for JSON/JSONB types instead of `Json`
+   - Adds `from __future__ import annotations` for Python 3.9 compatibility
+   - Nullable fields automatically get `= None` default
+3. Added tox configuration for local multi-version testing (py39-py313)
 
 ### Improvements
-1. Updated GitHub Actions workflow with latest action versions
+1. Updated GitHub Actions workflow with latest action versions (checkout@v4, setup-python@v5)
 2. Added ARCHITECTURE.md with project documentation
+3. Updated documentation with Pydantic v2 examples
 
 **v0.17.0**
 

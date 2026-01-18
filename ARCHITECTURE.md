@@ -6,8 +6,8 @@
 - Генерации ORM-моделей из SQL DDL (CREATE TABLE)
 - Конвертации моделей между разными фреймворками (Pydantic → SQLAlchemy и т.д.)
 
-**Версия:** 0.17.0
-**Python:** >=3.7
+**Версия:** 1.0.0
+**Python:** >=3.9
 **Лицензия:** MIT
 
 ## Структура проекта
@@ -26,7 +26,8 @@ omymodels/
 │
 └── models/                  # Генераторы для каждого типа моделей
     ├── gino/                # GinoORM (async PostgreSQL)
-    ├── pydantic/            # Pydantic (валидация)
+    ├── pydantic/            # Pydantic v1 (валидация, Optional[X])
+    ├── pydantic_v2/         # Pydantic v2 (валидация, X | None)
     ├── sqlalchemy/          # SQLAlchemy ORM
     ├── sqlalchemy_core/     # SQLAlchemy Core (Table API)
     ├── sqlmodel/            # SQLModel (SQLAlchemy + Pydantic)
@@ -129,6 +130,7 @@ class ModelGenerator:
 models = {
     "gino": gino.ModelGenerator(),
     "pydantic": pydantic.ModelGenerator(),
+    "pydantic_v2": pydantic_v2.ModelGenerator(),
     "sqlalchemy": sqlalchemy.ModelGenerator(),
     "sqlalchemy_core": sqlalchemy_core.ModelGenerator(),
     "sqlmodel": sqlmodel.ModelGenerator(),
@@ -201,7 +203,8 @@ omm schema.sql -m pydantic -t models.py
 | Формат | Описание |
 |--------|----------|
 | GinoORM | Async PostgreSQL ORM |
-| Pydantic | Валидация и сериализация |
+| Pydantic v1 | Валидация и сериализация (Optional[X]) |
+| Pydantic v2 | Валидация и сериализация (X \| None) |
 | SQLAlchemy ORM | Классический ORM |
 | SQLAlchemy Core | Table API |
 | SQLModel | SQLAlchemy + Pydantic |

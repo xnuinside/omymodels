@@ -65,7 +65,8 @@ Create Models from DDL
 
 By default method **create_models** generates GinoORM models. Use the argument ``models_type`` to specify output format:
 
-* ``'pydantic'`` - Pydantic models
+* ``'pydantic'`` - Pydantic v1 models (uses ``Optional[X]``)
+* ``'pydantic_v2'`` - Pydantic v2 models (uses ``X | None`` syntax, ``dict | list`` for JSON)
 * ``'sqlalchemy'`` - SQLAlchemy ORM models
 * ``'sqlalchemy_core'`` - SQLAlchemy Core Tables
 * ``'dataclass'`` - Python Dataclasses
@@ -347,14 +348,21 @@ New Features
 ^^^^^^^^^^^^
 
 #. Added support for Python 3.12 and 3.13
-#. Added tox configuration for local multi-version testing
-#. Updated Pydantic dependency to support both v1 and v2
+#. Added ``pydantic_v2`` models type with native Pydantic v2 syntax:
+
+   * Uses ``X | None`` instead of ``Optional[X]``
+   * Uses ``dict | list`` for JSON/JSONB types instead of ``Json``
+   * Adds ``from __future__ import annotations`` for Python 3.9 compatibility
+   * Nullable fields automatically get ``= None`` default
+
+#. Added tox configuration for local multi-version testing (py39-py313)
 
 Improvements
 ^^^^^^^^^^^^
 
-#. Updated GitHub Actions workflow with latest action versions
+#. Updated GitHub Actions workflow with latest action versions (checkout@v4, setup-python@v5)
 #. Added ARCHITECTURE.md with project documentation
+#. Updated documentation with Pydantic v2 examples
 
 **v0.17.0**
 

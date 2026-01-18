@@ -39,7 +39,8 @@ Supported Models:
 ### Create Models from DDL
 
 By default method **create_models** generates GinoORM models. Use the argument `models_type` to specify output format:
-- `'pydantic'` - Pydantic models
+- `'pydantic'` - Pydantic v1 models (uses `Optional[X]`)
+- `'pydantic_v2'` - Pydantic v2 models (uses `X | None` syntax, `dict | list` for JSON)
 - `'sqlalchemy'` - SQLAlchemy ORM models
 - `'sqlalchemy_core'` - SQLAlchemy Core Tables
 - `'dataclass'` - Python Dataclasses
@@ -47,7 +48,7 @@ By default method **create_models** generates GinoORM models. Use the argument `
 
 A lot of examples in tests/ - https://github.com/xnuinside/omymodels/tree/main/tests.
 
-For example,
+#### Pydantic v1 example
 
 ```python
 from omymodels import create_models
@@ -63,12 +64,10 @@ CREATE table user_history (
     ,event_time            timestamp not null default now()
     ,comment           varchar(1000) not null default 'none'
     ) ;
-
-
 """
 result = create_models(ddl, models_type='pydantic')['code']
 
- # and output will be:    
+# output:
 import datetime
 from typing import Optional
 from pydantic import BaseModel
@@ -83,8 +82,50 @@ class UserHistory(BaseModel):
     status: str
     event_time: datetime.datetime
     comment: str
-
 ```
+
+#### Pydantic v2 example
+
+```python
+from omymodels import create_models
+
+
+ddl = """
+CREATE table user_history (
+     runid                 decimal(21) null
+    ,job_id                decimal(21)  null
+    ,id                    varchar(100) not null
+    ,user              varchar(100) not null
+    ,status                varchar(10) not null
+    ,event_time            timestamp not null default now()
+    ,comment           varchar(1000) not null default 'none'
+    ) ;
+"""
+result = create_models(ddl, models_type='pydantic_v2')['code']
+
+# output:
+from __future__ import annotations
+
+import datetime
+from pydantic import BaseModel
+
+
+class UserHistory(BaseModel):
+
+    runid: float | None = None
+    job_id: float | None = None
+    id: str
+    user: str
+    status: str
+    event_time: datetime.datetime = datetime.datetime.now()
+    comment: str = 'none'
+```
+
+**Key differences in Pydantic v2 output:**
+- Uses `X | None` instead of `Optional[X]`
+- Uses `dict | list` for JSON/JSONB types instead of `Json`
+- Includes `from __future__ import annotations` for Python 3.9 compatibility
+- Nullable fields automatically get `= None` default
 
 To generate Dataclasses from DDL use argument `models_type='dataclass'`
 
@@ -319,12 +360,17 @@ One more time, big 'thank you!' goes to https://github.com/archongum for Web-ver
 
 ### New Features
 1. Added support for Python 3.12 and 3.13
-2. Added tox configuration for local multi-version testing
-3. Updated Pydantic dependency to support both v1 and v2
+2. Added `pydantic_v2` models type with native Pydantic v2 syntax:
+   - Uses `X | None` instead of `Optional[X]`
+   - Uses `dict | list` for JSON/JSONB types instead of `Json`
+   - Adds `from __future__ import annotations` for Python 3.9 compatibility
+   - Nullable fields automatically get `= None` default
+3. Added tox configuration for local multi-version testing (py39-py313)
 
 ### Improvements
-1. Updated GitHub Actions workflow with latest action versions
+1. Updated GitHub Actions workflow with latest action versions (checkout@v4, setup-python@v5)
 2. Added ARCHITECTURE.md with project documentation
+3. Updated documentation with Pydantic v2 examples
 
 **v0.17.0**
 
