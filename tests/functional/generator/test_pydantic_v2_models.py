@@ -119,7 +119,7 @@ CREATE TABLE "material" (
     # Verify key features of Pydantic v2 output
     assert "from __future__ import annotations" in result
     assert "from pydantic import BaseModel" in result
-    assert "class MaterialType(str, Enum):" in result
+    assert "MaterialType = Enum(" in result
     assert "class Material(BaseModel):" in result
     # Pydantic v2 uses X | None syntax instead of Optional[X]
     assert "description: str | None = None" in result
