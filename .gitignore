@@ -1,10 +1,14 @@
 *.pyc
+__pycache__/
 omymodels/__pycache__
 omymodels/models/**/__pycache__
 dist/
 .pytest_cache/
 .vscode/
+.tox/
 tests/generator/_models.py
+tests/integration/**/module_*.py
 ./models.py
+models.py
 poetry.lock
 *~
