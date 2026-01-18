@@ -45,7 +45,7 @@ class ModelGenerator:
         if column_type == "UUID":
             self.no_need_par = True
         if column_data.size:
-            column_type = self.add_size_to_column_type(column_data.size)
+            column_type = self.add_size_to_column_type(column_type, column_data.size)
         elif self.no_need_par is False:
             column_type += "()"
         if "[" in column_data.type:
@@ -54,11 +54,11 @@ class ModelGenerator:
         return column_type
 
     @staticmethod
-    def add_size_to_column_type(size):
+    def add_size_to_column_type(column_type, size):
         if isinstance(size, int):
-            return f"({size})"
+            return f"{column_type}({size})"
         elif isinstance(size, tuple):
-            return f"({','.join([str(x) for x in size])})"
+            return f"{column_type}({','.join([str(x) for x in size])})"
 
     def column_default(self, column_data: Dict) -> str:
         """extract & format column default values"""
@@ -85,26 +85,19 @@ class ModelGenerator:
         table_data: Dict,
         schema_global: bool,
     ) -> List[str]:
-        properties = []
-        if (
-            column_data.type.lower() == "serial"
-            or column_data.type.lower() == "bigserial"
-        ):
-            properties.append(st.autoincrement)
+        # Separate positional args (ForeignKey) from keyword args
+        positional_properties = []
+        keyword_properties = []
+
+        # ForeignKey is a positional argument - must come before keyword args
         if column_data.references:
-            properties.append(
+            positional_properties.append(
                 self.column_reference(
                     column_data.name, column_data.references, schema_global
                 )
             )
-        if not column_data.nullable and column_data.name not in table_pk:
-            properties.append(st.required)
-        if column_data.default is not None:
-            properties.append(self.column_default(column_data))
-        if column_data.name in table_pk:
-            properties.append(st.pk_template)
-        if column_data.unique:
-            properties.append(st.unique)
+
+        # Check alter table for foreign keys
         if "columns" in table_data.alter:
             for alter_column in table_data.alter["columns"]:
                 if (
@@ -113,14 +106,30 @@ class ModelGenerator:
                     and alter_column["references"]
                     and not column_data.references
                 ):
-                    properties.append(
+                    positional_properties.append(
                         self.column_reference(
                             alter_column["name"],
                             alter_column["references"],
                             schema_global,
                         )
                     )
-        return properties
+
+        # Keyword arguments
+        if (
+            column_data.type.lower() == "serial"
+            or column_data.type.lower() == "bigserial"
+        ):
+            keyword_properties.append(st.autoincrement)
+        if not column_data.nullable and column_data.name not in table_pk:
+            keyword_properties.append(st.required)
+        if column_data.default is not None:
+            keyword_properties.append(self.column_default(column_data))
+        if column_data.name in table_pk:
+            keyword_properties.append(st.pk_template)
+        if column_data.unique:
+            keyword_properties.append(st.unique)
+
+        return positional_properties + keyword_properties
 
     @staticmethod
     def column_reference(

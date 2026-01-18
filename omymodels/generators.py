@@ -13,6 +13,7 @@ from omymodels.models.pydantic import core as p
 from omymodels.models.pydantic_v2 import core as p2
 from omymodels.models.sqlalchemy import core as s
 from omymodels.models.sqlalchemy_core import core as sc
+from omymodels.models.sqlalchemy_v2 import core as s2
 from omymodels.models.sqlmodel import core as sm
 
 # Built-in generator modules
@@ -22,6 +23,7 @@ models = {
     "pydantic_v2": p2,
     "dataclass": d,
     "sqlalchemy": s,
+    "sqlalchemy_v2": s2,
     "sqlalchemy_core": sc,
     "sqlmodel": sm,
     "openapi3": oas3,

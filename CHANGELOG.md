@@ -43,6 +43,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Boolean defaults 0/1 converted to False/True
 - Expanded `datetime_now_check` with more SQL datetime keywords
 
+**SQLAlchemy 2.0 Support (issue #49)**
+- New `sqlalchemy_v2` models type with modern SQLAlchemy 2.0 syntax
+- Uses `DeclarativeBase` instead of deprecated `declarative_base()`
+- Uses `Mapped[T]` type annotations for columns
+- Uses `mapped_column()` instead of `Column()`
+- Uses `X | None` union syntax for nullable columns
+- Supports all column types, foreign keys, indexes, and constraints
+
 **SQLModel Improvements**
 - Fixed array type generation (issue #66)
 - Arrays now properly generate `List[T]` with correct SQLAlchemy ARRAY type
@@ -75,6 +83,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed boolean values capitalization - now generates `True`/`False` instead of `true`/`false` (PR #67)
 - Fixed SQLModel array type generation TypeError (issue #66)
 - Fixed MySQL blob types not mapping to `bytes` (issue #62)
+- Fixed `sqlalchemy_core` generator missing column names in output
+- Fixed `sqlalchemy_core` generator not including type name with size (e.g., `String(255)`)
+- Fixed `sqlalchemy_core` generator ForeignKey positional argument order
 
 ### Documentation
 

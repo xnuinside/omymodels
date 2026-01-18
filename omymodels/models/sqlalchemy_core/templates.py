@@ -12,7 +12,7 @@ table_template = """\n
 """
 
 # columns defenition
-column_template = """        Column({column_type}{properties})"""
+column_template = """        Column("{column_name}", {column_type}{properties})"""
 required = ", nullable=False"
 default = ", server_default={default}"
 pk_template = ", primary_key=True"

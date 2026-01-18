@@ -13,8 +13,8 @@ metadata = MetaData()
 
 
 table = Table("table", metadata,
-        Column(UUID, primary_key=True),
-        Column(sa.Integer()),
+        Column("_id", UUID, primary_key=True),
+        Column("one_more_id", sa.Integer()),
         UniqueConstraint('one_more_id', name='table_pk'),
         schema="prefix--schema-name")
 
@@ -41,27 +41,27 @@ metadata = MetaData()
 
 
 materials = Table("materials", metadata,
-        Column(sa.Integer(), primary_key=True),
-        Column(sa.String(), nullable=False),
-        Column(sa.String()),
-        Column(sa.String()),
-        Column(sa.TIMESTAMP()),
-        Column(sa.TIMESTAMP()),
+        Column("id", sa.Integer(), primary_key=True),
+        Column("title", sa.String(), nullable=False),
+        Column("description", sa.String()),
+        Column("link", sa.String()),
+        Column("created_at", sa.TIMESTAMP()),
+        Column("updated_at", sa.TIMESTAMP()),
 )
 
 
 material_attachments = Table("material_attachments", metadata,
-        Column(sa.Integer(), sa.ForeignKey('materials.id')),
-        Column(sa.Integer(), sa.ForeignKey('attachments.id')),
+        Column("material_id", sa.Integer(), sa.ForeignKey('materials.id')),
+        Column("attachment_id", sa.Integer(), sa.ForeignKey('attachments.id')),
         schema="schema_name")
 
 
 attachments = Table("attachments", metadata,
-        Column(sa.Integer(), primary_key=True),
-        Column(sa.String()),
-        Column(sa.String()),
-        Column(sa.TIMESTAMP()),
-        Column(sa.TIMESTAMP()),
+        Column("id", sa.Integer(), primary_key=True),
+        Column("title", sa.String()),
+        Column("description", sa.String()),
+        Column("created_at", sa.TIMESTAMP()),
+        Column("updated_at", sa.TIMESTAMP()),
 )
 """
     ddl = """

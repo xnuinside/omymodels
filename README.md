@@ -16,7 +16,8 @@ O! My Models (omymodels) is a library that allow you to **generate** different O
 
 Supported Models:
 
-- SQLAlchemy ORM (https://docs.sqlalchemy.org/en/20/orm/)
+- SQLAlchemy 2.0 ORM (https://docs.sqlalchemy.org/en/20/orm/) - modern syntax with `Mapped` and `mapped_column`
+- SQLAlchemy ORM (legacy style)
 - SQLAlchemy Core (Tables) (https://docs.sqlalchemy.org/en/20/core/metadata.html)
 - SQLModel (https://sqlmodel.tiangolo.com/) - combines SQLAlchemy and Pydantic
 - GinoORM (https://python-gino.org/)
