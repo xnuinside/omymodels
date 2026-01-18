@@ -6,7 +6,10 @@ import omymodels.types as t
 from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.pydantic_v2 import templates as pt
 from omymodels.models.pydantic_v2.types import types_mapping
-from omymodels.types import datetime_types
+from omymodels.types import datetime_types, string_types
+
+# Types that support max_length constraint
+MAX_LENGTH_TYPES = string_types
 
 
 class ModelGenerator:
@@ -49,8 +52,17 @@ class ModelGenerator:
             self.uuid_import = True
         return _type
 
+    def _should_add_max_length(self, column: Column) -> bool:
+        """Check if column should have max_length constraint."""
+        if not column.size:
+            return False
+        # Only add max_length for string types (varchar, char, etc.), not text
+        original_type = column.type.lower().split("[")[0]
+        return original_type in MAX_LENGTH_TYPES
+
     def generate_attr(self, column: Column, defaults_off: bool) -> str:
         _type = None
+        max_length = column.size if self._should_add_max_length(column) else None
 
         # Pydantic v2 uses X | None syntax
         if column.nullable:
@@ -65,13 +77,42 @@ class ModelGenerator:
 
         column_str = column_str.format(arg_name=column.name, type=_type)
 
-        if column.default is not None and not defaults_off:
+        # Handle max_length with Field()
+        if max_length is not None:
+            self.imports.add("Field")
+            field_params = []
+            # Handle defaults
+            if column.nullable and not defaults_off:
+                field_params.append("default=None")
+            elif column.default is not None and not defaults_off:
+                default_val = self._get_default_value(column)
+                if default_val:
+                    field_params.append(f"default={default_val}")
+            field_params.append(f"max_length={max_length}")
+            column_str += f" = Field({', '.join(field_params)})"
+        elif column.default is not None and not defaults_off:
             column_str = self.add_default_values(column_str, column)
         elif column.nullable and not defaults_off:
             # Nullable fields without explicit default should default to None
             column_str += pt.pydantic_default_attr.format(default="None")
 
         return column_str
+
+    def _get_default_value(self, column: Column) -> str:
+        """Get formatted default value for Field()."""
+        if column.default is None or str(column.default).upper() == "NULL":
+            return ""
+
+        # Handle datetime default values
+        if column.type.upper() in datetime_types:
+            if datetime_now_check(column.default.lower()):
+                return "datetime.datetime.now()"
+
+        # Add quotes for string defaults if not already quoted
+        default_val = column.default
+        if isinstance(default_val, str) and "'" not in default_val and '"' not in default_val:
+            default_val = f"'{default_val}'"
+        return default_val
 
     @staticmethod
     def add_default_values(column_str: str, column: Column) -> str:

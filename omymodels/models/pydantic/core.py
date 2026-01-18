@@ -10,6 +10,9 @@ from omymodels.models.pydantic import templates as pt
 from omymodels.models.pydantic.types import types_mapping
 from omymodels.types import big_integer_types, integer_types, string_types, text_types
 
+# Types that support max_length constraint
+MAX_LENGTH_TYPES = string_types
+
 
 class ModelGenerator:
     def __init__(self):
@@ -74,9 +77,18 @@ class ModelGenerator:
             self.typing_imports.add("List")
         return _type
 
+    def _should_add_max_length(self, column: Column) -> bool:
+        """Check if column should have max_length constraint."""
+        if not column.size:
+            return False
+        # Only add max_length for string types (varchar, char, etc.), not text
+        original_type = column.type.lower().split("[")[0]
+        return original_type in MAX_LENGTH_TYPES
+
     def generate_attr(self, column: Column, defaults_off: bool) -> str:
         _type = None
         original_type = column.type  # Keep original for array detection
+        max_length = column.size if self._should_add_max_length(column) else None
 
         if column.nullable:
             self.typing_imports.add("Optional")
@@ -99,13 +111,20 @@ class ModelGenerator:
         arg_name = column.name
         field_params = None
 
-        # Check if we need Field() for alias or generated column
+        # Check if we need Field() for alias, generated column, or max_length
         generated_as = getattr(column, "generated_as", None)
-        if not self._is_valid_identifier(column.name) or generated_as is not None:
-            field_params = self._get_field_params(column, defaults_off)
+        needs_field = (
+            not self._is_valid_identifier(column.name)
+            or generated_as is not None
+            or max_length is not None
+        )
+
+        if needs_field:
+            field_params = self._get_field_params(column, defaults_off, max_length)
             if field_params:
                 self.imports.add("Field")
-            arg_name = self._generate_valid_identifier(column.name)
+            if not self._is_valid_identifier(column.name):
+                arg_name = self._generate_valid_identifier(column.name)
         else:
             if column.default is not None and not defaults_off:
                 field_params = self._get_default_value_string(column)
@@ -118,19 +137,27 @@ class ModelGenerator:
 
         return column_str
 
-    def _get_field_params(self, column: Column, defaults_off: bool) -> str:
+    def _get_field_params(
+        self, column: Column, defaults_off: bool, max_length: int = None
+    ) -> str:
         params = []
 
         if not self._is_valid_identifier(column.name):
             params.append(f'alias="{column.name}"')
 
-        if column.default is not None and not defaults_off:
+        # For nullable fields with max_length, add default=None
+        if column.nullable and max_length is not None and not defaults_off:
+            params.append("default=None")
+        elif column.default is not None and not defaults_off:
             if default_value := self._get_default_value_string(column):
                 params.append(f"default{default_value.replace(' ', '')}")
 
         generated_as = getattr(column, "generated_as", None)
         if generated_as is not None:
             params.append("exclude=True")
+
+        if max_length is not None:
+            params.append(f"max_length={max_length}")
 
         if params:
             return f" = Field({', '.join(params)})"

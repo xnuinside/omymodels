@@ -21,18 +21,18 @@ CREATE table user_history (
     expected = """from __future__ import annotations
 
 import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UserHistory(BaseModel):
 
     runid: float | None = None
     job_id: float | None = None
-    id: str
-    user: str
-    status: str
+    id: str = Field(max_length=100)
+    user: str = Field(max_length=100)
+    status: str = Field(max_length=10)
     event_time: datetime.datetime = datetime.datetime.now()
-    comment: str = 'none'
+    comment: str = Field(default='none', max_length=1000)
 """
     assert result == expected
 
@@ -241,3 +241,57 @@ class OptionalData(BaseModel):
     active: bool | None = None
 """
     assert expected == result
+
+
+def test_pydantic_v2_varchar_max_length():
+    """Test that VARCHAR(n) generates Field(max_length=n) in Pydantic v2.
+
+    Regression test for issue #48.
+    """
+    ddl = """
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255),
+    bio TEXT
+);
+"""
+    result = create_models(ddl, models_type="pydantic_v2")
+    expected = """from __future__ import annotations
+
+from pydantic import BaseModel, Field
+
+
+class Users(BaseModel):
+
+    id: int
+    name: str = Field(max_length=100)
+    email: str | None = Field(default=None, max_length=255)
+    bio: str | None = None
+"""
+    assert expected == result["code"]
+
+
+def test_pydantic_v2_char_max_length():
+    """Test that CHAR(n) generates Field(max_length=n) in Pydantic v2.
+
+    Regression test for issue #48.
+    """
+    ddl = """
+CREATE TABLE codes (
+    code CHAR(10) NOT NULL,
+    description VARCHAR(200)
+);
+"""
+    result = create_models(ddl, models_type="pydantic_v2")
+    expected = """from __future__ import annotations
+
+from pydantic import BaseModel, Field
+
+
+class Codes(BaseModel):
+
+    code: str = Field(max_length=10)
+    description: str | None = Field(default=None, max_length=200)
+"""
+    assert expected == result["code"]

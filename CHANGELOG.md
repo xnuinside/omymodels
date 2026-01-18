@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `table_prefix` and `table_suffix` parameters for class name customization
 - Boolean defaults 0/1 converted to False/True
 - Expanded `datetime_now_check` with more SQL datetime keywords
+- VARCHAR(n) and CHAR(n) now generate `Field(max_length=n)` for Pydantic validation (issue #48)
 
 **SQLAlchemy 2.0 Support (issue #49)**
 - New `sqlalchemy_v2` models type with modern SQLAlchemy 2.0 syntax

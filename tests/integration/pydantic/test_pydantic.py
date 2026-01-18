@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from omymodels import create_models
 
 
@@ -29,5 +31,38 @@ def test_pydantic_models_are_working_as_expected(load_generated_code) -> None:
     )
 
     assert used_model
+
+    os.remove(os.path.abspath(module.__file__))
+
+
+def test_pydantic_max_length_validation(load_generated_code) -> None:
+    """Integration test: verify max_length constraint is enforced (issue #48)."""
+    from pydantic import ValidationError
+
+    ddl = """
+    CREATE TABLE users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(10) NOT NULL,
+        email VARCHAR(50)
+    );
+    """
+    result = create_models(ddl, models_type="pydantic")["code"]
+
+    module = load_generated_code(result)
+
+    # Valid data within max_length
+    user = module.Users(id=1, name="John", email="john@example.com")
+    assert user.name == "John"
+    assert user.email == "john@example.com"
+
+    # Name exceeds max_length of 10
+    with pytest.raises(ValidationError) as exc_info:
+        module.Users(id=2, name="A" * 11, email="test@example.com")
+    assert "name" in str(exc_info.value)
+
+    # Email exceeds max_length of 50
+    with pytest.raises(ValidationError) as exc_info:
+        module.Users(id=3, name="Jane", email="a" * 51)
+    assert "email" in str(exc_info.value)
 
     os.remove(os.path.abspath(module.__file__))
