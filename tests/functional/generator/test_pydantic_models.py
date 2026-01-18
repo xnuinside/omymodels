@@ -193,3 +193,130 @@ CREATE TABLE "User" (
     result = create_models(ddl, models_type="pydantic")
 
     assert expected == result["code"]
+
+
+def test_mysql_blob_types():
+    """Test that MySQL blob types are correctly mapped to bytes.
+
+    Regression test for issue #62.
+    """
+    ddl = """
+CREATE TABLE blob_test (
+    col_tinyblob TINYBLOB,
+    col_blob BLOB,
+    col_mediumblob MEDIUMBLOB,
+    col_longblob LONGBLOB
+);
+"""
+    result = create_models(ddl, models_type="pydantic")
+    expected = """from typing import Optional
+from pydantic import BaseModel
+
+
+class BlobTest(BaseModel):
+    col_tinyblob: Optional[bytes]
+    col_blob: Optional[bytes]
+    col_mediumblob: Optional[bytes]
+    col_longblob: Optional[bytes]
+"""
+    assert expected == result["code"]
+
+
+def test_mysql_all_common_types():
+    """Test comprehensive MySQL type support.
+
+    Regression test for issue #62 - covers integer, decimal, temporal,
+    text, and binary types.
+    """
+    ddl = """
+CREATE TABLE all_types (
+    -- Integer types
+    col_tinyint TINYINT NOT NULL,
+    col_smallint SMALLINT,
+    col_mediumint MEDIUMINT,
+    col_int INT,
+    col_bigint BIGINT,
+
+    -- Decimal types
+    col_decimal DECIMAL(10,2),
+    col_float FLOAT,
+    col_double DOUBLE,
+
+    -- Temporal types
+    col_date DATE,
+    col_datetime DATETIME,
+    col_timestamp TIMESTAMP,
+    col_time TIME,
+    col_year YEAR,
+
+    -- Text types
+    col_char CHAR(10),
+    col_varchar VARCHAR(255),
+    col_tinytext TINYTEXT,
+    col_text TEXT,
+    col_mediumtext MEDIUMTEXT,
+    col_longtext LONGTEXT,
+
+    -- Binary types
+    col_binary BINARY(10),
+    col_varbinary VARBINARY(255),
+    col_tinyblob TINYBLOB,
+    col_blob BLOB,
+    col_mediumblob MEDIUMBLOB,
+    col_longblob LONGBLOB,
+
+    -- JSON type
+    col_json JSON
+);
+"""
+    result = create_models(ddl, models_type="pydantic")
+
+    # Verify key type mappings
+    code = result["code"]
+    assert "col_tinyint: int" in code
+    assert "col_smallint: Optional[int]" in code
+    assert "col_bigint: Optional[int]" in code
+    assert "col_decimal: Optional[float]" in code
+    assert "col_float: Optional[float]" in code
+    assert "col_double: Optional[float]" in code
+    assert "col_date: Optional[date]" in code
+    assert "col_datetime: Optional[datetime]" in code
+    assert "col_timestamp: Optional[datetime]" in code
+    assert "col_time: Optional[time]" in code
+    assert "col_year: Optional[int]" in code
+    assert "col_char: Optional[str]" in code
+    assert "col_varchar: Optional[str]" in code
+    assert "col_text: Optional[str]" in code
+    assert "col_binary: Optional[bytes]" in code
+    assert "col_varbinary: Optional[bytes]" in code
+    assert "col_tinyblob: Optional[bytes]" in code
+    assert "col_blob: Optional[bytes]" in code
+    assert "col_mediumblob: Optional[bytes]" in code
+    assert "col_longblob: Optional[bytes]" in code
+    assert "col_json: Optional[Any]" in code
+
+
+def test_mysql_default_null():
+    """Test that DEFAULT NULL is handled correctly for temporal types.
+
+    Regression test for issue #62.
+    """
+    ddl = """
+CREATE TABLE test_defaults (
+    col_date DATE DEFAULT NULL,
+    col_datetime DATETIME DEFAULT NULL,
+    col_timestamp TIMESTAMP DEFAULT NULL
+);
+"""
+    result = create_models(ddl, models_type="pydantic")
+    expected = """from datetime import datetime, date
+from typing import Optional
+from pydantic import BaseModel
+
+
+class TestDefaults(BaseModel):
+    col_date: Optional[date]
+    col_datetime: Optional[datetime]
+    col_timestamp: Optional[datetime]
+"""
+    assert expected == result["code"]

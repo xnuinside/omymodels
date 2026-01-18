@@ -23,6 +23,10 @@ binary_types = (
     "VARBINARY",
     "binary",
     "varbinary",
+    "tinyblob",
+    "blob",
+    "mediumblob",
+    "longblob",
 )
 
 # JSON types

@@ -498,222 +498,25 @@ If you see any bugs or have any suggestions - feel free to open the issue. Any h
 One more time, big 'thank you!' goes to https://github.com/archongum for Web-version: https://archon-omymodels-online.hf.space/ 
 
 ## Changelog
-**v1.0.0**
 
-### Breaking Changes
-1. Dropped support for Python 3.7 and 3.8
-2. Minimum required Python version is now 3.9
+See [CHANGELOG.md](CHANGELOG.md) for full version history.
 
-### New Features
-1. Added support for Python 3.12 and 3.13
-2. Added `pydantic_v2` models type with native Pydantic v2 syntax:
-   - Uses `X | None` instead of `Optional[X]`
-   - Uses `dict | list` for JSON/JSONB types instead of `Json`
-   - Adds `from __future__ import annotations` for Python 3.9 compatibility
-   - Nullable fields automatically get `= None` default
-3. Added plugin system for custom generators - add your own model types without forking:
-   - `register_generator()` - register custom generator
-   - `unregister_generator()` - remove custom generator
-   - `list_generators()` - list all available generators
-   - Base classes: `BaseGenerator`, `ORMGenerator`, `DataModelGenerator`
-   - `TypeConverter` class for type mappings
-   - Entry points support for auto-discovery
-   - See examples: `example/custom_generator.py`, `example/extend_builtin_generator.py`
-4. Added OpenAPI 3 (Swagger) schema support:
-   - Generate OpenAPI 3 schemas from DDL: `create_models(ddl, models_type="openapi3")`
-   - Convert OpenAPI 3 schemas to Python models: `create_models_from_openapi3(schema, models_type="pydantic_v2")`
-   - Supports JSON and YAML input (with pyyaml)
-5. Added tox configuration for local multi-version testing (py39-py313)
-6. Added pytest-cov for code coverage reporting
+### v1.0.0 Highlights
 
-### Improvements
-1. Updated GitHub Actions workflow with latest action versions (checkout@v4, setup-python@v5)
-2. Added ARCHITECTURE.md with project documentation
-3. Updated documentation with Pydantic v2 examples
-4. Reorganized types module with TypeConverter class
-5. Updated py-models-parser to version 1.0.0
+**Breaking Changes:**
+- Dropped support for Python 3.7 and 3.8
+- Minimum required Python version is now 3.9
 
-### Bug Fixes
-1. Fixed `iterate_over_the_list()` modifying list during iteration
-2. Fixed meaningless condition in dataclass generator
+**New Features:**
+- Pydantic v2 support with native syntax (`X | None`, `dict | list`)
+- OpenAPI 3 (Swagger) schema generation and conversion
+- Plugin system for custom generators
+- SQLModel array type support
+- MySQL blob types support
 
-**v0.17.0**
+**Improvements:**
+- Simplified datetime imports
+- Better Pydantic field handling (aliases, reserved names, generated columns)
+- Enum functional syntax generation
 
-### Updates
-1. fix character varying type - https://github.com/xnuinside/omymodels/issues/59
-2. sqlalchemy import removed from generation in sqlmodels if it is not used
-3.  = Field() - is not placed in SQLModel if there is no defaults or other settings to the field
-
-**v0.16.0**
-
-### Updates
-1. Initial SQLModel Support
-
-
-**v0.15.1**
-## Updates
-1. Foreign Key processing updates - https://github.com/xnuinside/omymodels/pull/55
-2. Move to simple-ddl-parser version 1.X
-
-**v0.14.0**
-## Updates
-
-1. Python 3.11 support. 
-
-
-**v0.13.0**
-## New feature
-
-1. Added argument 'schema_global=' to support SQLAlchemy & Gino different table schemas https://github.com/xnuinside/omymodels/issues/41
-
-**v0.12.1**
-### Improvements
-
-1. current_timestamp function processed now same was as "now()" function from ddl
-
-
-**v0.12.0**
-### Fixes
-1. Now named arguments always went after positional. Fix for https://github.com/xnuinside/omymodels/issues/35
-
-### New feature:
-1. Availability to disable auto-name convertion - https://github.com/xnuinside/omymodels/issues/36. 
-Now, if you want to keep names 1-to-1 as in your DDL file, you can set argument `no_auto_snake_case=True` and O!MyModels will do nothing with the table or column names.
-
-
-
-**v0.11.1**
-
-### Improvements:
-1. added bytes type to pydantic - https://github.com/xnuinside/omymodels/pull/31
-2. parser version updated to the latest 
-
-
-**v0.11.0**
-
-### Fixes:
-
-1. MSSQL column & tables names in [] now is parsed validly  - https://github.com/xnuinside/omymodels/issues/28
-2. names like 'users_WorkSchedule' now converted correctly to PascalCase like UsersWorkSchedule
-
-
-**v0.10.1**
-1. Update simple-ddl-parser version to 0.21.2
-
-
-**v0.10.0**
-### Improvements:
-1. Meta models moved to separate package - https://github.com/xnuinside/table-meta
-2. `common` module renamed to `from_ddl`, but anyway please use public API as imports from main module:
-
-`from omymodels import create_models` or `from omymodels import convert_models`
-
-### Fixes:
-
-1. Fixed bunch of bugs in converter, but it stil in 'beta'.
-2. Previously you can generate models if was any tables in ddl. Now you can also generate Enum models if in ddl you have only CREATE TYPE statements.
-3. String enums now in any models types will be inherit from (str, Enum)
-
-
-### Features:
-
-1. Added converter feature to convert one model type to another (excluding SQLAlchemy Core (Tables)). 
-Now with more tests for supported models, but still in Beta with bucnh of issues.
-
-**v0.9.0**
-Features:
-1. Added beta models converter from one type of models to another.
-To use models convertor:
-
-```python
-from omymodels import convert_models
-
-
-models_from = """
-
-class MaterialType(str, Enum):
-
-    article = "article"
-    video = "video"
-
-
-@dataclass
-class Material:
-
-    id: int
-    title: str
-    description: str
-    link: str
-    type: MaterialType
-    additional_properties: Union[dict, list]
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-
-"""
-
-result = convert_models(models_from, models_type="gino")
-print(result)
-```
-
-where `models_type` - type of models that you want to get as a result
-
-2. Now if O!MyModels does not know how to convert type - he just leave it as is.
-
-Fixes:
-1. In Dataclass & Pydantic generators now Decimals & Floats converted to float (previously was int).
-
-**v0.8.4**
-1. Now if tables was not found in input DDL - models generator raise NoTable error. if you want to have still silent exit if no tables, please use flag: exit_silent
-
-**v0.8.3**
-1. Added fundamental concept of TableMetaModel - class that unifies metadata parsed from different classes/ORM models types/DDLs to one standard to allow easy way convert one models to another
-in next releases it will be used for converter from one type of models to another.
-2. Fixed issue: https://github.com/xnuinside/omymodels/issues/18 "NOW() not recognized as now()"
-3. Fixed issue: https://github.com/xnuinside/omymodels/issues/19 "Default value of now() always returns same time, use field for dataclass"
-
-**v0.8.1**
-1. Parser version is updated (fixed several issues with generation)
-2. Fixed issue with Unique Constraint after schema in SQLAlchemy Core
-
-**v0.8.0**
-1. Fix --defaults-off flag in cli
-2. Added support for SQLAlchemy Core Tables generating
-3. Added examples folder in github `omymodels/example`
-4. Fix issue with ForeignKey in SQLAlchemy
-
-**v0.7.0**
-1. Added generation for SQLAlchemy models (defaults from DDLs are setting up as 'server_default')
-2. Added defaults for Pydantic models
-3. Added flag to generate Pydantic & Dataclass models WITHOUT defaults `defaults_off=True` (by default it is False). And cli flag --defaults-off
-4. Fixed issue with Enum types with lower case names in DDLs
-5. Fixed several issues with Dataclass generation (default with datetime & Enums)
-6. '"' do not remove from defaults now
-
-**v0.6.0**
-1. O!MyModels now also can generate python Dataclass from DDL. Use argument models_type='dataclass' or if you use the cli flag --models_type dataclass or -m dataclass
-2. Added ForeignKey generation to GinoORM Models, added support for ondelete and onupdate
-
-**v0.5.0**
-1. Added Enums/IntEnums types for Gino & Pydantic
-2. Added UUID type
-3. Added key `schema_global` in create_models method (by default schema_global = True). 
-If you set schema_global=False schema if it exists in ddl will be defined for each table (model) in table args.
-This way you can have differen schemas per model (table). By default schema_global=True - this mean for all 
-table only one schema and it is defined in `db = Gino(schema="prefix--schema-name")`.
-4. If column is a primary key (primary_key=True) nullable argument not showed, because primary keys always are not null.
-5. To cli was added flag '--no-global-schema' to set schema in table_args.
-
-**v0.4.1**
-1. Added correct work with table names contains multiple '-'
-
-**v0.4.0**
-1. Added generation for Pydantic models from ddl
-2. Main method create_gino_models renamed to create_models
-
-**v0.3.0**
-1. Generated Index for 'index' statement in __table_args__ (not unique constrait as previously)
-2. Fix issue with column size as tuple (4,2)
-
-**v0.2.0**
-1. Valid generating columns in models: autoincrement, default, type, arrays, unique, primary key and etc.
-2. Added creating __table_args__ for indexes
+See [CHANGELOG.md](CHANGELOG.md) for complete details and previous versions.
