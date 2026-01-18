@@ -1,11 +1,13 @@
-# till will not be released poetry plugins to get possible add custom steos in build process
-# https://github.com/python-poetry/poetry/pull/3733
+#!/bin/bash
+# Build script for omymodels package
+
+# Merge changelog into README (keep full changelog in README.md for PyPI)
 sed '/## Changelog/q' README.md > new_README.md
 cat CHANGELOG.txt >> new_README.md
 rm README.md
 mv new_README.md README.md
-m2r README.md
-mv README.rst docs/README.rst
-rm -r dist
+
+# Build package (PyPI supports Markdown directly via pyproject.toml readme field)
+rm -rf dist
 poetry build
 twine check dist/*
