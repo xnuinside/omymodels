@@ -67,6 +67,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Works with both `sqlalchemy` and `sqlalchemy_v2` model types
 - File naming: `{schema_name}_{base_filename}.py` (e.g., `schema1_models.py`)
 
+**Pydal Model Conversion (issue #30)**
+- Convert Pydal table definitions to any supported model type using `convert_models()`
+- Supports all output formats: SQLAlchemy, SQLAlchemy v2, Gino, Pydantic, Pydantic v2, Dataclass, SQLModel
+- Handles Pydal types: `id`, `string`, `text`, `integer`, `boolean`, `datetime`, `date`, `float`, `decimal`
+- Pydal's `id` type maps to primary key
+- Pydal's `reference table_name` type maps to foreign key
+
 **SQLModel Improvements**
 - Fixed array type generation (issue #66)
 - Arrays now properly generate `List[T]` with correct SQLAlchemy ARRAY type
