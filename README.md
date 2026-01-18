@@ -332,6 +332,60 @@ And result will be this:
                 )
 ```
 
+## Custom Generators (Plugin System)
+
+You can add support for your own model types without forking the repository.
+
+### Creating a Custom Generator
+
+```python
+from omymodels import BaseGenerator, TypeConverter, register_generator, create_models
+
+# Define type mapping
+MY_TYPES = {
+    "varchar": "String",
+    "integer": "Integer",
+    "boolean": "Boolean",
+    "timestamp": "DateTime",
+}
+
+class MyGenerator(BaseGenerator):
+    def __init__(self):
+        super().__init__()
+        self.type_converter = TypeConverter(MY_TYPES)
+
+    def generate_model(self, table, singular=True, **kwargs):
+        class_name = table.name.title().replace("_", "")
+        lines = [f"class {class_name}(MyBaseModel):"]
+        for column in table.columns:
+            col_type = self.type_converter.convert(column.type)
+            lines.append(f"    {column.name}: {col_type}")
+        return "\n".join(lines)
+
+    def create_header(self, tables, **kwargs):
+        return "from my_framework import MyBaseModel\n"
+
+# Register and use
+register_generator("my_framework", MyGenerator)
+result = create_models(ddl, models_type="my_framework")
+```
+
+### Extending Built-in Generators
+
+```python
+from omymodels import register_generator
+from omymodels.models.pydantic_v2.core import ModelGenerator as PydanticV2Generator
+
+class CustomPydanticGenerator(PydanticV2Generator):
+    def create_header(self, *args, **kwargs):
+        header = super().create_header(*args, **kwargs)
+        return "from my_types import CustomType\n" + header
+
+register_generator("my_pydantic", CustomPydanticGenerator)
+```
+
+See full examples in `example/custom_generator.py` and `example/extend_builtin_generator.py`.
+
 ## TODO in next releases
 
 1. Add Sequence generation in Models (Gino, SQLAlchemy)
