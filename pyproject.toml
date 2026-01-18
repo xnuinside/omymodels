@@ -35,6 +35,9 @@ pytest = "^7.4"
 pytest-cov = "^4.1"
 tox = "^4.0"
 sqlalchemy = "^2.0"
+# Note: sqlmodel and gino are not included as test dependencies due to conflicts:
+# - sqlmodel requires pydantic>=2.0, but table-meta requires pydantic<2.0
+# - gino requires sqlalchemy<1.4, but we use sqlalchemy>=2.0
 
 [tool.poetry.scripts]
 omm = 'omymodels.cli:main'
