@@ -1,8 +1,7 @@
 """Integration tests for GinoORM generation.
 
-NOTE: Gino requires SQLAlchemy<1.4, which conflicts with SQLAlchemy>=2.0
-used for other tests. These tests are skipped in CI due to dependency conflicts.
-To run these tests locally, install gino in a separate virtual environment.
+NOTE: Gino requires SQLAlchemy<1.4. Run these tests in isolated environment:
+  tox -e integration-gino
 """
 
 import os
@@ -19,7 +18,7 @@ except ImportError:
 
 pytestmark = pytest.mark.skipif(
     not HAS_GINO,
-    reason="Gino is not installed (requires SQLAlchemy<1.4, conflicts with SQLAlchemy>=2.0)"
+    reason="Gino is not installed"
 )
 
 

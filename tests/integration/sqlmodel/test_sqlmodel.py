@@ -1,8 +1,10 @@
 """Integration tests for SQLModel generation.
 
-NOTE: SQLModel requires Pydantic>=2.0, which conflicts with table-meta
-that requires Pydantic<2.0. These tests are skipped in CI due to dependency conflicts.
-To run these tests locally, install sqlmodel in a separate virtual environment.
+NOTE: These tests are DISABLED due to an unresolvable dependency conflict:
+- SQLModel requires pydantic>=2.0
+- table-meta (used by omymodels) requires pydantic<2.0
+
+These tests will be automatically skipped until table-meta adds pydantic 2.x support.
 """
 
 import os
@@ -21,7 +23,7 @@ except ImportError:
 pytestmark = [
     pytest.mark.skipif(
         not HAS_SQLMODEL,
-        reason="SQLModel is not installed (requires Pydantic>=2.0, conflicts with table-meta)"
+        reason="SQLModel is not installed"
     ),
     pytest.mark.skipif(
         sys.version_info < (3, 10),
