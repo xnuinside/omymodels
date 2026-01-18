@@ -209,3 +209,30 @@ CREATE TABLE "material" (
 """
     result = create_models(ddl, models_type="dataclass")["code"]
     assert expected == result
+
+
+def test_default_boolean():
+    expected = """from dataclasses import dataclass
+
+
+@dataclass
+class Material:
+
+    id: int
+    name: str
+    edited: bool = False
+    deleted: bool = True
+"""
+
+    ddl = """
+    CREATE TABLE Material
+    (
+        id integer,
+        name      string,
+        edited   boolean DEFAULT false,
+        deleted  boolean DEFAULT true,
+        PRIMARY KEY (id, name)
+    );
+    """
+    result = create_models(ddl, models_type="dataclass")["code"]
+    assert expected == result
