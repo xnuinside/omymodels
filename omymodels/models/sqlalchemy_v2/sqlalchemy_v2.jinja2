@@ -1,0 +1,10 @@
+from sqlalchemy import (
+    String, Text, Integer, BigInteger, SmallInteger,
+    Float, Numeric, Boolean, Date, DateTime, Time, LargeBinary, Enum
+)
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+{{ headers }}
+
+class Base(DeclarativeBase):
+    pass
+{{ models }}
