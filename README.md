@@ -1,7 +1,8 @@
 ## O! My Models
 
-![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels)![workflow](https://github.com/xnuinside/omymodels/actions/workflows/main.yml/badge.svg)
+![badge1](https://img.shields.io/pypi/v/omymodels) ![badge2](https://img.shields.io/pypi/l/omymodels) ![badge3](https://img.shields.io/pypi/pyversions/omymodels) ![workflow](https://github.com/xnuinside/omymodels/actions/workflows/main.yml/badge.svg)
 
+**[Interactive Demo](https://xnuinside.github.io/omymodels/)** | **[Documentation](https://github.com/xnuinside/omymodels#how-to-use)** | **[PyPI](https://pypi.org/project/omymodels/)**
 
 ## Try in Web-UI 
 Try the online O!MyModels converter or simply use it online: https://archon-omymodels-online.hf.space/ (A big thanks for that goes to https://github.com/archongum)
