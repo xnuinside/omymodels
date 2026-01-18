@@ -5,7 +5,7 @@ from table_meta.model import Column
 import omymodels.models.sqlmodel.templates as st
 from omymodels import logic, types
 from omymodels.helpers import create_class_name, datetime_now_check
-from omymodels.models.sqlmodel.types import types_mapping
+from omymodels.models.sqlmodel.types import pydantic_to_sa_fallback, types_mapping
 from omymodels.types import datetime_types
 
 
@@ -18,6 +18,7 @@ class ModelGenerator(GeneratorBase):
     def __init__(self):
         self.state = set()
         self.postgresql_dialect_cols = set()
+        self.typing_imports = set()
         self.constraint = False
         self.im_index = False
         self.types_mapping = types_mapping
@@ -75,9 +76,15 @@ class ModelGenerator(GeneratorBase):
             self.postgresql_dialect_cols.add(column_type["sa"])
 
         if "[" in column_data.type and column_data.type not in types.json_types:
-            # @TODO: How do we handle arrays for SQLModel?
             self.postgresql_dialect_cols.add("ARRAY")
-            column_type = f"ARRAY({column_type})"
+            self.typing_imports.add("List")
+            sa_type = column_type["sa"]
+            if sa_type is None:
+                sa_type = pydantic_to_sa_fallback.get(column_type["pydantic"], "sa.String")
+            column_type = {
+                "pydantic": f"List[{column_type['pydantic']}]",
+                "sa": f"ARRAY({sa_type})",
+            }
         return column_type
 
     def add_table_args(
@@ -155,6 +162,9 @@ class ModelGenerator(GeneratorBase):
     ) -> str:
         """header of the file - imports & sqlalchemy init"""
         header = ""
+        if self.typing_imports:
+            _imports = sorted(self.typing_imports)
+            header += st.typing_import.format(types=", ".join(_imports)) + "\n"
         if "sa." in models_str:
             header += st.sqlalchemy_import  # Do we always need this import?
         if "func" in self.state:
@@ -162,7 +172,7 @@ class ModelGenerator(GeneratorBase):
         if self.postgresql_dialect_cols:
             header += (
                 st.postgresql_dialect_import.format(
-                    types=",".join(self.postgresql_dialect_cols)
+                    types=", ".join(sorted(self.postgresql_dialect_cols))
                 )
                 + "\n"
             )

@@ -1,4 +1,5 @@
 # imports
+typing_import = "from typing import {types}"
 postgresql_dialect_import = """from sqlalchemy.dialects.postgresql import {types}
 from pydantic import Json, UUID4"""
 sql_alchemy_func_import = "from sqlalchemy.sql import func"

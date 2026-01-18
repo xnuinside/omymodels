@@ -66,3 +66,14 @@ direct_types = {
 }
 
 types_mapping.update(direct_types)
+
+# Fallback SA types for array elements when base type has sa=None
+pydantic_to_sa_fallback = {
+    "int": "sa.Integer",
+    "str": "sa.String",
+    "float": "sa.Float",
+    "bool": "sa.Boolean",
+    "datetime.datetime": "sa.DateTime",
+    "datetime.date": "sa.Date",
+    "datetime.time": "sa.Time",
+}
