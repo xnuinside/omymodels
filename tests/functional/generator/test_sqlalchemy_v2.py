@@ -186,3 +186,67 @@ CREATE TABLE array_test (
     assert "Mapped[List[str] | None]" in code
     assert "Mapped[List[int] | None]" in code
     assert "ARRAY(" in code
+
+
+def test_relationships_with_back_populates():
+    """Test that relationships=True generates relationship() with back_populates."""
+    ddl = """
+CREATE TABLE users (
+  id int PRIMARY KEY,
+  name varchar NOT NULL
+);
+
+CREATE TABLE posts (
+  id int PRIMARY KEY,
+  title varchar NOT NULL,
+  user_id int
+);
+
+ALTER TABLE posts ADD FOREIGN KEY (user_id) REFERENCES users (id);
+"""
+    result = create_models(ddl, models_type="sqlalchemy_v2", relationships=True)
+    code = result["code"]
+
+    # Check relationship import
+    assert "from sqlalchemy.orm import relationship" in code
+
+    # Check parent (Users) has posts relationship
+    assert 'posts: Mapped[List["Posts"]] = relationship("Posts", back_populates="user")' in code
+
+    # Check child (Posts) has user relationship
+    assert 'user: Mapped["Users"] = relationship("Users", back_populates="posts")' in code
+
+
+def test_relationships_multiple_foreign_keys():
+    """Test relationships with multiple foreign keys in the same table."""
+    ddl = """
+CREATE TABLE users (
+  id int PRIMARY KEY,
+  name varchar
+);
+
+CREATE TABLE posts (
+  id int PRIMARY KEY,
+  title varchar
+);
+
+CREATE TABLE comments (
+  id int PRIMARY KEY,
+  text varchar,
+  user_id int,
+  post_id int
+);
+
+ALTER TABLE comments ADD FOREIGN KEY (user_id) REFERENCES users (id);
+ALTER TABLE comments ADD FOREIGN KEY (post_id) REFERENCES posts (id);
+"""
+    result = create_models(ddl, models_type="sqlalchemy_v2", relationships=True)
+    code = result["code"]
+
+    # Check parent relationships
+    assert 'comments: Mapped[List["Comments"]] = relationship("Comments", back_populates="user")' in code
+    assert 'comments: Mapped[List["Comments"]] = relationship("Comments", back_populates="post")' in code
+
+    # Check child relationships
+    assert 'user: Mapped["Users"] = relationship("Users", back_populates="comments")' in code
+    assert 'post: Mapped["Posts"] = relationship("Posts", back_populates="comments")' in code

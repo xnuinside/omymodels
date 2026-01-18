@@ -51,3 +51,8 @@ schema = """
 
 on_delete = ', ondelete="{mode}"'
 on_update = ', onupdate="{mode}"'
+
+# relationship templates
+relationship_import = "from sqlalchemy.orm import relationship"
+relationship_template = '    {attr_name} = relationship("{related_class}"{back_populates})\n'
+back_populates_template = ', back_populates="{attr_name}"'

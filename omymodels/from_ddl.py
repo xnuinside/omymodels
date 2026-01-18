@@ -44,6 +44,7 @@ def create_models(
     no_auto_snake_case: Optional[bool] = False,
     table_prefix: Optional[str] = "",
     table_suffix: Optional[str] = "",
+    relationships: Optional[bool] = False,
 ):
     """models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
@@ -65,6 +66,7 @@ def create_models(
         defaults_off,
         table_prefix=table_prefix,
         table_suffix=table_suffix,
+        relationships=relationships,
     )
     if dump:
         save_models_to_file(output, dump_path)
@@ -138,6 +140,56 @@ def save_models_to_file(models: str, dump_path: str) -> None:
         f.write(models)
 
 
+def _add_relationship(
+    relationships: Dict, table_name: str, fk_column: str, ref_table: str, ref_column: str
+):
+    """Helper to add both sides of a relationship."""
+    relationships.setdefault(table_name, []).append({
+        "type": "many_to_one",
+        "fk_column": fk_column,
+        "ref_table": ref_table,
+        "ref_column": ref_column,
+        "child_table_name": table_name,
+    })
+    relationships.setdefault(ref_table, []).append({
+        "type": "one_to_many",
+        "child_table": table_name,
+        "fk_column": fk_column,
+    })
+
+
+def _get_alter_columns(table) -> List:
+    """Get ALTER TABLE columns if they exist."""
+    if hasattr(table, 'alter') and table.alter:
+        return table.alter.get("columns", [])
+    return []
+
+
+def collect_relationships(tables: List) -> Dict:
+    """Collect foreign key relationships between tables."""
+    relationships = {}
+
+    for table in tables:
+        for column in table.columns:
+            if column.references and column.references.get("table"):
+                _add_relationship(
+                    relationships, table.name, column.name,
+                    column.references["table"],
+                    column.references.get("column") or column.name
+                )
+
+        for alter_col in _get_alter_columns(table):
+            ref_info = alter_col.get("references")
+            if ref_info and ref_info.get("table"):
+                _add_relationship(
+                    relationships, table.name, alter_col["name"],
+                    ref_info["table"],
+                    ref_info.get("column") or alter_col["name"]
+                )
+
+    return relationships
+
+
 def generate_models_file(
     data: Dict[str, List],
     singular: bool = False,
@@ -147,6 +199,7 @@ def generate_models_file(
     defaults_off: Optional[bool] = False,
     table_prefix: Optional[str] = "",
     table_suffix: Optional[str] = "",
+    relationships: Optional[bool] = False,
 ) -> str:
     """method to prepare full file with all Models &"""
     models_str = ""
@@ -159,6 +212,11 @@ def generate_models_file(
     if data["tables"]:
         add_custom_types_to_generator(data["types"], generator)
 
+        # Collect relationships if enabled
+        relationships_map = {}
+        if relationships:
+            relationships_map = collect_relationships(data["tables"])
+
         for table in data["tables"]:
             models_str += generator.generate_model(
                 table,
@@ -168,6 +226,7 @@ def generate_models_file(
                 defaults_off=defaults_off,
                 table_prefix=table_prefix,
                 table_suffix=table_suffix,
+                relationships=relationships_map.get(table.name, []) if relationships else [],
             )
         header += generator.create_header(
             data["tables"], schema=schema_global, models_str=models_str
