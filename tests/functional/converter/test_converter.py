@@ -243,7 +243,7 @@ class User(BaseModel):
     # Verify key elements in output
     assert "from enum import Enum" in result
     assert "from dataclasses import dataclass" in result
-    assert "class Status(str, Enum):" in result
+    assert "Status = Enum(" in result
     assert "@dataclass" in result
     assert "class User:" in result
     assert "id: int" in result
