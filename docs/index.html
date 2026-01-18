@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O! My Models - DDL to Python Models Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-purple: #a371f7;
+            --accent-orange: #d29922;
+            --accent-red: #f85149;
+            --border-color: #30363d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--accent-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #4090e0;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+            .arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        .code-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-title .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .code-title .dot.sql { background: var(--accent-orange); }
+        .code-title .dot.python { background: var(--accent-green); }
+
+        .code-content {
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+        }
+
+        .arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 0;
+        }
+
+        .arrow svg {
+            width: 48px;
+            height: 48px;
+            color: var(--accent-blue);
+        }
+
+        .arrow span {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Syntax highlighting */
+        .keyword { color: var(--accent-purple); }
+        .string { color: var(--accent-green); }
+        .type { color: var(--accent-blue); }
+        .comment { color: var(--text-secondary); }
+        .function { color: var(--accent-orange); }
+        .class-name { color: var(--accent-blue); font-weight: 600; }
+        .decorator { color: var(--accent-orange); }
+
+        /* Model Types */
+        .models-section {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 48px;
+        }
+
+        .model-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .model-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .model-card .icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .model-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .model-card code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Quick Start */
+        .quickstart-section {
+            padding: 80px 0;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .step {
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .step h3 {
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+
+        .step p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .step .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        /* Output Selector */
+        .output-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .output-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s;
+        }
+
+        .output-btn:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .output-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #fff;
+        }
+
+        /* Features */
+        .features-section {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .feature {
+            padding: 24px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .feature h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Output panels for demo */
+        .output-panel {
+            display: none;
+        }
+
+        .output-panel.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">O<span>!</span> My Models</a>
+            <nav class="nav-links">
+                <a href="https://github.com/xnuinside/omymodels">GitHub</a>
+                <a href="https://github.com/xnuinside/omymodels#how-to-use">Docs</a>
+                <a href="https://pypi.org/project/omymodels/">PyPI</a>
+                <a href="https://archon-omymodels-online.hf.space/">Try Online</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>SQL DDL to Python Models</h1>
+            <p>Generate Pydantic, SQLAlchemy, SQLModel, Dataclasses and more from your database schema in seconds</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/xnuinside/omymodels#how-to-install" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    pip install omymodels
+                </a>
+                <a href="https://archon-omymodels-online.hf.space/" class="btn btn-secondary" title="Version may differ from the latest release">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Try Online
+                </a>
+            </div>
+            <p style="margin-top: 16px; font-size: 0.85rem; color: var(--text-secondary);">
+                * Web UI version may differ from the latest release
+            </p>
+        </div>
+    </section>
+
+    <section class="demo-section">
+        <div class="container">
+            <h2 class="section-title">See It In Action</h2>
+            <p class="section-subtitle">Paste your SQL, get Python models instantly</p>
+
+            <div class="output-selector" style="justify-content: center;">
+                <button class="output-btn active" data-output="pydantic">pydantic</button>
+                <button class="output-btn" data-output="pydantic_v2">pydantic_v2</button>
+                <button class="output-btn" data-output="sqlalchemy">sqlalchemy</button>
+                <button class="output-btn" data-output="sqlmodel">sqlmodel</button>
+                <button class="output-btn" data-output="dataclass">dataclass</button>
+            </div>
+
+            <div class="demo-container">
+                <div class="code-panel">
+                    <div class="code-header">
+                        <span class="code-title"><span class="dot sql"></span>SQL DDL</span>
+                    </div>
+                    <div class="code-content">
+<pre><span class="keyword">CREATE TABLE</span> <span class="string">"users"</span> (
+  <span class="string">"id"</span> <span class="type">SERIAL</span> <span class="keyword">PRIMARY KEY</span>,
+  <span class="string">"email"</span> <span class="type">VARCHAR(255)</span> <span class="keyword">NOT NULL</span>,
+  <span class="string">"name"</span> <span class="type">VARCHAR(100)</span>,
+  <span class="string">"is_active"</span> <span class="type">BOOLEAN</span> <span class="keyword">DEFAULT</span> <span class="string">TRUE</span>,
+  <span class="string">"created_at"</span> <span class="type">TIMESTAMP</span> <span class="keyword">DEFAULT</span> <span class="function">NOW()</span>
+);</pre>
+                    </div>
+                </div>
+
+                <div class="arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                    <span>omymodels</span>
+                </div>
+
+                <div class="code-panel">
+                    <div class="code-header">
+                        <span class="code-title"><span class="dot python"></span>Python Model</span>
+                    </div>
+                    <div class="code-content">
+                        <div id="output-pydantic" class="output-panel active">
+<pre><span class="keyword">from</span> datetime <span class="keyword">import</span> datetime
+<span class="keyword">from</span> typing <span class="keyword">import</span> Optional
+<span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel
+
+
+<span class="keyword">class</span> <span class="class-name">Users</span>(BaseModel):
+    id: int
+    email: str
+    name: Optional[str]
+    is_active: Optional[bool] = True
+    created_at: Optional[datetime] = datetime.now()</pre>
+                        </div>
+                        <div id="output-pydantic_v2" class="output-panel">
+<pre><span class="keyword">from</span> __future__ <span class="keyword">import</span> annotations
+<span class="keyword">import</span> datetime
+<span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel
+
+
+<span class="keyword">class</span> <span class="class-name">Users</span>(BaseModel):
+    id: int
+    email: str
+    name: str | None = None
+    is_active: bool | None = True
+    created_at: datetime.datetime | None = datetime.datetime.now()</pre>
+                        </div>
+                        <div id="output-sqlalchemy" class="output-panel">
+<pre><span class="keyword">import</span> sqlalchemy <span class="keyword">as</span> sa
+<span class="keyword">from</span> sqlalchemy.ext.declarative <span class="keyword">import</span> declarative_base
+<span class="keyword">from</span> sqlalchemy.sql <span class="keyword">import</span> func
+
+Base = declarative_base()
+
+
+<span class="keyword">class</span> <span class="class-name">Users</span>(Base):
+    __tablename__ = <span class="string">'users'</span>
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+    email = sa.Column(sa.String(255), nullable=False)
+    name = sa.Column(sa.String(100))
+    is_active = sa.Column(sa.Boolean(), server_default='true')
+    created_at = sa.Column(sa.TIMESTAMP(), server_default=func.now())</pre>
+                        </div>
+                        <div id="output-sqlmodel" class="output-panel">
+<pre><span class="keyword">import</span> datetime
+<span class="keyword">from</span> typing <span class="keyword">import</span> Optional
+<span class="keyword">from</span> sqlmodel <span class="keyword">import</span> Field, SQLModel
+<span class="keyword">from</span> sqlalchemy.sql <span class="keyword">import</span> func
+
+
+<span class="keyword">class</span> <span class="class-name">Users</span>(SQLModel, table=True):
+    __tablename__ = <span class="string">'users'</span>
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    email: str
+    name: Optional[str]
+    is_active: Optional[bool] = Field(server_default=<span class="string">'true'</span>)
+    created_at: Optional[datetime.datetime] = Field(server_default=func.now())</pre>
+                        </div>
+                        <div id="output-dataclass" class="output-panel">
+<pre><span class="keyword">import</span> datetime
+<span class="keyword">from</span> dataclasses <span class="keyword">import</span> dataclass, field
+
+
+<span class="decorator">@dataclass</span>
+<span class="keyword">class</span> <span class="class-name">Users</span>:
+    id: int
+    email: str
+    name: str = None
+    is_active: bool = True
+    created_at: datetime.datetime = field(
+        default_factory=datetime.datetime.now
+    )</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="models-section">
+        <div class="container">
+            <h2 class="section-title">Supported Output Formats</h2>
+            <p class="section-subtitle">One DDL, many possibilities</p>
+
+            <div class="models-grid">
+                <div class="model-card">
+                    <div class="icon">🔷</div>
+                    <h3>Pydantic v1</h3>
+                    <code>pydantic</code>
+                </div>
+                <div class="model-card">
+                    <div class="icon">🔶</div>
+                    <h3>Pydantic v2</h3>
+                    <code>pydantic_v2</code>
+                </div>
+                <div class="model-card">
+                    <div class="icon">🗄️</div>
+                    <h3>SQLAlchemy ORM</h3>
+                    <code>sqlalchemy</code>
+                </div>
+                <div class="model-card">
+                    <div class="icon">⚡</div>
+                    <h3>SQLModel</h3>
+                    <code>sqlmodel</code>
+                </div>
+                <div class="model-card">
+                    <div class="icon">📦</div>
+                    <h3>Dataclasses</h3>
+                    <code>dataclass</code>
+                </div>
+                <div class="model-card">
+                    <div class="icon">🦄</div>
+                    <h3>GinoORM</h3>
+                    <code>gino</code>
+                </div>
+                <div class="model-card">
+                    <div class="icon">📋</div>
+                    <h3>OpenAPI 3</h3>
+                    <code>openapi3</code>
+                </div>
+                <div class="model-card">
+                    <div class="icon">🔧</div>
+                    <h3>SQLAlchemy Core</h3>
+                    <code>sqlalchemy_core</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quickstart-section">
+        <div class="container">
+            <h2 class="section-title">Quick Start</h2>
+            <p class="section-subtitle">Get started in 3 simple steps</p>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Install</h3>
+                    <p>Install via pip in seconds</p>
+                    <div class="code-block">
+                        <code>pip install omymodels</code>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Use in Python</h3>
+                    <p>Import and generate models</p>
+                    <div class="code-block">
+<pre><span class="keyword">from</span> omymodels <span class="keyword">import</span> create_models
+
+result = create_models(
+    ddl,
+    models_type=<span class="string">"pydantic_v2"</span>
+)
+<span class="function">print</span>(result[<span class="string">"code"</span>])</pre>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Or Use CLI</h3>
+                    <p>Generate directly from terminal</p>
+                    <div class="code-block">
+<pre><span class="comment"># Generate Pydantic v2 models</span>
+omm schema.sql -m pydantic_v2 -t models.py
+
+<span class="comment"># Generate SQLModel</span>
+omm schema.sql -m sqlmodel -t models.py</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">Features</h2>
+            <p class="section-subtitle">Everything you need for model generation</p>
+
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Bidirectional Conversion</h3>
+                    <p>Convert between different model types. Turn Pydantic into SQLAlchemy or vice versa.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📝</div>
+                    <h3>Enum Support</h3>
+                    <p>Automatically generates Python Enums from SQL ENUM and TYPE definitions.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Foreign Keys</h3>
+                    <p>Preserves relationships with proper foreign key references and constraints.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>Defaults & Constraints</h3>
+                    <p>Handles default values, nullable fields, and other column constraints.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔌</div>
+                    <h3>Plugin System</h3>
+                    <p>Create custom generators for your own frameworks without forking.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🌐</div>
+                    <h3>OpenAPI Support</h3>
+                    <p>Generate OpenAPI 3 schemas or convert them to Python models.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>
+                Made with ❤️ by <a href="https://github.com/xnuinside">xnuinside</a> ·
+                <a href="https://github.com/xnuinside/omymodels">GitHub</a> ·
+                <a href="https://pypi.org/project/omymodels/">PyPI</a> ·
+                <a href="https://archon-omymodels-online.hf.space/">Web UI by archongum</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Output selector functionality
+        document.querySelectorAll('.output-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                document.querySelectorAll('.output-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Show corresponding output
+                const output = btn.dataset.output;
+                document.querySelectorAll('.output-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                document.getElementById('output-' + output).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
