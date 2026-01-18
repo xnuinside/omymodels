@@ -4,7 +4,8 @@ db = Gino()
 
 
 class Users(db.Model):
-    __tablename__ = "users"
+
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer(), autoincrement=True, primary_key=True)
     name = db.Column(db.String())
@@ -15,7 +16,8 @@ class Users(db.Model):
 
 
 class Languages(db.Model):
-    __tablename__ = "languages"
+
+    __tablename__ = 'languages'
 
     id = db.Column(db.Integer(), primary_key=True)
     code = db.Column(db.String(2), nullable=False)
