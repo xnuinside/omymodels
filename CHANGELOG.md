@@ -83,6 +83,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed boolean values capitalization - now generates `True`/`False` instead of `true`/`false` (PR #67)
 - Fixed SQLModel array type generation TypeError (issue #66)
 - Fixed MySQL blob types not mapping to `bytes` (issue #62)
+- Fixed `sqlalchemy_core` generator missing column names in output
+- Fixed `sqlalchemy_core` generator not including type name with size (e.g., `String(255)`)
+- Fixed `sqlalchemy_core` generator ForeignKey positional argument order
 
 ### Documentation
 
