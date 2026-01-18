@@ -73,12 +73,14 @@ import datetime
 from typing import Union
 from dataclasses import dataclass, field
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 @dataclass
 class Material:
@@ -119,12 +121,14 @@ import datetime
 from typing import Union
 from dataclasses import dataclass, field
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 @dataclass
 class Material:
@@ -165,12 +169,14 @@ import datetime
 from typing import Union
 from dataclasses import dataclass, field
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 @dataclass
 class Material:

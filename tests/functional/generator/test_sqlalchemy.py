@@ -11,12 +11,14 @@ from sqlalchemy.dialects.postgresql import JSON
 
 Base = declarative_base()
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 class Material(Base):
 
@@ -263,12 +265,14 @@ from sqlalchemy.dialects.postgresql import JSON
 
 Base = declarative_base()
 
+MaterialType = Enum(
+    value='MaterialType',
+    names=[
+        ('article', 'article'),
+        ('video', 'video')
+    ]
+)
 
-class MaterialType(str, Enum):
-
-    article = 'article'
-    video = 'video'
-    
 
 class Material(Base):
 
