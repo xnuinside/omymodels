@@ -182,12 +182,14 @@ def clean_value(string: str) -> str:
     return string
 
 
-def iterate_over_the_list(items: List) -> str:
-    """simple ddl parser return " in strings if in DDL them was used, we need to remove them"""
-    for item in items:
-        if isinstance(item, dict):
-            prepare_data(item)
-        elif isinstance(item, str):
-            items.append(clean_value(item))
-            items.remove(item)
-    return items
+def iterate_over_the_list(items: List) -> List:
+    """Clean list items - remove quotes from strings and process dicts.
+
+    simple-ddl-parser returns quotes in strings if DDL used them.
+    """
+    return [
+        clean_value(item) if isinstance(item, str)
+        else prepare_data(item) if isinstance(item, dict)
+        else item
+        for item in items
+    ]

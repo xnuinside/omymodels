@@ -36,8 +36,7 @@ class ModelGenerator:
             _type = column.type.lower().split("[")[0]
         if self.custom_types:
             _type = self.add_custom_type(_type)
-        if _type == _type:
-            _type = types_mapping.get(_type, _type)
+        _type = types_mapping.get(_type, _type)
         if _type.split("[")[0] in self.types_for_import:
             self.typing_imports.add(_type.split("[")[0])
         elif "datetime" in _type:
