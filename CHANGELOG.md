@@ -85,6 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed dependency conflict with simple-ddl-generator: relaxed `table-meta` constraint to `>=0.1.5` (issue #46)
 - Fixed `iterate_over_the_list()` modifying list during iteration
 - Fixed meaningless condition in dataclass generator
 - Fixed incorrect column type crash (PR #63)

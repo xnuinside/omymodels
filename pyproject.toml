@@ -28,7 +28,7 @@ simple-ddl-parser = "^1.0.0"
 Jinja2 = "^3.0.1"
 py-models-parser = "^1.0.0"
 pydantic = ">=1.8.2,<3.0.0"
-table-meta = "^0.1.5"
+table-meta = ">=0.1.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.4"
