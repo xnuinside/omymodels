@@ -140,58 +140,52 @@ def save_models_to_file(models: str, dump_path: str) -> None:
         f.write(models)
 
 
+def _add_relationship(
+    relationships: Dict, table_name: str, fk_column: str, ref_table: str, ref_column: str
+):
+    """Helper to add both sides of a relationship."""
+    relationships.setdefault(table_name, []).append({
+        "type": "many_to_one",
+        "fk_column": fk_column,
+        "ref_table": ref_table,
+        "ref_column": ref_column,
+        "child_table_name": table_name,
+    })
+    relationships.setdefault(ref_table, []).append({
+        "type": "one_to_many",
+        "child_table": table_name,
+        "fk_column": fk_column,
+    })
+
+
+def _get_alter_columns(table) -> List:
+    """Get ALTER TABLE columns if they exist."""
+    if hasattr(table, 'alter') and table.alter:
+        return table.alter.get("columns", [])
+    return []
+
+
 def collect_relationships(tables: List) -> Dict:
-    """Collect foreign key relationships between tables.
-
-    Returns a dict mapping table_name -> list of relationships info.
-    Each relationship has:
-    - fk_column: the foreign key column name in the child table
-    - ref_table: the referenced (parent) table name
-    - ref_column: the referenced column name
-
-    Checks both inline column references and ALTER TABLE foreign keys.
-    """
+    """Collect foreign key relationships between tables."""
     relationships = {}
 
-    def add_relationship(table_name: str, fk_column: str, ref_table: str, ref_column: str):
-        """Helper to add both sides of a relationship."""
-        # Add to child table's relationships (many-to-one)
-        if table_name not in relationships:
-            relationships[table_name] = []
-        relationships[table_name].append({
-            "type": "many_to_one",
-            "fk_column": fk_column,
-            "ref_table": ref_table,
-            "ref_column": ref_column,
-            "child_table_name": table_name,  # The child needs to know its own table name for back_populates
-        })
-        # Add to parent table's relationships (one-to-many)
-        if ref_table not in relationships:
-            relationships[ref_table] = []
-        relationships[ref_table].append({
-            "type": "one_to_many",
-            "child_table": table_name,
-            "fk_column": fk_column,
-        })
-
     for table in tables:
-        # Check inline column references
         for column in table.columns:
-            if column.references:
-                ref_table = column.references.get("table")
-                ref_column = column.references.get("column") or column.name
-                if ref_table:
-                    add_relationship(table.name, column.name, ref_table, ref_column)
+            if column.references and column.references.get("table"):
+                _add_relationship(
+                    relationships, table.name, column.name,
+                    column.references["table"],
+                    column.references.get("column") or column.name
+                )
 
-        # Check ALTER TABLE foreign keys
-        if hasattr(table, 'alter') and table.alter and "columns" in table.alter:
-            for alter_column in table.alter["columns"]:
-                if alter_column.get("references"):
-                    ref_info = alter_column["references"]
-                    ref_table = ref_info.get("table")
-                    ref_column = ref_info.get("column") or alter_column["name"]
-                    if ref_table:
-                        add_relationship(table.name, alter_column["name"], ref_table, ref_column)
+        for alter_col in _get_alter_columns(table):
+            ref_info = alter_col.get("references")
+            if ref_info and ref_info.get("table"):
+                _add_relationship(
+                    relationships, table.name, alter_col["name"],
+                    ref_info["table"],
+                    ref_info.get("column") or alter_col["name"]
+                )
 
     return relationships
 

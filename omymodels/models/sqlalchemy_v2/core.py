@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 
 import omymodels.models.sqlalchemy_v2.templates as st
-from omymodels.helpers import create_class_name, datetime_now_check, pluralize
+from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.sqlalchemy_v2.types import types_mapping, python_to_sa_type
 from omymodels.types import datetime_types, json_types, postgresql_dialect
 import omymodels.types as t

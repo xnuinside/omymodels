@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 
 import omymodels.models.sqlalchemy.templates as st
 from omymodels import logic
-from omymodels.helpers import create_class_name, datetime_now_check, pluralize
+from omymodels.helpers import create_class_name, datetime_now_check
 from omymodels.models.sqlalchemy.types import types_mapping
 from omymodels.types import datetime_types
 
