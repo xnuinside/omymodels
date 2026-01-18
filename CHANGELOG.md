@@ -60,6 +60,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Works with both `sqlalchemy` and `sqlalchemy_v2` model types
 - For `sqlalchemy_v2`: uses `Mapped[List[T]]` for one-to-many and `Mapped[T]` for many-to-one
 
+**Schema-Separated Model Files (issue #40)**
+- New `split_by_schema` parameter for `create_models()` to generate separate files per database schema
+- Each schema gets its own file with a schema-specific Base class (e.g., `Schema1Base`)
+- Tables without explicit schema go to a file with the default `Base` class
+- Works with both `sqlalchemy` and `sqlalchemy_v2` model types
+- File naming: `{schema_name}_{base_filename}.py` (e.g., `schema1_models.py`)
+
 **SQLModel Improvements**
 - Fixed array type generation (issue #66)
 - Arrays now properly generate `List[T]` with correct SQLAlchemy ARRAY type

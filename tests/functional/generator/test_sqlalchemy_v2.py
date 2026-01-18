@@ -250,3 +250,27 @@ ALTER TABLE comments ADD FOREIGN KEY (post_id) REFERENCES posts (id);
     # Check child relationships
     assert 'user: Mapped["Users"] = relationship("Users", back_populates="comments")' in code
     assert 'post: Mapped["Posts"] = relationship("Posts", back_populates="comments")' in code
+
+
+def test_split_by_schema():
+    """Test split_by_schema with SQLAlchemy 2.0 style models."""
+    ddl = """
+CREATE SCHEMA schema1;
+
+CREATE TABLE schema1.users (
+    id int PRIMARY KEY,
+    name varchar NOT NULL
+);
+"""
+    result = create_models(ddl, models_type="sqlalchemy_v2", split_by_schema=True, dump=False)
+    code = result["code"]
+
+    # Should have schema1
+    assert "schema1" in code
+
+    # Check schema1 output has SQLAlchemy 2.0 style with custom Base
+    schema1_code = code["schema1"]
+    assert "class Schema1Base(DeclarativeBase):" in schema1_code
+    assert "class Users(Schema1Base):" in schema1_code
+    assert "id: Mapped[int]" in schema1_code
+    assert 'dict(schema="schema1")' in schema1_code

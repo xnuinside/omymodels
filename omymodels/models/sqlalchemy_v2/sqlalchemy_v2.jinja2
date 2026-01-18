@@ -5,6 +5,6 @@ from sqlalchemy import (
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 {{ headers }}
 
-class Base(DeclarativeBase):
+class {{ base_name }}(DeclarativeBase):
     pass
 {{ models }}

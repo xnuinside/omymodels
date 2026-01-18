@@ -45,6 +45,7 @@ def create_models(
     table_prefix: Optional[str] = "",
     table_suffix: Optional[str] = "",
     relationships: Optional[bool] = False,
+    split_by_schema: Optional[bool] = False,
 ):
     """models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
@@ -56,7 +57,28 @@ def create_models(
             sys.exit(0)
         else:
             raise NoTablesError()
-    # generate code
+
+    # Handle split_by_schema mode
+    if split_by_schema:
+        output = generate_models_by_schema(
+            data,
+            singular,
+            naming_exceptions,
+            models_type,
+            defaults_off,
+            table_prefix=table_prefix,
+            table_suffix=table_suffix,
+            relationships=relationships,
+        )
+        if dump:
+            save_models_by_schema(output, dump_path)
+        else:
+            for schema_name, code in output.items():
+                print(f"# === {schema_name} ===")
+                print(code)
+        return {"metadata": data, "code": output}
+
+    # generate code (single file mode)
     output = generate_models_file(
         data,
         singular,
@@ -138,6 +160,104 @@ def save_models_to_file(models: str, dump_path: str) -> None:
         os.makedirs(folder, exist_ok=True)
     with open(dump_path, "w+") as f:
         f.write(models)
+
+
+def save_models_by_schema(models_by_schema: Dict[str, str], dump_path: str) -> None:
+    """Save models split by schema to separate files."""
+    folder = os.path.dirname(dump_path)
+    base_name = os.path.basename(dump_path)
+    name_without_ext = os.path.splitext(base_name)[0]
+
+    if folder:
+        os.makedirs(folder, exist_ok=True)
+
+    for schema_name, code in models_by_schema.items():
+        file_name = f"{schema_name}_{name_without_ext}.py" if schema_name else f"{name_without_ext}.py"
+        file_path = os.path.join(folder, file_name) if folder else file_name
+        with open(file_path, "w+") as f:
+            f.write(code)
+
+
+def group_tables_by_schema(tables: List) -> Dict[str, List]:
+    """Group tables by their schema attribute."""
+    grouped = {}
+    for table in tables:
+        schema = table.table_schema or ""
+        grouped.setdefault(schema, []).append(table)
+    return grouped
+
+
+def _schema_to_base_name(schema: str) -> str:
+    """Convert schema name to Base class name (e.g., 'my_schema' -> 'MySchemaBase')."""
+    if not schema:
+        return "Base"
+    # Convert snake_case or kebab-case to PascalCase
+    parts = schema.replace("-", "_").split("_")
+    pascal = "".join(part.capitalize() for part in parts)
+    return f"{pascal}Base"
+
+
+def generate_models_by_schema(
+    data: Dict[str, List],
+    singular: bool = False,
+    exceptions: Optional[List] = None,
+    models_type: str = "gino",
+    defaults_off: Optional[bool] = False,
+    table_prefix: Optional[str] = "",
+    table_suffix: Optional[str] = "",
+    relationships: Optional[bool] = False,
+) -> Dict[str, str]:
+    """Generate models split by schema, each with its own Base class."""
+    from omymodels.generators import get_generator_by_type, render_jinja2_template
+
+    results = {}
+    tables_by_schema = group_tables_by_schema(data["tables"])
+
+    # Collect relationships across all tables if enabled
+    relationships_map = {}
+    if relationships:
+        relationships_map = collect_relationships(data["tables"])
+
+    for schema_name, tables in tables_by_schema.items():
+        generator = get_generator_by_type(models_type)
+        add_custom_types_to_generator(data["types"], generator)
+
+        models_str = ""
+        header = ""
+
+        # Include types only in the first (or default) schema file
+        if data["types"] and schema_name == "":
+            types_generator = enum.ModelGenerator(data["types"])
+            models_str += types_generator.create_types()
+            header += types_generator.create_header()
+
+        for table in tables:
+            models_str += generator.generate_model(
+                table,
+                singular,
+                exceptions,
+                schema_global=False,  # Always include schema in __table_args__
+                defaults_off=defaults_off,
+                table_prefix=table_prefix,
+                table_suffix=table_suffix,
+                relationships=relationships_map.get(table.name, []) if relationships else [],
+            )
+
+        header += generator.create_header(tables, schema=False, models_str=models_str)
+
+        # Generate code with schema-specific Base name
+        base_name = _schema_to_base_name(schema_name)
+        output = render_jinja2_template(
+            models_type, models_str, header, base_name=base_name
+        )
+
+        # Replace class inheritance from Base to custom base name
+        if base_name != "Base":
+            output = output.replace("(Base):", f"({base_name}):")
+
+        results[schema_name] = output
+
+    return results
 
 
 def _add_relationship(
