@@ -43,6 +43,13 @@ jobs:
         poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
-    - name: Test with pytest
+    - name: Test with pytest and coverage
       run: |
-        pytest tests/ -vv
+        pytest tests/ -vv --cov=omymodels --cov-report=term-missing --cov-report=xml
+    - name: Upload coverage to Codecov
+      if: matrix.python == '3.11'
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./coverage.xml
+        fail_ci_if_error: false
+        verbose: true

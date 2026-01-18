@@ -12,3 +12,9 @@ tests/integration/**/module_*.py
 models.py
 poetry.lock
 *~
+
+# Coverage
+htmlcov/
+.coverage
+coverage.xml
+*.cover

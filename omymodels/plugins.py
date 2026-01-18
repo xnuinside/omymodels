@@ -4,7 +4,7 @@ Allows users to register their own model generators without forking the reposito
 """
 
 import sys
-from typing import Dict, List, Type
+from typing import Dict, Type
 
 from omymodels.generation.base import BaseGenerator
 

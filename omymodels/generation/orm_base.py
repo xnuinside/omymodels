@@ -1,6 +1,6 @@
 """Base generator for ORM generators (Gino, SQLAlchemy, SQLModel)."""
 
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Set
 
 from table_meta.model import Column
 

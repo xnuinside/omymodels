@@ -1,51 +1,59 @@
-# O! My Models - Архитектура проекта
+# O! My Models - Project Architecture
 
-## Обзор
+## Overview
 
-**O! My Models (omymodels)** - универсальная Python библиотека для:
-- Генерации ORM-моделей из SQL DDL (CREATE TABLE)
-- Конвертации моделей между разными фреймворками (Pydantic → SQLAlchemy и т.д.)
+**O! My Models (omymodels)** - a universal Python library for:
+- Generating ORM models from SQL DDL (CREATE TABLE)
+- Converting models between different frameworks (Pydantic → SQLAlchemy, etc.)
 
-**Версия:** 1.0.0
+**Version:** 1.0.0
 **Python:** >=3.9
-**Лицензия:** MIT
+**License:** MIT
 
-## Структура проекта
+## Project Structure
 
 ```
 omymodels/
-├── __init__.py              # Публичный API: create_models(), convert_models()
-├── from_ddl.py              # Основной модуль генерации из DDL
-├── converter.py             # Конвертер между типами моделей
-├── cli.py                   # Командная строка (omm)
-├── generators.py            # Маршрутизация к генераторам
-├── helpers.py               # Утилиты (pluralize, snake_case, etc.)
-├── logic.py                 # Логика генерации колонок и таблиц
-├── errors.py                # Исключения
-├── types.py                 # Базовые определения SQL типов
+├── __init__.py              # Public API: create_models(), convert_models()
+├── from_ddl.py              # Main DDL generation module
+├── converter.py             # Converter between model types
+├── cli.py                   # Command line interface (omm)
+├── generators.py            # Router to generators
+├── helpers.py               # Utilities (pluralize, snake_case, etc.)
+├── logic.py                 # Column and table generation logic
+├── errors.py                # Exceptions
+├── types.py                 # Base SQL type definitions
+├── plugins.py               # Plugin system for custom generators
+├── openapi.py               # OpenAPI 3 schema conversion
 │
-└── models/                  # Генераторы для каждого типа моделей
+├── generation/              # Base generator classes
+│   ├── base.py              # BaseGenerator abstract class
+│   ├── datamodel_base.py    # Base for data models (Pydantic, Dataclass)
+│   └── orm_base.py          # Base for ORM models (SQLAlchemy, Gino)
+│
+└── models/                  # Generators for each model type
     ├── gino/                # GinoORM (async PostgreSQL)
-    ├── pydantic/            # Pydantic v1 (валидация, Optional[X])
-    ├── pydantic_v2/         # Pydantic v2 (валидация, X | None)
+    ├── pydantic/            # Pydantic v1 (validation, Optional[X])
+    ├── pydantic_v2/         # Pydantic v2 (validation, X | None)
     ├── sqlalchemy/          # SQLAlchemy ORM
     ├── sqlalchemy_core/     # SQLAlchemy Core (Table API)
     ├── sqlmodel/            # SQLModel (SQLAlchemy + Pydantic)
     ├── dataclass/           # Python Dataclasses
     ├── enum/                # Python Enum
-    ├── pydal/               # PyDAL (в разработке)
-    └── tortoise/            # Tortoise ORM (в разработке)
+    ├── openapi3/            # OpenAPI 3 schema generator
+    ├── pydal/               # PyDAL (in development)
+    └── tortoise/            # Tortoise ORM (in development)
 ```
 
-Каждый генератор содержит:
-- `core.py` - класс ModelGenerator
-- `types.py` - маппинг SQL → целевые типы
-- `templates.py` - строковые шаблоны кода
-- `*.jinja2` - финальный шаблон файла
+Each generator contains:
+- `core.py` - ModelGenerator class
+- `types.py` - SQL → target type mapping
+- `templates.py` - code string templates
+- `*.jinja2` - final file template
 
-## Архитектура
+## Architecture
 
-### Поток данных
+### Data Flow
 
 ```
 SQL DDL (Input)
@@ -61,13 +69,13 @@ SQL DDL (Input)
 │  Normalization              │
 │  - prepare_data()           │
 │  - convert_ddl_to_models()  │
-│  - TableMeta объекты        │
+│  - TableMeta objects        │
 └─────────────────────────────┘
      │
      ▼
 ┌─────────────────────────────┐
 │  Type Conversion            │
-│  - types.py маппинг         │
+│  - types.py mapping         │
 │  - prepare_column_type()    │
 └─────────────────────────────┘
      │
@@ -89,27 +97,27 @@ SQL DDL (Input)
 Python Code (Output)
 ```
 
-### Ключевые компоненты
+### Key Components
 
 #### 1. ModelGenerator (models/*/core.py)
 
-Базовая структура генератора:
+Base generator structure:
 
 ```python
 class ModelGenerator:
     def __init__(self):
-        self.types_mapping      # SQL → целевой тип
-        self.templates          # Шаблоны кода
-        self.state              # Отслеживание импортов
-        self.custom_types       # Enum и кастомные типы
+        self.types_mapping      # SQL → target type
+        self.templates          # Code templates
+        self.state              # Import tracking
+        self.custom_types       # Enum and custom types
 
-    def generate_model(table)   # Генерация одной модели
-    def create_header(tables)   # Заголовок с импортами
+    def generate_model(table)   # Generate single model
+    def create_header(tables)   # Header with imports
 ```
 
-#### 2. Система типов (types.py)
+#### 2. Type System (types.py)
 
-Группы SQL типов:
+SQL type groups:
 - `string_types`: VARCHAR, CHAR, TEXT, STRING
 - `integer_types`: INTEGER, INT, SERIAL, BIGINT, SMALLINT
 - `datetime_types`: DATE, TIMESTAMP, DATETIME, TIME
@@ -117,14 +125,14 @@ class ModelGenerator:
 - `float_types`: FLOAT, DECIMAL, NUMERIC, DOUBLE
 - `json_types`: JSON, JSONB
 
-#### 3. Логика генерации (logic.py)
+#### 3. Generation Logic (logic.py)
 
-- `generate_column()` - полное определение колонки
+- `generate_column()` - complete column definition
 - `setup_column_attributes()` - nullable, defaults, primary_key
-- `add_table_args()` - индексы, constraints, schema
-- `add_reference_to_the_column()` - внешние ключи
+- `add_table_args()` - indexes, constraints, schema
+- `add_reference_to_the_column()` - foreign keys
 
-#### 4. Маршрутизатор (generators.py)
+#### 4. Router (generators.py)
 
 ```python
 models = {
@@ -135,101 +143,128 @@ models = {
     "sqlalchemy_core": sqlalchemy_core.ModelGenerator(),
     "sqlmodel": sqlmodel.ModelGenerator(),
     "dataclass": dataclass.ModelGenerator(),
+    "openapi3": openapi3.ModelGenerator(),
 }
 ```
 
 ## API
 
-### Программный интерфейс
+### Programmatic Interface
 
 ```python
 from omymodels import create_models, convert_models
 
-# Генерация из DDL
+# Generate from DDL
 result = create_models(
-    ddl="CREATE TABLE users (...)",  # или ddl_path="schema.sql"
+    ddl="CREATE TABLE users (...)",  # or ddl_path="schema.sql"
     models_type="pydantic",          # gino, sqlalchemy, dataclass, etc.
-    dump=True,                       # сохранить в файл
+    dump=True,                       # save to file
     dump_path="models.py",
     singular=False,                  # users → User (singularize)
-    schema_global=True,              # глобальная схема
-    defaults_off=False,              # без defaults
+    schema_global=True,              # global schema
+    defaults_off=False,              # without defaults
 )
-# Возвращает: {"metadata": {...}, "code": "..."}
+# Returns: {"metadata": {...}, "code": "..."}
 
-# Конвертация между типами
+# Convert between types
 output = convert_models(
     model_from="@dataclass\nclass User: ...",
     models_type="sqlalchemy"
 )
 ```
 
-### Командная строка
+### Command Line
 
 ```bash
-# Базовое использование
+# Basic usage
 omm schema.sql
 
-# С опциями
+# With options
 omm schema.sql -m pydantic -t models.py
 
-# Флаги:
-# -m, --models_type     Тип моделей
-# -t, --target          Путь для сохранения
-# --no-dump             Вывод в консоль
-# --no-global-schema    Схема в table_args
-# --defaults-off        Без значений по умолчанию
-# -v                    Verbose режим
+# Flags:
+# -m, --models_type     Model type
+# -t, --target          Save path
+# --no-dump             Output to console
+# --no-global-schema    Schema in table_args
+# --defaults-off        Without default values
+# -v                    Verbose mode
 ```
 
-## Зависимости
+## Dependencies
 
-| Библиотека | Назначение |
-|------------|------------|
-| simple-ddl-parser | Парсинг SQL DDL |
-| table-meta | Унифицированная структура TableMeta |
-| py-models-parser | Парсинг Python моделей |
-| Jinja2 | Шаблонизация кода |
-| pydantic | Валидация данных |
+| Library | Purpose |
+|---------|---------|
+| simple-ddl-parser | SQL DDL parsing |
+| table-meta | Unified TableMeta structure |
+| py-models-parser | Python model parsing |
+| Jinja2 | Code templating |
+| pydantic | Data validation |
 
-## Поддерживаемые форматы
+## Supported Formats
 
-### Входные форматы
-- **SQL DDL**: PostgreSQL, MySQL, MS SQL диалекты
-- **Python код**: Pydantic, Dataclasses, SQLAlchemy (для конвертации)
+### Input Formats
+- **SQL DDL**: PostgreSQL, MySQL, MS SQL dialects
+- **Python code**: Pydantic, Dataclasses, SQLAlchemy (for conversion)
+- **OpenAPI 3**: JSON/YAML schema definitions
 
-### Выходные форматы
+### Output Formats
 
-| Формат | Описание |
-|--------|----------|
+| Format | Description |
+|--------|-------------|
 | GinoORM | Async PostgreSQL ORM |
-| Pydantic v1 | Валидация и сериализация (Optional[X]) |
-| Pydantic v2 | Валидация и сериализация (X \| None) |
-| SQLAlchemy ORM | Классический ORM |
+| Pydantic v1 | Validation and serialization (Optional[X]) |
+| Pydantic v2 | Validation and serialization (X \| None) |
+| SQLAlchemy ORM | Classic ORM |
 | SQLAlchemy Core | Table API |
 | SQLModel | SQLAlchemy + Pydantic |
-| Dataclasses | Встроенные Python классы |
-| Python Enum | Перечисления |
+| Dataclasses | Built-in Python classes |
+| Python Enum | Enumerations |
+| OpenAPI 3 | JSON schema definitions |
 
-## Паттерны проектирования
+## Design Patterns
 
-1. **Strategy Pattern** - разные генераторы для разных типов
-2. **Template Method** - Jinja2 для финального рендеринга
+1. **Strategy Pattern** - different generators for different types
+2. **Template Method** - Jinja2 for final rendering
 3. **Factory Pattern** - `get_generator_by_type()`
-4. **Pipeline** - парсинг → нормализация → генерация → рендеринг
+4. **Pipeline** - parsing → normalization → generation → rendering
 
-## Расширение
+## Extension
 
-Добавление нового типа моделей:
+### Adding a New Model Type
 
-1. Создать папку `models/[type]/`
-2. Добавить `core.py` с классом `ModelGenerator`
-3. Добавить `types.py` с маппингом типов
-4. Добавить `templates.py` с шаблонами
-5. Добавить `[type].jinja2`
-6. Зарегистрировать в `generators.py`
+1. Create folder `models/[type]/`
+2. Add `core.py` with `ModelGenerator` class
+3. Add `types.py` with type mapping
+4. Add `templates.py` with templates
+5. Add `[type].jinja2`
+6. Register in `generators.py`
 
-## Структура данных
+### Plugin System
+
+Custom generators can be registered without forking:
+
+```python
+from omymodels import register_generator
+from omymodels.generation import BaseGenerator
+
+class MyORMGenerator(BaseGenerator):
+    def generate_model(self, table, **kwargs):
+        ...
+    def create_header(self, tables, **kwargs):
+        ...
+
+register_generator("my_orm", MyORMGenerator)
+```
+
+Or via entry points in `pyproject.toml`:
+
+```toml
+[project.entry-points."omymodels.generators"]
+my_orm = "my_package.generators:MyORMGenerator"
+```
+
+## Data Structure
 
 ```
 TableMeta (table-meta library)

@@ -2,12 +2,13 @@
 
 import pathlib
 from types import ModuleType
-from typing import List, Union
+from typing import List
 
 from jinja2 import Template
 
 from omymodels.models.dataclass import core as d
 from omymodels.models.gino import core as g
+from omymodels.models.openapi3 import core as oas3
 from omymodels.models.pydantic import core as p
 from omymodels.models.pydantic_v2 import core as p2
 from omymodels.models.sqlalchemy import core as s
@@ -23,6 +24,7 @@ models = {
     "sqlalchemy": s,
     "sqlalchemy_core": sc,
     "sqlmodel": sm,
+    "openapi3": oas3,
 }
 
 supported_models = list(models.keys())

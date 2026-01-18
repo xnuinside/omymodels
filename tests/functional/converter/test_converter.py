@@ -212,3 +212,99 @@ class Material(Base):
 """
     result = convert_models(models_from, models_type="pydantic")
     assert expected == result
+
+
+def test_from_pydantic_to_dataclass():
+    """Test converting Pydantic models to Python dataclasses."""
+    models_from = """
+from enum import Enum
+from pydantic import BaseModel
+
+
+class Status(str, Enum):
+    active = 'active'
+    inactive = 'inactive'
+
+
+class User(BaseModel):
+    id: int
+    name: str
+    status: Status
+"""
+
+    result = convert_models(models_from, models_type="dataclass")
+
+    # Verify key elements in output
+    assert "from enum import Enum" in result
+    assert "from dataclasses import dataclass" in result
+    assert "class Status(str, Enum):" in result
+    assert "@dataclass" in result
+    assert "class User:" in result
+    assert "id: int" in result
+    assert "name: str" in result
+    assert "status: Status" in result
+
+
+def test_from_pydantic_to_gino():
+    """Test converting Pydantic models to GinoORM."""
+    models_from = """
+from pydantic import BaseModel
+
+
+class Product(BaseModel):
+    id: int
+    name: str
+    price: float
+    in_stock: bool
+"""
+
+    expected = """from gino import Gino
+
+db = Gino()
+
+
+class Product(db.Model):
+
+    __tablename__ = 'products'
+
+    id = db.Column(db.Integer())
+    name = db.Column(db.String())
+    price = db.Column(db.Float())
+    in_stock = db.Column(db.Boolean())
+"""
+    result = convert_models(models_from, models_type="gino")
+    assert expected == result
+
+
+def test_from_pydantic_to_sqlalchemy():
+    """Test converting Pydantic models to SQLAlchemy ORM."""
+    models_from = """
+import datetime
+from pydantic import BaseModel
+
+
+class Order(BaseModel):
+    id: int
+    customer_name: str
+    total: float
+    created_at: datetime.datetime
+"""
+
+    expected = """import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+
+
+Base = declarative_base()
+
+
+class Order(Base):
+
+    __tablename__ = 'orders'
+
+    id = sa.Column(sa.Integer())
+    customer_name = sa.Column(sa.String())
+    total = sa.Column(sa.Float())
+    created_at = sa.Column(sa.DateTime())
+"""
+    result = convert_models(models_from, models_type="sqlalchemy")
+    assert expected == result

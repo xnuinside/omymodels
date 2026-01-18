@@ -6,10 +6,12 @@ Supports generating models for:
 - Pydantic v1 and v2
 - SQLModel
 - Python Dataclasses
+- OpenAPI 3 schemas
 """
 
 from omymodels.converter import convert_models
 from omymodels.from_ddl import create_models
+from omymodels.openapi import create_models_from_openapi3
 
 # Plugin system for custom generators
 from omymodels.plugins import (
@@ -32,6 +34,7 @@ __all__ = [
     # Main API
     "create_models",
     "convert_models",
+    "create_models_from_openapi3",
     # Plugin system
     "register_generator",
     "unregister_generator",

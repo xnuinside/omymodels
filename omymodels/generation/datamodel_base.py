@@ -1,8 +1,8 @@
 """Base generator for data model generators (Pydantic, Dataclass)."""
 
-from typing import Any, Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set
 
-from table_meta.model import Column, TableMeta
+from table_meta.model import Column
 
 from omymodels.generation.base import BaseGenerator
 from omymodels.helpers import datetime_now_check

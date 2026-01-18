@@ -22,6 +22,7 @@ Supported Models:
 - Pydantic v1/v2 (https://docs.pydantic.dev/)
 - Python Dataclasses (https://docs.python.org/3/library/dataclasses.html)
 - Python Enum (https://docs.python.org/3/library/enum.html) - generated from DDL SQL Types
+- OpenAPI 3 (Swagger) schemas (https://swagger.io/specification/)
 
 
 ## How to install
@@ -45,6 +46,7 @@ By default method **create_models** generates GinoORM models. Use the argument `
 - `'sqlalchemy_core'` - SQLAlchemy Core Tables
 - `'dataclass'` - Python Dataclasses
 - `'sqlmodel'` - SQLModel models
+- `'openapi3'` - OpenAPI 3 (Swagger) schema definitions
 
 A lot of examples in tests/ - https://github.com/xnuinside/omymodels/tree/main/tests.
 
@@ -332,6 +334,96 @@ And result will be this:
                 )
 ```
 
+## OpenAPI 3 (Swagger) Support
+
+O!MyModels supports bidirectional conversion with OpenAPI 3 schemas.
+
+### Generate OpenAPI 3 schema from DDL
+
+```python
+from omymodels import create_models
+
+ddl = """
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP
+);
+"""
+
+result = create_models(ddl, models_type="openapi3")
+print(result["code"])
+
+# Output:
+# {
+#   "components": {
+#     "schemas": {
+#       "Users": {
+#         "type": "object",
+#         "properties": {
+#           "id": {"type": "integer"},
+#           "username": {"type": "string", "maxLength": 100},
+#           "email": {"type": "string", "maxLength": 255},
+#           "is_active": {"type": "boolean", "default": true},
+#           "created_at": {"type": "string", "format": "date-time"}
+#         },
+#         "required": ["id", "username"]
+#       }
+#     }
+#   }
+# }
+```
+
+### Convert OpenAPI 3 schema to Python models
+
+```python
+from omymodels import create_models_from_openapi3
+
+schema = """
+{
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "integer"},
+                    "name": {"type": "string"},
+                    "email": {"type": "string"},
+                    "created_at": {"type": "string", "format": "date-time"}
+                },
+                "required": ["id", "name"]
+            }
+        }
+    }
+}
+"""
+
+# Convert to Pydantic v2
+result = create_models_from_openapi3(schema, models_type="pydantic_v2")
+print(result)
+
+# Output:
+# from __future__ import annotations
+#
+# import datetime
+# from pydantic import BaseModel
+#
+#
+# class User(BaseModel):
+#
+#     id: int
+#     name: str
+#     email: str | None = None
+#     created_at: datetime.datetime | None = None
+```
+
+YAML schemas are also supported (requires `pyyaml`):
+```bash
+pip install pyyaml
+```
+
 ## Custom Generators (Plugin System)
 
 You can add support for your own model types without forking the repository.
@@ -419,12 +511,31 @@ One more time, big 'thank you!' goes to https://github.com/archongum for Web-ver
    - Uses `dict | list` for JSON/JSONB types instead of `Json`
    - Adds `from __future__ import annotations` for Python 3.9 compatibility
    - Nullable fields automatically get `= None` default
-3. Added tox configuration for local multi-version testing (py39-py313)
+3. Added plugin system for custom generators - add your own model types without forking:
+   - `register_generator()` - register custom generator
+   - `unregister_generator()` - remove custom generator
+   - `list_generators()` - list all available generators
+   - Base classes: `BaseGenerator`, `ORMGenerator`, `DataModelGenerator`
+   - `TypeConverter` class for type mappings
+   - Entry points support for auto-discovery
+   - See examples: `example/custom_generator.py`, `example/extend_builtin_generator.py`
+4. Added OpenAPI 3 (Swagger) schema support:
+   - Generate OpenAPI 3 schemas from DDL: `create_models(ddl, models_type="openapi3")`
+   - Convert OpenAPI 3 schemas to Python models: `create_models_from_openapi3(schema, models_type="pydantic_v2")`
+   - Supports JSON and YAML input (with pyyaml)
+5. Added tox configuration for local multi-version testing (py39-py313)
+6. Added pytest-cov for code coverage reporting
 
 ### Improvements
 1. Updated GitHub Actions workflow with latest action versions (checkout@v4, setup-python@v5)
 2. Added ARCHITECTURE.md with project documentation
 3. Updated documentation with Pydantic v2 examples
+4. Reorganized types module with TypeConverter class
+5. Updated py-models-parser to version 1.0.0
+
+### Bug Fixes
+1. Fixed `iterate_over_the_list()` modifying list during iteration
+2. Fixed meaningless condition in dataclass generator
 
 **v0.17.0**
 
