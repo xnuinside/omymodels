@@ -17,19 +17,18 @@ CREATE table user_history (
 """
     result = create_models(ddl, models_type="pydantic")["code"]
 
-    expected = """import datetime
+    expected = """from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
 
 
 class UserHistory(BaseModel):
-
     runid: Optional[float]
     job_id: Optional[float]
     id: str
     user: str
     status: str
-    event_time: datetime.datetime = datetime.datetime.now()
+    event_time: datetime = datetime.now()
     comment: str = 'none'
 """
     assert result == expected
@@ -41,7 +40,6 @@ from pydantic import BaseModel
 
 
 class Arrays2(BaseModel):
-
     field_1: List[float]
     field_2: List[int]
     field_3: List[str] = '{"none"}'
@@ -74,7 +72,6 @@ from pydantic import BaseModel
 
 
 class Table(BaseModel):
-
     _id: UUID
 """
     ddl = """
@@ -88,9 +85,9 @@ CREATE TABLE "prefix--schema-name"."table" (
 
 def test_enums_lower_case_names_works():
     expected = """from enum import Enum
-import datetime
-from typing import Optional
-from pydantic import BaseModel, Json
+from datetime import datetime
+from typing import Any, Optional
+from pydantic import BaseModel
 
 MaterialType = Enum(
     value='MaterialType',
@@ -102,15 +99,14 @@ MaterialType = Enum(
 
 
 class Material(BaseModel):
-
     id: int
     title: str
     description: Optional[str]
     link: str
     type: Optional[MaterialType]
-    additional_properties: Optional[Json]
-    created_at: Optional[datetime.datetime] = datetime.datetime.now()
-    updated_at: Optional[datetime.datetime]
+    additional_properties: Optional[Any]
+    created_at: Optional[datetime] = datetime.now()
+    updated_at: Optional[datetime]
 """
     from omymodels import create_models
 
@@ -155,9 +151,9 @@ CREATE TABLE "material" (
 """
     result = create_models(ddl, models_type="pydantic", defaults_off=True)["code"]
     expected = """from enum import Enum
-import datetime
-from typing import Optional
-from pydantic import BaseModel, Json
+from datetime import datetime
+from typing import Any, Optional
+from pydantic import BaseModel
 
 MaterialType = Enum(
     value='MaterialType',
@@ -169,15 +165,14 @@ MaterialType = Enum(
 
 
 class Material(BaseModel):
-
     id: int
     title: str
     description: Optional[str]
     link: str
     type: Optional[MaterialType]
-    additional_properties: Optional[Json]
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
+    additional_properties: Optional[Any]
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
 """
     assert expected == result
 
@@ -187,7 +182,6 @@ def test_pydantic_with_bytes():
 
 
 class User(BaseModel):
-
     avatar: bytes
 """
 

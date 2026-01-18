@@ -19,8 +19,8 @@ mapper = {
     float_types: "float",
     numeric_types: "float",
     boolean_types: "bool",
-    datetime_types: "datetime.datetime",
-    json_types: "Json",
+    datetime_types: "datetime",
+    json_types: "Any",
     text_types: "str",
     binary_types: "bytes",
 }
@@ -28,12 +28,14 @@ mapper = {
 types_mapping = populate_types_mapping(mapper)
 
 direct_types = {
-    "date": "datetime.date",
-    "timestamp": "datetime.datetime",
+    "date": "date",
+    "time": "time",
+    "timestamp": "datetime",
     "smallint": "int",
-    "jsonb": "Json",
+    "json": "Any",
+    "jsonb": "Any",
     "uuid": "UUID",
+    "year": "int",
 }
-
 
 types_mapping.update(direct_types)

@@ -161,9 +161,9 @@ class Material(Base):
 
 def test_from_sqlalchemy_to_pydantic():
     expected = """from enum import Enum
-import datetime
-from typing import Optional
-from pydantic import BaseModel, Json
+from datetime import datetime
+from typing import Any, Optional
+from pydantic import BaseModel
 
 MaterialType = Enum(
     value='MaterialType',
@@ -175,15 +175,14 @@ MaterialType = Enum(
 
 
 class Material(BaseModel):
-
     id: Optional[int]
     title: Optional[str]
     description: Optional[str]
     link: Optional[str]
     type: Optional[MaterialType]
-    additional_properties: Optional[Json]
-    created_at: Optional[datetime.datetime]
-    updated_at: Optional[datetime.datetime]
+    additional_properties: Optional[Any]
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
 """
 
     models_from = """

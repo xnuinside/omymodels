@@ -1,7 +1,5 @@
 """Unit tests for the TypeConverter class."""
 
-import pytest
-
 from omymodels.types import TypeConverter
 
 
