@@ -476,3 +476,68 @@ ALTER TABLE "comments" ADD FOREIGN KEY ("post_id") REFERENCES "posts" ("id");
 """
     result = create_models(ddl, models_type="sqlalchemy", relationships=True)["code"]
     assert result == expected
+
+
+def test_split_by_schema():
+    """Test that split_by_schema generates separate files per schema with custom Base."""
+    ddl = """
+CREATE SCHEMA schema1;
+CREATE SCHEMA schema2;
+
+CREATE TABLE schema1.users (
+    id int PRIMARY KEY,
+    name varchar NOT NULL
+);
+
+CREATE TABLE schema2.orders (
+    id int PRIMARY KEY,
+    total decimal(10,2)
+);
+"""
+    result = create_models(ddl, models_type="sqlalchemy", split_by_schema=True, dump=False)
+    code = result["code"]
+
+    # Should have two schemas
+    assert "schema1" in code
+    assert "schema2" in code
+
+    # Check schema1 output
+    schema1_code = code["schema1"]
+    assert "Schema1Base = declarative_base()" in schema1_code
+    assert "class Users(Schema1Base):" in schema1_code
+    assert 'dict(schema="schema1")' in schema1_code
+
+    # Check schema2 output
+    schema2_code = code["schema2"]
+    assert "Schema2Base = declarative_base()" in schema2_code
+    assert "class Orders(Schema2Base):" in schema2_code
+    assert 'dict(schema="schema2")' in schema2_code
+
+
+def test_split_by_schema_with_no_schema_tables():
+    """Test split_by_schema handles tables without explicit schema."""
+    ddl = """
+CREATE SCHEMA myschema;
+
+CREATE TABLE myschema.users (
+    id int PRIMARY KEY
+);
+
+CREATE TABLE public_table (
+    id int PRIMARY KEY
+);
+"""
+    result = create_models(ddl, models_type="sqlalchemy", split_by_schema=True, dump=False)
+    code = result["code"]
+
+    # Should have myschema and empty string for tables without schema
+    assert "myschema" in code
+    assert "" in code
+
+    # Check myschema output
+    assert "MyschemaBase = declarative_base()" in code["myschema"]
+    assert "class Users(MyschemaBase):" in code["myschema"]
+
+    # Check default schema output (no schema)
+    assert "Base = declarative_base()" in code[""]
+    assert "class PublicTable(Base):" in code[""]

@@ -85,13 +85,16 @@ def get_supported_models() -> List[str]:
     return list(list_generators().keys())
 
 
-def render_jinja2_template(models_type: str, models: str, headers: str) -> str:
+def render_jinja2_template(
+    models_type: str, models: str, headers: str, base_name: str = "Base"
+) -> str:
     """Render Jinja2 template for model output.
 
     Args:
         models_type: Generator type name
         models: Generated model code
         headers: Generated header/imports code
+        base_name: Name for the Base class (default: "Base")
 
     Returns:
         Rendered template as string
@@ -107,5 +110,5 @@ def render_jinja2_template(models_type: str, models: str, headers: str) -> str:
     with open(template_file) as t:
         template = t.read()
         template = Template(template)
-        params = {"models": models, "headers": headers}
+        params = {"models": models, "headers": headers, "base_name": base_name}
         return template.render(**params)
