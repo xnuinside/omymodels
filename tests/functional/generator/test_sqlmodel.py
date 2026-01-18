@@ -383,3 +383,37 @@ class Qwe(SQLModel, table=True):
     name: Optional[str]
 """
     assert expected == result
+
+
+def test_sqlmodel_with_array_types():
+    """Test that SQLModel generation works with PostgreSQL array types.
+
+    Regression test for issue #66.
+    """
+    ddl = """
+    CREATE TABLE test_table (
+        id SERIAL PRIMARY KEY,
+        names TEXT[],
+        scores INTEGER[] NOT NULL
+    );
+    """
+    result = create_models(ddl, models_type="sqlmodel")["code"]
+    expected = """import datetime
+import decimal
+from typing import Optional
+from sqlmodel import Field, SQLModel
+from typing import List
+import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import ARRAY
+from pydantic import Json, UUID4
+
+
+class TestTable(SQLModel, table=True):
+
+    __tablename__ = 'test_table'
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    names: Optional[List[str]] = Field(sa_type=ARRAY(sa.Text))
+    scores: List[int] = Field(sa_type=ARRAY(sa.Integer))
+"""
+    assert expected == result
