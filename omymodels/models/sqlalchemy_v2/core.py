@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 
 import omymodels.models.sqlalchemy_v2.templates as st
-from omymodels.helpers import create_class_name, datetime_now_check
+from omymodels.helpers import create_class_name, datetime_now_check, pluralize
 from omymodels.models.sqlalchemy_v2.types import types_mapping, python_to_sa_type
 from omymodels.types import datetime_types, json_types, postgresql_dialect
 import omymodels.types as t
@@ -24,6 +24,7 @@ class ModelGenerator(GeneratorBase):
         self.time_import = False
         self.uuid_import = False
         self.fk_import = False
+        self.relationship_import = False
         self.types_mapping = types_mapping
         self.templates = st
         self.prefix = ""
@@ -225,6 +226,7 @@ class ModelGenerator(GeneratorBase):
         singular: bool = True,
         exceptions: Optional[List] = None,
         schema_global: Optional[bool] = True,
+        relationships: Optional[List] = None,
         *args,
         **kwargs,
     ) -> str:
@@ -242,7 +244,67 @@ class ModelGenerator(GeneratorBase):
         if table.indexes or table.alter or table.checks or not schema_global:
             model = self._add_table_args(model, table, schema_global)
 
+        # Generate relationships if enabled
+        if relationships:
+            model += self._generate_relationships(
+                relationships, singular, exceptions
+            )
+
         return model
+
+    def _generate_relationships(
+        self,
+        relationships: List[Dict],
+        singular: bool,
+        exceptions: Optional[List] = None,
+    ) -> str:
+        """Generate relationship() lines for the model."""
+        result = "\n"
+        self.relationship_import = True
+        self.typing_imports.add("List")
+
+        for rel in relationships:
+            if rel["type"] == "many_to_one":
+                # Child side: reference to parent
+                # e.g., author: Mapped["Authors"] = relationship("Authors", back_populates="books")
+                ref_table = rel["ref_table"]
+                fk_column = rel["fk_column"]
+                child_table_name = rel["child_table_name"]
+                related_class = create_class_name(ref_table, singular, exceptions)
+                # Attribute name derived from FK column (author_id -> author)
+                attr_name = fk_column.replace("_id", "") if fk_column.endswith("_id") else ref_table.lower()
+                # back_populates points to the collection on the parent (uses child table name)
+                back_pop_name = child_table_name.lower().replace("-", "_")
+                back_populates = st.back_populates_template.format(attr_name=back_pop_name)
+                # Type hint for many-to-one is the related class (quoted for forward ref)
+                type_hint = f'"{related_class}"'
+                result += st.relationship_template.format(
+                    attr_name=attr_name,
+                    type_hint=type_hint,
+                    related_class=related_class,
+                    back_populates=back_populates,
+                )
+            elif rel["type"] == "one_to_many":
+                # Parent side: collection of children
+                # e.g., books: Mapped[List["Books"]] = relationship("Books", back_populates="author")
+                child_table = rel["child_table"]
+                fk_column = rel["fk_column"]
+                related_class = create_class_name(child_table, singular, exceptions)
+                # Attribute name is the child table name (as-is, since table names are typically plural)
+                attr_name = child_table.lower().replace("-", "_")
+                # back_populates points to the single parent reference on the child
+                # Derived from FK column (author_id -> author)
+                back_pop_name = fk_column.replace("_id", "") if fk_column.endswith("_id") else child_table.lower()
+                back_populates = st.back_populates_template.format(attr_name=back_pop_name)
+                # Type hint for one-to-many is List of related class (quoted for forward ref)
+                type_hint = f'List["{related_class}"]'
+                result += st.relationship_template.format(
+                    attr_name=attr_name,
+                    type_hint=type_hint,
+                    related_class=related_class,
+                    back_populates=back_populates,
+                )
+        return result
 
     def _add_table_args(
         self, model: str, table: Dict, schema_global: bool = True
@@ -319,5 +381,8 @@ class ModelGenerator(GeneratorBase):
 
         if self.im_index:
             parts.append(st.index_import + "\n")
+
+        if self.relationship_import:
+            parts.append(st.relationship_import + "\n")
 
         return "".join(parts)

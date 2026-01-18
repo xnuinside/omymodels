@@ -361,3 +361,118 @@ ALTER TABLE "schema1"."table1" ADD FOREIGN KEY
 """
     result = create_models(ddl, schema_global=False, models_type="sqlalchemy")["code"]
     assert result == expected
+
+
+def test_relationships_with_back_populates():
+    """Test that relationships=True generates relationship() with back_populates."""
+    expected = """import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+
+
+Base = declarative_base()
+
+
+class Users(Base):
+
+    __tablename__ = 'users'
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+    name = sa.Column(sa.String(), nullable=False)
+
+    posts = relationship("Posts", back_populates="user")
+
+
+class Posts(Base):
+
+    __tablename__ = 'posts'
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+    title = sa.Column(sa.String(), nullable=False)
+    user_id = sa.Column(sa.Integer(), sa.ForeignKey('users.id'))
+
+    user = relationship("Users", back_populates="posts")
+"""
+    ddl = """
+CREATE TABLE "users" (
+  "id" int PRIMARY KEY,
+  "name" varchar NOT NULL
+);
+
+CREATE TABLE "posts" (
+  "id" int PRIMARY KEY,
+  "title" varchar NOT NULL,
+  "user_id" int
+);
+
+ALTER TABLE "posts" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+"""
+    result = create_models(ddl, models_type="sqlalchemy", relationships=True)["code"]
+    assert result == expected
+
+
+def test_relationships_multiple_foreign_keys():
+    """Test relationships with multiple foreign keys in the same table."""
+    expected = """import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+
+
+Base = declarative_base()
+
+
+class Users(Base):
+
+    __tablename__ = 'users'
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+    name = sa.Column(sa.String())
+
+    comments = relationship("Comments", back_populates="user")
+
+
+class Posts(Base):
+
+    __tablename__ = 'posts'
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+    title = sa.Column(sa.String())
+
+    comments = relationship("Comments", back_populates="post")
+
+
+class Comments(Base):
+
+    __tablename__ = 'comments'
+
+    id = sa.Column(sa.Integer(), primary_key=True)
+    text = sa.Column(sa.String())
+    user_id = sa.Column(sa.Integer(), sa.ForeignKey('users.id'))
+    post_id = sa.Column(sa.Integer(), sa.ForeignKey('posts.id'))
+
+    user = relationship("Users", back_populates="comments")
+    post = relationship("Posts", back_populates="comments")
+"""
+    ddl = """
+CREATE TABLE "users" (
+  "id" int PRIMARY KEY,
+  "name" varchar
+);
+
+CREATE TABLE "posts" (
+  "id" int PRIMARY KEY,
+  "title" varchar
+);
+
+CREATE TABLE "comments" (
+  "id" int PRIMARY KEY,
+  "text" varchar,
+  "user_id" int,
+  "post_id" int
+);
+
+ALTER TABLE "comments" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "comments" ADD FOREIGN KEY ("post_id") REFERENCES "posts" ("id");
+"""
+    result = create_models(ddl, models_type="sqlalchemy", relationships=True)["code"]
+    assert result == expected

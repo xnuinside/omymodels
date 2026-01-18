@@ -52,6 +52,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Uses `X | None` union syntax for nullable columns
 - Supports all column types, foreign keys, indexes, and constraints
 
+**SQLAlchemy Relationships (issue #47)**
+- New `relationships` parameter for `create_models()` to generate `relationship()` with `back_populates`
+- Automatically generates bidirectional relationships for foreign keys:
+  - Parent side (one-to-many): collection attribute pointing to children
+  - Child side (many-to-one): attribute pointing to parent
+- Works with both `sqlalchemy` and `sqlalchemy_v2` model types
+- For `sqlalchemy_v2`: uses `Mapped[List[T]]` for one-to-many and `Mapped[T]` for many-to-one
+
 **SQLModel Improvements**
 - Fixed array type generation (issue #66)
 - Arrays now properly generate `List[T]` with correct SQLAlchemy ARRAY type

@@ -44,6 +44,7 @@ def create_models(
     no_auto_snake_case: Optional[bool] = False,
     table_prefix: Optional[str] = "",
     table_suffix: Optional[str] = "",
+    relationships: Optional[bool] = False,
 ):
     """models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
@@ -65,6 +66,7 @@ def create_models(
         defaults_off,
         table_prefix=table_prefix,
         table_suffix=table_suffix,
+        relationships=relationships,
     )
     if dump:
         save_models_to_file(output, dump_path)
@@ -138,6 +140,62 @@ def save_models_to_file(models: str, dump_path: str) -> None:
         f.write(models)
 
 
+def collect_relationships(tables: List) -> Dict:
+    """Collect foreign key relationships between tables.
+
+    Returns a dict mapping table_name -> list of relationships info.
+    Each relationship has:
+    - fk_column: the foreign key column name in the child table
+    - ref_table: the referenced (parent) table name
+    - ref_column: the referenced column name
+
+    Checks both inline column references and ALTER TABLE foreign keys.
+    """
+    relationships = {}
+
+    def add_relationship(table_name: str, fk_column: str, ref_table: str, ref_column: str):
+        """Helper to add both sides of a relationship."""
+        # Add to child table's relationships (many-to-one)
+        if table_name not in relationships:
+            relationships[table_name] = []
+        relationships[table_name].append({
+            "type": "many_to_one",
+            "fk_column": fk_column,
+            "ref_table": ref_table,
+            "ref_column": ref_column,
+            "child_table_name": table_name,  # The child needs to know its own table name for back_populates
+        })
+        # Add to parent table's relationships (one-to-many)
+        if ref_table not in relationships:
+            relationships[ref_table] = []
+        relationships[ref_table].append({
+            "type": "one_to_many",
+            "child_table": table_name,
+            "fk_column": fk_column,
+        })
+
+    for table in tables:
+        # Check inline column references
+        for column in table.columns:
+            if column.references:
+                ref_table = column.references.get("table")
+                ref_column = column.references.get("column") or column.name
+                if ref_table:
+                    add_relationship(table.name, column.name, ref_table, ref_column)
+
+        # Check ALTER TABLE foreign keys
+        if hasattr(table, 'alter') and table.alter and "columns" in table.alter:
+            for alter_column in table.alter["columns"]:
+                if alter_column.get("references"):
+                    ref_info = alter_column["references"]
+                    ref_table = ref_info.get("table")
+                    ref_column = ref_info.get("column") or alter_column["name"]
+                    if ref_table:
+                        add_relationship(table.name, alter_column["name"], ref_table, ref_column)
+
+    return relationships
+
+
 def generate_models_file(
     data: Dict[str, List],
     singular: bool = False,
@@ -147,6 +205,7 @@ def generate_models_file(
     defaults_off: Optional[bool] = False,
     table_prefix: Optional[str] = "",
     table_suffix: Optional[str] = "",
+    relationships: Optional[bool] = False,
 ) -> str:
     """method to prepare full file with all Models &"""
     models_str = ""
@@ -159,6 +218,11 @@ def generate_models_file(
     if data["tables"]:
         add_custom_types_to_generator(data["types"], generator)
 
+        # Collect relationships if enabled
+        relationships_map = {}
+        if relationships:
+            relationships_map = collect_relationships(data["tables"])
+
         for table in data["tables"]:
             models_str += generator.generate_model(
                 table,
@@ -168,6 +232,7 @@ def generate_models_file(
                 defaults_off=defaults_off,
                 table_prefix=table_prefix,
                 table_suffix=table_suffix,
+                relationships=relationships_map.get(table.name, []) if relationships else [],
             )
         header += generator.create_header(
             data["tables"], schema=schema_global, models_str=models_str

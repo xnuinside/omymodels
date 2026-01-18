@@ -210,3 +210,42 @@ def test_sqlalchemy_v2_complete_example(load_generated_code) -> None:
     assert len(user_id_col.foreign_keys) == 1
 
     os.remove(os.path.abspath(module.__file__))
+
+
+def test_sqlalchemy_v2_relationships_with_back_populates(load_generated_code) -> None:
+    """Integration test: verify relationship() with back_populates is generated correctly."""
+    ddl = """
+    CREATE TABLE authors (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL
+    );
+
+    CREATE TABLE books (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(200) NOT NULL,
+        author_id INT
+    );
+
+    ALTER TABLE books ADD FOREIGN KEY (author_id) REFERENCES authors (id);
+    """
+    result = create_models(ddl, models_type="sqlalchemy_v2", relationships=True)["code"]
+
+    module = load_generated_code(result)
+
+    # Verify models exist
+    assert hasattr(module, "Authors")
+    assert hasattr(module, "Books")
+
+    # Verify relationships are defined
+    from sqlalchemy.orm import configure_mappers
+    configure_mappers()
+
+    # Check Authors has 'books' relationship
+    author_relationships = module.Authors.__mapper__.relationships
+    assert "books" in author_relationships.keys()
+
+    # Check Books has 'author' relationship
+    book_relationships = module.Books.__mapper__.relationships
+    assert "author" in book_relationships.keys()
+
+    os.remove(os.path.abspath(module.__file__))
