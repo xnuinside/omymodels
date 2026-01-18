@@ -1,6 +1,3 @@
-import pytest
-from helpers import generate_params_for_converter
-
 from omymodels import convert_models
 
 
@@ -57,42 +54,6 @@ class Material(db.Model):
     updated_at = db.Column(db.DateTime())
 """
     assert result == expected
-
-
-ddl = """
-CREATE TYPE "material_type" AS ENUM (
-  'video',
-  'article'
-);
-
-CREATE TABLE "material" (
-  "id" SERIAL PRIMARY KEY,
-  "title" varchar NOT NULL,
-  "description" text,
-  "link" varchar NOT NULL,
-  "type" material_type,
-  "additional_properties" json DEFAULT '{"key": "value"}',
-  "created_at" timestamp DEFAULT (now()),
-  "updated_at" timestamp
-);
-"""
-params = generate_params_for_converter(ddl)
-
-
-@pytest.mark.skip
-@pytest.mark.parametrize(
-    "base_model_type,target_model_type,base_model_code,target_model_code", params
-)
-def test_convert_models_params(
-    base_model_type: str,
-    target_model_type: str,
-    base_model_code: str,
-    target_model_code: str,
-):
-    assert (
-        convert_models(base_model_code, models_type=target_model_type)
-        == target_model_code
-    )
 
 
 def test_from_sqlalchemy_to_gino():

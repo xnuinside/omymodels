@@ -1,10 +1,4 @@
-"""Integration tests for SQLAlchemy Core (Table) generation.
-
-NOTE: The sqlalchemy_core generator has known bugs:
-- Column names are not included in the output
-- Column type sizes are not properly attached to type names
-These tests are skipped until the generator is fixed.
-"""
+"""Integration tests for SQLAlchemy Core (Table) generation."""
 
 import os
 
@@ -18,16 +12,10 @@ try:
 except ImportError:
     HAS_SQLALCHEMY = False
 
-# Skip all tests - generator has known bugs that need to be fixed
-pytestmark = [
-    pytest.mark.skipif(
-        not HAS_SQLALCHEMY,
-        reason="SQLAlchemy is not installed"
-    ),
-    pytest.mark.skip(
-        reason="sqlalchemy_core generator has known bugs (missing column names, broken type sizes)"
-    ),
-]
+pytestmark = pytest.mark.skipif(
+    not HAS_SQLALCHEMY,
+    reason="SQLAlchemy is not installed"
+)
 
 
 def test_sqlalchemy_core_basic_table_is_valid(load_generated_code) -> None:
