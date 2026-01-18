@@ -55,6 +55,7 @@ Period = Enum(
 """
     assert expected == result
 
+
 def test_enum_with_whitespace():
     ddl = """
     CREATE TYPE "enum_with_spaces" AS ENUM (

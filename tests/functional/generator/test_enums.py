@@ -73,7 +73,6 @@ Period = Enum(
 
 
 class Notification(BaseModel):
-
     content_type: Optional[ContentType]
     period: Optional[Period]
 """

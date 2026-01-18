@@ -42,6 +42,8 @@ def create_models(
     defaults_off: Optional[bool] = False,
     exit_silent: Optional[bool] = False,
     no_auto_snake_case: Optional[bool] = False,
+    table_prefix: Optional[str] = "",
+    table_suffix: Optional[str] = "",
 ):
     """models_type can be: "gino", "dataclass", "pydantic" """
     # extract data from ddl file
@@ -55,7 +57,14 @@ def create_models(
             raise NoTablesError()
     # generate code
     output = generate_models_file(
-        data, singular, naming_exceptions, models_type, schema_global, defaults_off
+        data,
+        singular,
+        naming_exceptions,
+        models_type,
+        schema_global,
+        defaults_off,
+        table_prefix=table_prefix,
+        table_suffix=table_suffix,
     )
     if dump:
         save_models_to_file(output, dump_path)
@@ -99,6 +108,9 @@ def convert_ddl_to_models(  # noqa: C901
                 column["name"] = snake_case(column["name"])
             if column["name"] in refs:
                 column["references"] = refs[column["name"]]
+            # Handle generated columns (GENERATED ALWAYS AS)
+            if "generated" in column:
+                column["generated_as"] = column["generated"].get("as")
         if not no_auto_snake_case:
             table["primary_key"] = [snake_case(pk) for pk in table["primary_key"]]
             for uniq in table.get("constraints", {}).get("uniques", []):
@@ -133,6 +145,8 @@ def generate_models_file(
     models_type: str = "gino",
     schema_global: bool = True,
     defaults_off: Optional[bool] = False,
+    table_prefix: Optional[str] = "",
+    table_suffix: Optional[str] = "",
 ) -> str:
     """method to prepare full file with all Models &"""
     models_str = ""
@@ -152,6 +166,8 @@ def generate_models_file(
                 exceptions,
                 schema_global=schema_global,
                 defaults_off=defaults_off,
+                table_prefix=table_prefix,
+                table_suffix=table_suffix,
             )
         header += generator.create_header(
             data["tables"], schema=schema_global, models_str=models_str

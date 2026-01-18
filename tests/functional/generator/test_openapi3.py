@@ -265,7 +265,6 @@ components:
         - id
 """
         try:
-            import yaml
             result = create_models_from_openapi3(yaml_schema, models_type="pydantic")
             assert "class User(BaseModel):" in result
         except ValueError as e:
